@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var uniqueIdGen = require('./../lib/uniqueIdGen.js');
+var uniqueIdGen = require('./../../lib/uniqueIdGen.js');
 
 describe('uniqueIdGen Tests ', function () {
     before(function() {

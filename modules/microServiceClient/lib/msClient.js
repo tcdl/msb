@@ -1,12 +1,6 @@
-/**
- */
-
 var msClient = {};
-var extend = require('util')._extend;
-var uniqueIdGen = require('./../lib/uniqueIdGen');
 var mq = require('message-queue');
-var Joi = mq.Joi;
-
+var uniqueIdGen = require('./../lib/uniqueIdGen');
 
 msClient._queue = null;
 
@@ -17,7 +11,7 @@ msClient._queue = null;
 msClient._opts = {
     mqType : 'redis',
     serviceId : uniqueIdGen.getUniqueId(),
-    producedMessageTTL : 60
+    producedMessageTTL : 1000 //1 second
 };
 
 /**
@@ -50,7 +44,7 @@ msClient.init = function init(opts){
     msClient._opts.serviceId  = opts.serviceId || msClient._opts.serviceId;
 
     //Create an mq client
-    msClient._queue = mq('redis');
+    msClient._queue = mq(msClient._opts.mqType);
 
     //create a redis client to produce new messages
     msClient._producer = msClient._queue.Publish();
@@ -109,6 +103,32 @@ msClient.consume = function consume(topic, opts, cb){
  * @param cb : function(err)
  */
 msClient.produce = function produce(topic, opts, req, cb){
+    //Create a new message
+    msClient._createMessage(opts, req, function(err,message){
+        if (err){
+            return cb(err,null);
+        }
+        //Publish the new message on the message bus
+        msClient._producer.publish(topic,JSON.stringify(message),function(err, items){
+            if (err){
+                return cb(err,null);
+            }
+            //Return the messageId
+            cb(err,message);
+        });
+    });
+};
+
+msClient._createMessage = function(opt,req,cb){
+    //Create a request object
+    var request = {};
+    request.metadata = req.metadata || {};
+    request.headers = req.params || {};
+    request.query = req.query || {};
+    request.params = req.params || {};
+    request.body = req.body || null;
+
+    //Create a new message object
     var message = {};
     message.id = message.id || msClient._getNewMessageId();
     message.metadata = message.metadata || {};
@@ -128,24 +148,13 @@ msClient.produce = function produce(topic, opts, req, cb){
         body : null
     };
 
-    //publish
-    msClient._producer.publish(topic,JSON.stringify(message),function(err, items){
-        if (err){
-            return cb(err);
-        }
-        //Return the messageId
-        cb(err,message);
-    });
+    //validate the message format
+
+    return cb(null, message)
 };
 
-/**
- * Create a new unique message Id
- * @returns messageId {string}
- * @private
- */
-msClient._getNewMessageId = function(){
-    return msClient._opts.serviceId + '.' + uniqueIdGen.getUniqueId();
-};
+
+
 
 /**
  * Process a consumed message, transform to JSON and See if the message was produced by this client

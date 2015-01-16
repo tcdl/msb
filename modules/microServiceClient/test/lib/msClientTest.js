@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var msClient = require('./../lib/msClient.js');
+var msClient = require('./../../lib/msClient.js');
 var redis = require('redis');
 var producer = redis.createClient();
 var consumer = redis.createClient();

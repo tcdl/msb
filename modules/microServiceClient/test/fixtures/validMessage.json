@@ -1,0 +1,15 @@
+{
+    "id": "5961191864920051712.5961191864961994752",
+    "req": {
+        "metadata": {},
+        "headers": {},
+        "query": {
+            "q" : "Summer holiday in spain"
+        },
+        "params": {},
+        "topic": "fooTopic",
+        "restopic": "fooTopic.RES.5961191864920051712"
+    },
+    "res":{},
+    "parent":{}
+}

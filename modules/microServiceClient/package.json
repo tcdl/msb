@@ -4,7 +4,7 @@
   "description": "microserviceClient, allows an abstract way of connecting to message busses",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test node node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha --dir ./.coverage -- --recursive tests/ -R spec"
+    "test": "istanbul cover ./node_modules/tape/bin/tape ./test/lib/*.js ./test/*/*/*.js && istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
     "flake-idgen": "^1.0.0",
     "hashtable": "^0.5.2",
     "ip": "^0.3.2",
+    "joi": "^5.1.0",
     "joy": "^0.1.1",
     "message-queue": "0.0.0",
     "redis": "^0.12.1",

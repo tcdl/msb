@@ -4,7 +4,7 @@ Simple client to build a micro-service architecture with NodeJs.
 
 It has some basic implementations for consuming and producing messages.
 
-currently only supports REDIS a Apache Kafka implementation is on his way.
+currently only supports Redis an Apache Kafka implementation is on his way.
 
 ##getting started
 

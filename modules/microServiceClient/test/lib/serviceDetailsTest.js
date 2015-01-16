@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var serviceDetails = require('./../lib/serviceDetails.js');
+var serviceDetails = require('./../../lib/serviceDetails.js');
 var os = require('os');
 
 describe('Service Details Tests ', function () {

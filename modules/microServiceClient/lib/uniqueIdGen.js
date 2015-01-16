@@ -34,7 +34,7 @@ uniqueIdGen.getUniqueId = function getUniqueId(){
     if (!uniqueIdGen._flakeIdGen){
       uniqueIdGen._flakeIdGen = new FlakeId(uniqueIdGen._defaults);
     }
-    return  intformat(uniqueIdGen._flakeIdGen.next(), 'dec');
+    return  intformat(uniqueIdGen._flakeIdGen.next(), 'hex');
 };
 
 module.exports = uniqueIdGen;
