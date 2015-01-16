@@ -1,3 +1,4 @@
+'use strict';
 var Contributor = require('../lib/contributor');
 var i = 1001;
 
