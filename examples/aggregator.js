@@ -1,3 +1,4 @@
+'use strict';
 var Originator = require('../lib/originator');
 var Contributor = require('../lib/contributor');
 
