@@ -8,4 +8,3 @@ Contributor.attachListener({
   contributor.message.res.body = i++;
   contributor.send();
 });
-

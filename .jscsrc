@@ -1,0 +1,11 @@
+{
+  "excludeFiles": [
+    "node_modules/**"
+  ],
+  "maximumLineLength": 120,
+  "preset": "google",
+  "requireCurlyBraces": null,
+  "disallowSpacesInsideObjectBrackets": null,
+  "requireSpacesInsideObjectBrackets": "all",
+  "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties"
+}

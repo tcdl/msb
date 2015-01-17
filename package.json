@@ -7,12 +7,14 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test-cov",
+    "cs": "jscs **/*.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "code": "^1.2.1",
+    "jscs": "^1.10.0",
     "lab": "^5.2.0",
     "simple-mock": "^0.2.6"
   },
