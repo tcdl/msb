@@ -10,7 +10,8 @@ Contributor.attachListener({
   // Create new
   var originator = new Originator({
     namespace: 'test.general',
-    requiredResCount: 2
+    waitForContribs: 2,
+    contribTimeout: 2000
   });
 
   originator.message.req = contrib.message.req;
@@ -24,8 +25,8 @@ Contributor.attachListener({
     contrib.message.res.body.results = contrib.message.res.body.results || [];
     contrib.message.res.body.results.push(message.res.body);
   })
-  .on('final', function() {
-    console.log('FINAL', contrib.message)
+  .on('end', function() {
+    console.log('END', contrib.message);
     contrib.message.res.statusCode = 200;
     contrib.send();
   });

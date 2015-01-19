@@ -1,3 +1,4 @@
+'use strict';
 /* Setup */
 var Lab = require('lab');
 var Code = require('code');
@@ -13,7 +14,6 @@ var expect = Code.expect;
 
 /* Modules */
 var simple = require('simple-mock');
-var mock = simple.mock;
 var msb = require('..');
 var Originator = msb.Originator;
 
@@ -78,19 +78,19 @@ describe('Originator', function() {
     it('can emit message immediately', function(done) {
       producer.publish.callbackWith();
 
-      var finalHandler = simple.mock();
+      var endHandler = simple.mock();
 
       var obj = new Originator({
         waitForContribs: 0
       });
 
       obj
-      .on('final', finalHandler)
+      .on('end', endHandler)
       .publish();
 
       expect(producer.publish.called).to.equal(true);
-      expect(finalHandler.called).to.equal(true);
-      expect(finalHandler.lastCall.args[0]).to.equal(obj.message);
+      expect(endHandler.called).to.equal(true);
+      expect(endHandler.lastCall.args[0]).to.equal(obj.message);
 
       done();
     });
@@ -98,7 +98,7 @@ describe('Originator', function() {
     it('can start collecting contributions', function(done) {
       producer.publish.callbackWith();
 
-      var finalHandler = simple.mock();
+      var endHandler = simple.mock();
 
       var obj = new Originator({
         waitForContribs: 1
@@ -109,7 +109,7 @@ describe('Originator', function() {
       simple.mock(obj, 'listenForAcks').returnWith();
 
       obj
-      .on('final', finalHandler)
+      .on('end', endHandler)
       .publish();
 
       expect(mocks.originator_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
@@ -118,7 +118,7 @@ describe('Originator', function() {
       expect(obj.listenForAcks.lastCall.args[0]).to.equal(obj.message.topics.ack);
       expect(obj.listenForAcks.lastCall.args[1]).to.equal('testValue');
       expect(producer.publish.called).to.equal(true);
-      expect(finalHandler.called).to.equal(false);
+      expect(endHandler.called).to.equal(false);
 
       done();
     });
