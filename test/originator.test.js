@@ -123,4 +123,22 @@ describe('Originator', function() {
       done();
     });
   });
+
+  describe('shouldAcceptMessageFn()', function(done) {
+
+    it('should per default match on message id', function(done) {
+      var obj = new Originator({});
+
+      expect(obj.shouldAcceptMessageFn({
+        id: 'other'
+      })).false();
+
+      expect(obj.shouldAcceptMessageFn({
+        id: obj.message.id
+      })).true();
+
+      done();
+    });
+
+  });
 });
