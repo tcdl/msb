@@ -1,5 +1,6 @@
 'use strict';
 /* Setup */
+/*jshint camelcase: false */
 var Lab = require('lab');
 var Code = require('code');
 var lab = exports.lab = Lab.script();
