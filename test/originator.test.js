@@ -35,7 +35,7 @@ describe('Originator', function() {
     mocks.messageFactory_createOriginalMessage = simple.mock(msb.messageFactory, 'createOriginalMessage');
     mocks.Originator_super_ = simple.mock(Originator, 'super_');
 
-    var obj = new Originator({});
+    var obj = Originator({}); // jshint ignore:line
 
     expect(mocks.messageFactory_createOriginalMessage.called).to.equal(true);
     expect(mocks.Originator_super_.called).to.equal(true);

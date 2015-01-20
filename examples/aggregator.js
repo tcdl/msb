@@ -20,13 +20,11 @@ Contributor.attachListener({
   originator
   .publish()
   .on('contrib', function(message) {
-    console.log('CONTRIB', contrib.message);
     contrib.message.res.body = contrib.message.res.body || {};
     contrib.message.res.body.results = contrib.message.res.body.results || [];
     contrib.message.res.body.results.push(message.res.body);
   })
   .on('end', function() {
-    console.log('END', contrib.message);
     contrib.message.res.statusCode = 200;
     contrib.send();
   });
