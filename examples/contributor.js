@@ -1,6 +1,9 @@
 'use strict';
-var Contributor = require('../lib/contributor');
+var msb = require('..');
+var Contributor = msb.Contributor;
 var i = 1001;
+
+msb.channelManager.startHeartbeatContributor();
 
 Contributor.attachListener({
   namespace: 'test.general'

@@ -1,6 +1,9 @@
 'use strict';
 var _ = require('lodash');
-var Originator = require('../lib/originator');
+var msb = require('..');
+var Originator = msb.Originator;
+
+msb.channelManager.startHeartbeatContributor();
 
 /*
   Returns a middleware that publishes incoming requests and responds where a response can be constructed.

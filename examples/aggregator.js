@@ -1,6 +1,9 @@
 'use strict';
-var Originator = require('../lib/originator');
-var Contributor = require('../lib/contributor');
+var msb = require('..');
+var Originator = msb.Originator;
+var Contributor = msb.Contributor;
+
+msb.channelManager.startHeartbeatContributor();
 
 Contributor.attachListener({
   namespace: 'test.aggregator'

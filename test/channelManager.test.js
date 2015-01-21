@@ -30,6 +30,11 @@ describe('channelManager', function() {
   });
 
   describe('findOrCreateProducer', function() {
+    beforeEach(function(done) {
+      simple.mock(channelManager, 'onNewChannel').returnWith();
+      done();
+    });
+
     it('can reuse publisher and channels per topic', function(done) {
       var mockPublisher = {};
 
@@ -63,6 +68,11 @@ describe('channelManager', function() {
   });
 
   describe('findOrCreateConsumer', function() {
+    beforeEach(function(done) {
+      simple.mock(channelManager, 'onNewChannel').returnWith();
+      done();
+    });
+
     it('can reuse subscribers per topic', function(done) {
       var mockSubscriber1 = {};
       var mockSubscriber2 = {};
