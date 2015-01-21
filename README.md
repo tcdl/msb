@@ -10,7 +10,8 @@ Components for use in microservices attached to the bus
 
 ## Contributor
 
-A contributor can send acks and contributions via the bus.
+A contributor can send acks and contributions via the bus. Contributors can be created from messages received by
+listening on a topic/namespace.
 
 ## Collector
 
@@ -19,10 +20,6 @@ A collector is a component that listens for multiple messages on a topic, with t
 ## Originator
 
 An originator is a collector component that can also publish new messages on the bus.
-
-## Middleware
-
-Middleware that translates from http to the bus can be created per config.
 
 ## Channel Manager
 

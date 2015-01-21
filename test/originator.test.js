@@ -131,11 +131,11 @@ describe('Originator', function() {
       var obj = new Originator({});
 
       expect(obj.shouldAcceptMessageFn({
-        id: 'other'
+        correlationId: 'other'
       })).false();
 
       expect(obj.shouldAcceptMessageFn({
-        id: obj.message.id
+        correlationId: obj.message.correlationId
       })).true();
 
       done();
