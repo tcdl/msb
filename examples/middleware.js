@@ -3,7 +3,7 @@ var _ = require('lodash');
 var msb = require('..');
 var Originator = msb.Originator;
 
-msb.channelManager.startHeartbeatContributor();
+msb.channelMonitor.startBroadcasting();
 
 /*
   Returns a middleware that publishes incoming requests and responds where a response can be constructed.

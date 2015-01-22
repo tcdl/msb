@@ -3,7 +3,7 @@ var msb = require('..');
 var Originator = msb.Originator;
 var Contributor = msb.Contributor;
 
-msb.channelManager.startHeartbeatContributor();
+msb.channelMonitor.startBroadcasting();
 
 Contributor.attachListener({
   namespace: 'test.aggregator'

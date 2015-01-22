@@ -3,7 +3,7 @@ var msb = require('..');
 var Contributor = msb.Contributor;
 var i = 1001;
 
-msb.channelManager.startHeartbeatContributor();
+msb.channelMonitor.startBroadcasting();
 
 Contributor.attachListener({
   namespace: 'test.general'
