@@ -29,6 +29,7 @@ Contributor.attachListener({
   })
   .on('end', function() {
     contrib.message.res.statusCode = 200;
+    contrib.message.res.bodyEncoding = 'json';
     contrib.send();
   });
 });

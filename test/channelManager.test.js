@@ -31,7 +31,6 @@ describe('channelManager', function() {
 
   describe('findOrCreateProducer', function() {
     beforeEach(function(done) {
-      simple.mock(channelManager, 'onNewChannel').returnWith();
       done();
     });
 
@@ -63,6 +62,22 @@ describe('channelManager', function() {
       expect(mockPublisher.channel.callCount).equals(2);
       expect(producer2).to.not.equal(producer1a);
       expect(producer1a).equals(producer1b);
+
+      done();
+    });
+
+    it('will emit a new channel event', function(done) {
+      simple.mock(channelManager, 'createProducer').returnWith({});
+
+      expect(channelManager.PRODUCER_NEW_TOPIC_EVENT).exists();
+
+      var onEvent = simple.mock();
+      channelManager.on(channelManager.PRODUCER_NEW_TOPIC_EVENT, onEvent);
+
+      channelManager.findOrCreateProducer('etc');
+
+      expect(onEvent.called).true();
+      expect(onEvent.lastCall.args[0]).equals('etc');
       done();
     });
   });
@@ -78,7 +93,9 @@ describe('channelManager', function() {
       var mockSubscriber2 = {};
 
       simple.mock(mockSubscriber1, 'setMaxListeners');
+      simple.mock(mockSubscriber1, 'on');
       simple.mock(mockSubscriber2, 'setMaxListeners');
+      simple.mock(mockSubscriber2, 'on');
 
       simple
       .mock(queue, 'Subscribe')
@@ -110,6 +127,45 @@ describe('channelManager', function() {
       expect(consumer1a).equals(consumer1b);
       expect(mockSubscriber1.setMaxListeners.callCount).equals(1);
       expect(mockSubscriber2.setMaxListeners.callCount).equals(1);
+      done();
+    });
+
+    it('will emit a new channel event', function(done) {
+      var mockSubscriber = {};
+      simple.mock(mockSubscriber, 'setMaxListeners');
+      simple.mock(mockSubscriber, 'on');
+      simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+
+      expect(channelManager.CONSUMER_NEW_TOPIC_EVENT).exists();
+
+      var onEvent = simple.mock();
+      channelManager.once(channelManager.CONSUMER_NEW_TOPIC_EVENT, onEvent);
+      channelManager.findOrCreateConsumer('etc');
+
+      expect(onEvent.called).true();
+      expect(onEvent.lastCall.args[0]).equals('etc');
+      done();
+    });
+
+    it('will listen for messages and emit a new message event', function(done) {
+      var mockSubscriber = {};
+      simple.mock(mockSubscriber, 'setMaxListeners');
+      simple.mock(mockSubscriber, 'on');
+      simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+
+      channelManager.findOrCreateConsumer('c.etc');
+
+      expect(mockSubscriber.on.called).true();
+      expect(mockSubscriber.on.lastCall.args[0]).equals('message');
+      expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
+
+      var onEvent = simple.mock();
+      channelManager.once(channelManager.CONSUMER_NEW_MESSAGE_EVENT, onEvent);
+
+      mockSubscriber.on.lastCall.args[1]();
+
+      expect(onEvent.called).true();
+      expect(onEvent.lastCall.args[0]).equals('c.etc');
       done();
     });
   });
