@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cli-table": "^0.3.1",
     "code": "^1.2.1",
     "jscs": "^1.10.0",
     "lab": "^5.2.0",
