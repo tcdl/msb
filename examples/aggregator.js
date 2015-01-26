@@ -6,13 +6,13 @@ var Contributor = msb.Contributor;
 msb.channelMonitor.startBroadcasting();
 
 Contributor.attachListener({
-  namespace: 'test.aggregator'
+  namespace: 'test:aggregator'
 }, function(contrib) {
   contrib.sendAckWithTimeout(5000);
 
   // Create new
   var originator = new Originator({
-    namespace: 'test.general',
+    namespace: 'test:general',
     waitForContribs: 2,
     contribTimeout: 2000
   });

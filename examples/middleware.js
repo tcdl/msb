@@ -15,7 +15,7 @@ msb.channelMonitor.startBroadcasting();
 */
 var middleware = function(req, res, next) {
   var originator = new Originator({
-    namespace: 'test.aggregator',
+    namespace: 'test:aggregator',
     waitForContribs: 1
   });
 

@@ -6,7 +6,7 @@ var i = 1001;
 msb.channelMonitor.startBroadcasting();
 
 Contributor.attachListener({
-  namespace: 'test.general'
+  namespace: 'test:general'
 }, function(contributor) {
   contributor.message.res.body = i++;
   contributor.send();

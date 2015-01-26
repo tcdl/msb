@@ -45,17 +45,17 @@ describe('channelManager', function() {
       .returnWith(2)
       .returnWith(null);
 
-      var producer1a = channelManager.findOrCreateProducer('prod1.1');
+      var producer1a = channelManager.findOrCreateProducer('prod1:1');
 
       expect(mockPublisher.channel.called).true();
-      expect(mockPublisher.channel.lastCall.args[0]).equals('prod1.1');
+      expect(mockPublisher.channel.lastCall.args[0]).equals('prod1:1');
 
-      var producer2 = channelManager.findOrCreateProducer('prod1.2');
+      var producer2 = channelManager.findOrCreateProducer('prod1:2');
 
-      expect(mockPublisher.channel.lastCall.args[0]).equals('prod1.2');
+      expect(mockPublisher.channel.lastCall.args[0]).equals('prod1:2');
       expect(mockPublisher.channel.called).true();
 
-      var producer1b = channelManager.findOrCreateProducer('prod1.1');
+      var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
       expect(queue.Publish.callCount).equals(1);
       expect(queue.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
@@ -103,24 +103,24 @@ describe('channelManager', function() {
       .returnWith(mockSubscriber2)
       .returnWith(null);
 
-      var consumer1a = channelManager.findOrCreateConsumer('con1.1');
+      var consumer1a = channelManager.findOrCreateConsumer('con1:1');
 
       expect(queue.Subscribe.called).true();
       expect(queue.Subscribe.lastCall.args[0]).deep.include({
-        channel: 'con1.1',
+        channel: 'con1:1',
         host: 'mock.host',
         port: '99999'
       });
 
-      var consumer2 = channelManager.findOrCreateConsumer('con1.2');
+      var consumer2 = channelManager.findOrCreateConsumer('con1:2');
 
       expect(queue.Subscribe.lastCall.args[0]).deep.include({
-        channel: 'con1.2',
+        channel: 'con1:2',
         host: 'mock.host',
         port: '99999'
       });
 
-      var consumer1b = channelManager.findOrCreateConsumer('con1.1');
+      var consumer1b = channelManager.findOrCreateConsumer('con1:1');
 
       expect(queue.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
