@@ -31,9 +31,6 @@ describe('channelManager', function() {
     channelManager.createProducer = mockChannels.createProducer;
     channelManager.createConsumer = mockChannels.createConsumer;
 
-    // simple.mock(channelMonitor.config, 'heartbeatTimeoutMs', 500);
-    // simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 500);
-
     done();
   });
 
@@ -270,16 +267,21 @@ describe('channelManager', function() {
       expect(channelMonitor.localInfoByTopic.ct.consumers).true();
       expect(channelMonitor.doBroadcast.callCount).equals(2);
 
+      channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, '_private');
+      expect(channelMonitor.localInfoByTopic._private).not.exists();
+
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, 'cm');
       expect(channelMonitor.localInfoByTopic.cm).exists();
       expect(channelMonitor.localInfoByTopic.cm.lastConsumedAt).date();
 
+      channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, '_private');
+      expect(channelMonitor.localInfoByTopic._private).not.exists();
+
+      channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, 'cr');
+      expect(channelMonitor.localInfoByTopic.cr).exists();
+      expect(channelMonitor.localInfoByTopic.cr.consumers).false();
+
       expect(channelMonitor.doBroadcast.callCount).equals(2);
-
-
-      expect(channelMonitor.localInfoByTopic.ct).exists();
-      expect(channelMonitor.localInfoByTopic.cm).exists();
-
       done();
     });
   });

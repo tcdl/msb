@@ -12,6 +12,7 @@ var afterEach = lab.afterEach;
 var expect = Code.expect;
 
 /* Modules */
+var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
 var queue = require('message-queue')('redis');
 var msb = require('..');
@@ -153,20 +154,93 @@ describe('channelManager', function() {
       simple.mock(mockSubscriber, 'on');
       simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
 
-      channelManager.findOrCreateConsumer('c.etc');
+      channelManager.findOrCreateConsumer('c:etc');
 
-      expect(mockSubscriber.on.called).true();
-      expect(mockSubscriber.on.lastCall.args[0]).equals('message');
+      expect(mockSubscriber.on.callCount).equals(2);
+      expect(mockSubscriber.on.calls[0].args[0]).equals('message');
+      expect(mockSubscriber.on.lastCall.args[0]).equals('removeListener');
       expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
 
       var onEvent = simple.mock();
       channelManager.once(channelManager.CONSUMER_NEW_MESSAGE_EVENT, onEvent);
 
-      mockSubscriber.on.lastCall.args[1]();
+      mockSubscriber.on.calls[0].args[1]();
 
       expect(onEvent.called).true();
-      expect(onEvent.lastCall.args[0]).equals('c.etc');
+      expect(onEvent.lastCall.args[0]).equals('c:etc');
       done();
+    });
+
+    describe('when the listeners are removed', function() {
+      it('will remove the cached channel', function(done) {
+        expect(channelManager.CONSUMER_REMOVED_TOPIC_EVENT).exists();
+
+        var mockSubscriber = new EventEmitter();
+        simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+
+        var onEvent = simple.mock();
+        channelManager.on(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, onEvent);
+
+        var channel = channelManager.findOrCreateConsumer('cr:etc');
+
+        // Do nothing for other events
+        channel.on('other', function() {});
+        channel.removeAllListeners('other');
+
+        var singleListener = function() {};
+        channel.on('message', singleListener);
+        channel.removeListener('message', singleListener);
+        channel.removeListener('message', singleListener);
+
+        setImmediate(function() {
+          expect(channelManager.createConsumer.callCount).equals(1);
+          expect(onEvent.callCount).equals(1);
+
+          // Cache was cleared
+          channelManager.findOrCreateConsumer('cr:etc');
+          expect(channelManager.createConsumer.callCount).equals(2);
+
+          done();
+        });
+      });
+
+      it('will remove multiple cached channels in one go', function(done) {
+        simple
+        .mock(channelManager, 'createConsumer')
+        .returnWith(new EventEmitter())
+        .returnWith(new EventEmitter());
+
+        var onEvent = simple.mock();
+        channelManager.on(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, onEvent);
+
+        var channelA = channelManager.findOrCreateConsumer('crm:a');
+        var channelB = channelManager.findOrCreateConsumer('crm:b');
+
+        var singleListener = function() {};
+
+        channelA.on('message', singleListener);
+        channelA.removeListener('message', singleListener);
+        channelA.on('message', singleListener); // Added listener after remove
+
+        channelB.on('message', singleListener);
+        channelB.removeListener('message', singleListener);
+
+        setImmediate(function() {
+          expect(channelManager.createConsumer.callCount).equals(2);
+          expect(onEvent.callCount).equals(1);
+          expect(onEvent.lastCall.args[0]).equals('crm:b');
+
+          // Cache not cleared
+          channelManager.findOrCreateConsumer('crm:a');
+          expect(channelManager.createConsumer.callCount).equals(2);
+
+          // Cache was cleared
+          channelManager.findOrCreateConsumer('crm:b');
+          expect(channelManager.createConsumer.callCount).equals(3);
+
+          done();
+        });
+      });
     });
   });
 });
