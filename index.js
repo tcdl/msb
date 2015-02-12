@@ -2,6 +2,7 @@
 /*
   e.g. `require('msb').channelManager` or `require('msb/lib/channelManager')`
 */
+exports.config = require('./lib/config');
 exports.channelManager = require('./lib/channelManager');
 exports.channelMonitor = require('./lib/channelMonitor');
 exports.messageFactory = require('./lib/messageFactory');

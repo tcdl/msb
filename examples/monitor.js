@@ -2,7 +2,8 @@ var Table = require('cli-table');
 var channelMonitor = require('..').channelMonitor;
 
 channelMonitor
-.on('updated', printTable).on('heartbeat', function() {
+.on('updated', printTable)
+.on('heartbeat', function() {
   printStatus(true);
 })
 .on('heartbeat-completed', function() {

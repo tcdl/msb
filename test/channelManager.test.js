@@ -16,12 +16,13 @@ var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
 var queue = require('message-queue')('redis');
 var msb = require('..');
+var config = msb.config;
 var channelManager = msb.channelManager;
 
 describe('channelManager', function() {
   beforeEach(function(done) {
-    simple.mock(channelManager.config, 'host', 'mock.host');
-    simple.mock(channelManager.config, 'port', '99999');
+    simple.mock(config, 'host', 'mock.host');
+    simple.mock(config, 'port', '99999');
     done();
   });
 
