@@ -23,8 +23,10 @@
   },
   "dependencies": {
     "debug": "^2.1.1",
+    "hiredis": "^0.2.0",
     "ip": "^0.3.2",
     "lodash": "^2.4.1",
-    "message-queue": "0.0.0"
+    "message-queue": "0.0.0",
+    "redis": "^0.12.1"
   }
 }
