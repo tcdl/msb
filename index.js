@@ -2,11 +2,12 @@
 /*
   e.g. `require('msb').channelManager` or `require('msb/lib/channelManager')`
 */
-exports.config = require('./lib/config');
-exports.channelManager = require('./lib/channelManager');
-exports.channelMonitor = require('./lib/channelMonitor');
-exports.messageFactory = require('./lib/messageFactory');
-exports.Collector = require('./lib/collector');
-exports.Originator = require('./lib/originator');
-exports.Contributor = require('./lib/contributor');
-exports.serviceDetails = require('./lib/support/serviceDetails');
+var msb = exports;
+msb.channelManager = require('./lib/channelManager');
+msb.channelMonitor = require('./lib/channelMonitor');
+msb.messageFactory = require('./lib/messageFactory');
+msb.Collector = require('./lib/collector');
+msb.Originator = require('./lib/originator');
+msb.Contributor = require('./lib/contributor');
+msb.serviceDetails = require('./lib/support/serviceDetails');
+msb.configure = require('lodash').merge.bind(null, require('./lib/config'));

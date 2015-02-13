@@ -16,7 +16,7 @@ var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
 var queue = require('message-queue')('redis');
 var msb = require('..');
-var config = msb.config;
+var config = require('../lib/config');
 var channelManager = msb.channelManager;
 
 describe('channelManager', function() {
