@@ -14,7 +14,7 @@ var expect = Code.expect;
 /* Modules */
 var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
-var queue = require('message-queue')('redis');
+var queue = require('../lib/drivers/queue');
 var msb = require('..');
 var config = require('../lib/config');
 var channelManager = msb.channelManager;

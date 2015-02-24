@@ -1,3 +1,4 @@
+'use strict';
 var Table = require('cli-table');
 var channelMonitor = require('..').channelMonitor;
 
