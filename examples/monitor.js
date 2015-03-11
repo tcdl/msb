@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 var Table = require('cli-table');
 var channelMonitor = require('..').channelMonitor;
 
@@ -30,7 +30,7 @@ function printTable(infoByTopic) {
     ]);
   });
 
-  console.log('\033c' + table.toString());
+  console.log('\x1Bc' + table.toString());
   // printStatus(true);
 }
 
