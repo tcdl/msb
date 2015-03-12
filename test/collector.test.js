@@ -195,6 +195,23 @@ describe('Collector', function() {
         done();
       });
 
+      it('will return null when subtracting from a non-existent value', function(done) {
+        var result = collector._setContribsRemainingForContributorId('a', -1);
+
+        expect(result).equals(null);
+        expect(collector._getContribsRemaining()).equals(0);
+        done();
+      });
+
+      it('will return null when subtracting from a zero value', function(done) {
+        collector._setContribsRemainingForContributorId('a', 0);
+        var result = collector._setContribsRemainingForContributorId('a', -1);
+
+        expect(result).equals(null);
+        expect(collector._getContribsRemaining()).equals(0);
+        done();
+      });
+
       it('will subtract where the value is negative', function(done) {
 
         collector._setContribsRemainingForContributorId('a', 5);
