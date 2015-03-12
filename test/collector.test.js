@@ -39,12 +39,14 @@ describe('Collector', function() {
     it('can be initialized with a config', function(done) {
       var config = {
         contribTimeout: 555,
+        ackTimeout: 50,
         waitForContribs: 1
       };
       var collector = new Collector(config);
 
       expect(collector.startedAt).exists();
       expect(Date.now() - collector.startedAt.valueOf()).below(10);
+      expect(collector.waitForAcksUntil - config.ackTimeout - Date.now()).below(10);
       expect(collector.timeoutMs).equals(555);
       done();
     });
@@ -57,6 +59,25 @@ describe('Collector', function() {
       collector = new Collector();
 
       done();
+    });
+
+    describe('isAwaitingAcks', function() {
+      it('will be null by default', function(done) {
+        expect(collector.isAwaitingAcks()).equals(null);
+        done();
+      });
+
+      it('will be true if waiting for acks', function(done) {
+        collector.waitForAcksUntil = new Date(Date.now() + 1000);
+        expect(collector.isAwaitingAcks()).true();
+        done();
+      });
+
+      it('will be false if not waiting for acks', function(done) {
+        collector.waitForAcksUntil = new Date();
+        expect(collector.isAwaitingAcks()).false();
+        done();
+      });
     });
 
     describe('_getMaxTimeoutMs()', function() {
@@ -411,6 +432,7 @@ describe('Collector', function() {
 
     describe('_onContribMessage', function() {
       var shouldAcceptMessageFn;
+      var message;
 
       beforeEach(function(done) {
         shouldAcceptMessageFn = simple.mock();
@@ -418,19 +440,22 @@ describe('Collector', function() {
         simple.mock(collector, 'emit').returnWith();
         simple.mock(collector, '_incContribsRemaining').returnWith();
         simple.mock(collector, '_processAck').returnWith();
-        simple.mock(collector, 'awaitingContribCount');
+        simple.mock(collector, 'isAwaitingContribs');
+        simple.mock(collector, 'isAwaitingAcks');
+        simple.mock(collector, '_enableAckTimeout').returnWith();
         simple.mock(collector, 'end').returnWith();
+
+        message = {
+          ack: 'ack'
+        };
 
         done();
       });
 
-      it('should accept message', function(done) {
-        var message = {
-          ack: 'ack'
-        };
+      it('should accept message when passed function returns true', function(done) {
 
         shouldAcceptMessageFn.returnWith(true);
-        collector.awaitingContribCount.returnWith(0);
+        collector.isAwaitingContribs.returnWith(0);
 
         collector._onContribMessage(shouldAcceptMessageFn, message);
 
@@ -443,22 +468,136 @@ describe('Collector', function() {
         expect(collector._incContribsRemaining.lastCall.args[0]).equals(-1);
         expect(collector._processAck.called).true();
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.awaitingContribCount.called).true();
+        expect(collector.isAwaitingContribs.called).true();
         expect(collector.end.called).true();
 
-        // Alternative shouldAcceptMessageFn
-        shouldAcceptMessageFn.returnWith(false);
-        collector._onContribMessage(shouldAcceptMessageFn, message);
-        expect(collector.contribMessages).length(1);
+        done();
+      });
 
-        // Alternative Contrib Count
-        collector.awaitingContribCount.returnWith(1);
-        collector._onContribMessage(shouldAcceptMessageFn, message);
-        expect(collector.end.calls).length(1);
+      it('should accept message when no function is passed', function(done) {
 
-        // Empty shouldAcceptMessageFn
+        collector.isAwaitingContribs.returnWith(0);
+
         collector._onContribMessage(null, message);
-        expect(collector.contribMessages).length(3);
+
+        expect(collector.contribMessages).length(1);
+        expect(collector.emit.called).true();
+        expect(collector.emit.lastCall.args[0]).equals('contrib');
+        expect(collector.emit.lastCall.args[1]).equals(message);
+        expect(collector._incContribsRemaining.called).true();
+        expect(collector._incContribsRemaining.lastCall.args[0]).equals(-1);
+        expect(collector._processAck.called).true();
+        expect(collector._processAck.lastCall.args[0]).equals(message.ack);
+        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.end.called).true();
+
+        done();
+      });
+
+      it('should not accept message when passed function returns false', function(done) {
+
+          shouldAcceptMessageFn.returnWith(false);
+
+          collector._onContribMessage(shouldAcceptMessageFn, message);
+
+          expect(collector.contribMessages).length(0);
+
+          done();
+      });
+
+      it('should not end when still awaiting contribs', function(done) {
+
+          collector.isAwaitingContribs.returnWith(1);
+
+          collector._onContribMessage(shouldAcceptMessageFn, message);
+
+          expect(collector.end.calls).length(0);
+
+          done();
+      });
+
+      it('should enable ack timeout when still awaiting acks', function(done) {
+
+          collector.isAwaitingContribs.returnWith(0);
+          collector.isAwaitingAcks.returnWith(true);
+
+          collector._onContribMessage(null, message);
+
+          expect(collector.contribMessages).length(1);
+          expect(collector._enableAckTimeout.called).true();
+          expect(collector.end.calls).length(0);
+
+          done();
+      });
+    });
+
+    describe('_onAckTimeout', function() {
+
+      beforeEach(function(done) {
+        simple.mock(collector, 'isAwaitingContribs');
+        simple.mock(collector, 'end').returnWith();
+        done();
+      });
+
+      it('should not end when (again) awaiting contribs', function(done) {
+
+        collector.isAwaitingContribs.returnWith(1);
+
+        collector._onAckTimeout();
+
+        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.end.called).false();
+
+        done();
+      });
+
+      it('should end when not awaiting contribs', function(done) {
+
+        collector.isAwaitingContribs.returnWith(0);
+
+        collector._onAckTimeout();
+
+        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.end.called).true();
+
+        done();
+      });
+    });
+
+    describe('_enableAckTimeout', function() {
+
+      beforeEach(function(done) {
+        simple.mock(Collector.prototype, '_onAckTimeout').returnWith();
+        simple.mock(global, 'setTimeout').returnWith(true);
+
+        collector.waitForAcksUntil = new Date(Date.now() + 1000);
+
+        done();
+      });
+
+      it('should do nothing if there is already an ack timeout', function(done) {
+
+        collector._ackTimeout = true;
+        collector._enableAckTimeout();
+
+        expect(collector._ackTimeout).true();
+        expect(setTimeout.called).false();
+
+        done();
+      });
+
+      it('should set an ack timeout', function(done) {
+
+        collector._enableAckTimeout();
+
+        expect(collector._ackTimeout).true();
+        expect(setTimeout.called).true();
+
+        var timeoutFn = setTimeout.lastCall.args[0];
+        timeoutFn();
+
+        expect(Collector.prototype._onAckTimeout.called).true();
+        expect(Collector.prototype._onAckTimeout.lastCall.context).equals(collector);
 
         done();
       });
