@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+var argv = require('minimist')(process.argv.slice(2), {
+  alias: {
+    t: 'topic',
+    h: 'host',
+    p: 'port'
+  },
+  boolean: 'pretty',
+  default: {
+    pretty: true
+  }
+});
+
+if (!argv.topic) {
+  console.error('topic is required');
+  process.exit(1);
+}
+
+var channelManager = require('..').channelManager;
+var topics;
+
+if (typeof argv.topic === 'string') {
+  topics = argv.topic.split(',');
+} else {
+  topics = argv.topic;
+}
+
+topics.forEach(function(topic) {
+  channelManager
+  .createConsumer(topic)
+  .on('message', function(message) {
+    try {
+      message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');
+    } catch(e) {
+      console.error(topic, e, message);
+      return;
+    }
+    console.log(message);
+  });
+});
