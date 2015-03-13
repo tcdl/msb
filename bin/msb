@@ -5,9 +5,10 @@ var argv = require('minimist')(process.argv.slice(2), {
     h: 'host',
     p: 'port'
   },
-  boolean: 'pretty',
+  boolean: ['pretty'],
   default: {
-    pretty: true
+    pretty: true,
+    follow: ['contrib', 'ack']
   }
 });
 
@@ -28,13 +29,29 @@ if (typeof argv.topic === 'string') {
 topics.forEach(function(topic) {
   channelManager
   .createConsumer(topic)
-  .on('message', function(message) {
-    try {
-      message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');
-    } catch(e) {
-      console.error(topic, e, message);
-      return;
-    }
-    console.log(message);
-  });
+  .on('message', onMessage);
 });
+
+function onMessage(message) {
+  try {
+    if (message.topics.contrib && eqOrIn(argv.follow, 'contrib')) {
+      channelManager
+      .findOrCreateConsumer(message.topics.contrib)
+      .on('message', onMessage);
+    }
+    if (message.topics.ack && eqOrIn(argv.follow, 'ack')) {
+      channelManager
+      .findOrCreateConsumer(message.topics.ack)
+      .on('message', onMessage);
+    }
+    message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');
+  } catch(e) {
+    console.error(topic, e, message);
+    return;
+  }
+  console.log(message);
+}
+
+function eqOrIn(strOrArr, str) {
+  return strOrArr && strOrArr === str || ~strOrArr.indexOf(str);
+}
