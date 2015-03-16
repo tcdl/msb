@@ -16,10 +16,10 @@ var expect = Code.expect;
 /* Modules */
 var simple = require('simple-mock');
 var msb = require('..');
-var Originator = msb.Originator;
+var Requester = msb.Requester;
 
 /* Tests */
-describe('Originator', function() {
+describe('Requester', function() {
   var mocks;
 
   beforeEach(function(done) {
@@ -33,13 +33,13 @@ describe('Originator', function() {
   });
 
   it('can be initialized', function(done) {
-    mocks.messageFactory_createOriginalMessage = simple.mock(msb.messageFactory, 'createOriginalMessage');
-    mocks.Originator_super_ = simple.mock(Originator, 'super_');
+    mocks.messageFactory_createRequestMessage = simple.mock(msb.messageFactory, 'createRequestMessage');
+    mocks.Requester_super_ = simple.mock(Requester, 'super_');
 
-    var obj = Originator({}); // jshint ignore:line
+    var obj = Requester({}); // jshint ignore:line
 
-    expect(mocks.messageFactory_createOriginalMessage.called).to.equal(true);
-    expect(mocks.Originator_super_.called).to.equal(true);
+    expect(mocks.messageFactory_createRequestMessage.called).to.equal(true);
+    expect(mocks.Requester_super_.called).to.equal(true);
     done();
   });
 
@@ -63,7 +63,7 @@ describe('Originator', function() {
       var expectedErr = new Error();
       producer.publish.callbackWith(expectedErr);
 
-      var obj = new Originator({});
+      var obj = new Requester({});
 
       obj
       .on('error', errHandler)
@@ -81,7 +81,7 @@ describe('Originator', function() {
 
       var endHandler = simple.mock();
 
-      var obj = new Originator({
+      var obj = new Requester({
         waitForResponses: 0
       });
 
@@ -100,11 +100,11 @@ describe('Originator', function() {
 
       var endHandler = simple.mock();
 
-      var obj = new Originator({
+      var obj = new Requester({
         waitForResponses: 1
       });
 
-      mocks.originator_shouldAcceptMessageFn = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
+      mocks.requester_shouldAcceptMessageFn = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
       simple.mock(obj, 'listenForResponses').returnWith();
       simple.mock(obj, 'listenForAcks').returnWith();
 
@@ -112,7 +112,7 @@ describe('Originator', function() {
       .on('end', endHandler)
       .publish();
 
-      expect(mocks.originator_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
+      expect(mocks.requester_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
       expect(obj.listenForResponses.lastCall.args[0]).to.equal(obj.message.topics.response);
       expect(obj.listenForResponses.lastCall.args[1]).to.equal('testValue');
       expect(obj.listenForAcks.lastCall.args[0]).to.equal(obj.message.topics.ack);
@@ -127,7 +127,7 @@ describe('Originator', function() {
   describe('shouldAcceptMessageFn()', function(done) {
 
     it('should per default match on message id', function(done) {
-      var obj = new Originator({});
+      var obj = new Requester({});
 
       expect(obj.shouldAcceptMessageFn({
         correlationId: 'other'

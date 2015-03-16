@@ -7,7 +7,7 @@ msb.channelManager = require('./lib/channelManager');
 msb.channelMonitor = require('./lib/channelMonitor');
 msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
-msb.Requestor = msb.Originator = require('./lib/originator');
+msb.Requester = msb.Originator = require('./lib/requester');
 msb.Responder = msb.Contributor = require('./lib/responder');
 msb.serviceDetails = require('./lib/support/serviceDetails');
 msb.configure = require('lodash').merge.bind(null, require('./lib/config'));

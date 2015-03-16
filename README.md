@@ -17,9 +17,9 @@ listening on a topic/namespace.
 
 A collector is a component that listens for multiple messages on a topic, with timeouts and number of responses determining its lifetime.
 
-## Originator
+## Requester
 
-An originator is a collector component that can also publish new messages on the bus.
+An requester is a collector component that can also publish new messages on the bus.
 
 ## Channel Manager
 

@@ -228,13 +228,13 @@ describe('channelManager', function() {
   describe('stopMonitoring()', function() {
     it('removes all listeners and stops current heartbeat collector', function(done) {
       simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 100);
-      simple.mock(msb.Originator.prototype, 'removeListeners');
+      simple.mock(msb.Requester.prototype, 'removeListeners');
       simple.mock(channelMonitor, 'doHeartbeat');
 
       channelMonitor.startMonitoring();
       channelMonitor.stopMonitoring();
 
-      expect(msb.Originator.prototype.removeListeners.called).true();
+      expect(msb.Requester.prototype.removeListeners.called).true();
       expect(channelMonitor.doHeartbeat.callCount).equals(1);
 
       setTimeout(function() {
