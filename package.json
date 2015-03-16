@@ -25,6 +25,7 @@
     "simple-mock": "^0.2.6"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "debug": "^2.1.1",
     "hiredis": "^0.2.0",
     "ip": "^0.3.2",

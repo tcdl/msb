@@ -91,7 +91,6 @@ describe('Originator', function() {
 
       expect(producer.publish.called).to.equal(true);
       expect(endHandler.called).to.equal(true);
-      expect(endHandler.lastCall.args[0]).to.equal(obj.message);
 
       done();
     });
