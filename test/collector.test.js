@@ -198,11 +198,28 @@ describe('Collector', function() {
       });
 
       it('will set the remaining for an id', function(done) {
-
         var result = collector._setContribsRemainingForContributorId('a', 5);
 
         expect(result).equals(5);
         expect(collector._getContribsRemaining()).equals(5);
+        done();
+      });
+
+      it('will add to the remaining for an id', function(done) {
+        collector._setContribsRemainingForContributorId('a', 1);
+        var result = collector._setContribsRemainingForContributorId('a', 5);
+
+        expect(result).equals(6);
+        expect(collector._getContribsRemaining()).equals(6);
+        done();
+      });
+
+      it('will set to the remaining for an id to zero', function(done) {
+        collector._setContribsRemainingForContributorId('a', 1);
+        var result = collector._setContribsRemainingForContributorId('a', 0);
+
+        expect(result).equals(0);
+        expect(collector._getContribsRemaining()).equals(0);
         done();
       });
 
