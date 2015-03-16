@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('lodash');
 var msb = require('..');
-var Originator = msb.Originator;
+var Requester = msb.Requester;
 
 msb.channelMonitor.startBroadcasting();
 
@@ -10,35 +10,35 @@ msb.channelMonitor.startBroadcasting();
 
   @param {object} config
   @param {string} config.namespace
-  @param {number} [config.contribTimeout=3000]
-  @param {number} [config.waitForContribs=-1] 0=return immediately, 1+=return after n contribs, -1=wait until timeout
+  @param {number} [config.responseTimeout=3000]
+  @param {number} [config.waitForResponses=-1] 0=return immediately, 1+=return after n responses, -1=wait until timeout
 */
 var middleware = function(req, res, next) {
-  var originator = new Originator({
+  var requester = new Requester({
     namespace: 'test:aggregator',
-    waitForContribs: 1
+    waitForResponses: 1
   });
 
-  _.merge(originator.message.req, {
+  requester
+  .publish({
     url: req.url,
     method: req.method,
     headers: req.headers,
     params: req.params,
     query: req.query,
     body: req.body
-  });
-
-  originator
-  .publish()
+  })
   .once('error', next)
   .on('ack', console.log)
-  .on('contrib', console.log)
-  .once('end', function(message) {
-    var statusCode = message.res.statusCode;
-    var headers = message.res.headers;
-    var body = message.res.body;
+  .on('response', console.log)
+  .once('end', function() {
+    var lastResponse = _.last(requester.responseMessages).payload;
 
-    res.writeHead(message.res.statusCode, message.res.headers);
+    var statusCode = lastResponse.statusCode;
+    var headers = lastResponse.headers;
+    var body = lastResponse.body;
+
+    res.writeHead(lastResponse.statusCode, lastResponse.headers);
     res.end((body && JSON.stringify(body)) || null);
   });
 };

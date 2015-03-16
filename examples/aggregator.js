@@ -1,35 +1,37 @@
 'use strict';
 var msb = require('..');
-var Originator = msb.Originator;
-var Contributor = msb.Contributor;
+var Requester = msb.Requester;
+var Responder = msb.Responder;
 
 msb.channelMonitor.startBroadcasting();
 
-Contributor.attachListener({
+Responder.createServer({
   namespace: 'test:aggregator'
-}, function(contrib) {
-  contrib.sendAckWithTimeout(5000);
+})
+.use(function(request, response, next) {
+  response.responder.sendAckWithTimeout(5000);
 
   // Create new
-  var originator = new Originator({
+  var requester = new Requester({
     namespace: 'test:general',
-    waitForContribs: 2,
-    contribTimeout: 2000
+    waitForResponses: 2,
+    responseTimeout: 2000
   });
 
-  originator.message.req = contrib.message.req;
-  originator.message.res = contrib.message.res;
+  var results = [];
 
-  originator
-  .publish()
-  .on('contrib', function(message) {
-    contrib.message.res.body = contrib.message.res.body || {};
-    contrib.message.res.body.results = contrib.message.res.body.results || [];
-    contrib.message.res.body.results.push(message.res.body);
+  requester
+  .publish(request)
+  .on('response', function(innerResponse) {
+    results.push(innerResponse.body);
   })
   .on('end', function() {
-    contrib.message.res.statusCode = 200;
-    contrib.message.res.bodyEncoding = 'json';
-    contrib.send();
+    response.writeHead(200);
+    response.send({
+      body: {
+        results: results
+      }
+    });
   });
-});
+})
+.listen();
