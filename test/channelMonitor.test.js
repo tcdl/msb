@@ -251,11 +251,11 @@ describe('channelManager', function() {
     });
 
     it('enables listening to heartbeats and broadcasts new channels', function(done) {
-      simple.mock(msb.Contributor, 'attachListener');
+      simple.mock(msb.Responder, 'attachListener');
 
       channelMonitor.startBroadcasting();
       channelMonitor.startBroadcasting(); // Safe to call repeatedly
-      expect(msb.Contributor.attachListener.callCount).equals(1);
+      expect(msb.Responder.attachListener.callCount).equals(1);
 
       simple.mock(channelMonitor, 'doBroadcast');
 

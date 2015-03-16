@@ -38,9 +38,9 @@ describe('Collector', function() {
 
     it('can be initialized with a config', function(done) {
       var config = {
-        contribTimeout: 555,
+        responseTimeout: 555,
         ackTimeout: 50,
-        waitForContribs: 1
+        waitForResponses: 1
       };
       var collector = new Collector(config);
 
@@ -89,7 +89,7 @@ describe('Collector', function() {
         done();
       });
 
-      it('can return the max of contributor timeouts', function(done) {
+      it('can return the max of responder timeouts', function(done) {
 
         collector.timeoutMs = 0;
         collector._timeoutMsById = {
@@ -99,7 +99,7 @@ describe('Collector', function() {
           d: 2000
         };
 
-        collector._contribsRemainingById = {
+        collector._responsesRemainingById = {
           b: 1,
           d: 0 // Skip this timeout
         };
@@ -109,7 +109,7 @@ describe('Collector', function() {
         done();
       });
 
-      it('can return the max of base and contributor timeouts', function(done) {
+      it('can return the max of base and responder timeouts', function(done) {
 
         collector.timeoutMs = 2000;
         collector._timeoutMsById = {
@@ -122,48 +122,48 @@ describe('Collector', function() {
       });
     });
 
-    describe('_getContribsRemaining()', function() {
+    describe('_getResponsesRemaining()', function() {
 
-      it('can return the base contribsRemaining', function(done) {
+      it('can return the base responsesRemaining', function(done) {
 
-        var result = collector._getContribsRemaining();
+        var result = collector._getResponsesRemaining();
 
         expect(result).equals(Number.MAX_VALUE);
         done();
       });
 
-      it('can return the sum of all contribs remaining', function(done) {
+      it('can return the sum of all responses remaining', function(done) {
 
-        collector._contribsRemaining = 0;
-        collector._contribsRemainingById = {
+        collector._responsesRemaining = 0;
+        collector._responsesRemainingById = {
           a: 4,
           b: 5,
           c: 3
         };
 
-        var result = collector._getContribsRemaining();
+        var result = collector._getResponsesRemaining();
         expect(result).equals(12);
         done();
       });
 
-      it('can return the base contribs remaining as a minimum', function(done) {
+      it('can return the base responses remaining as a minimum', function(done) {
 
-        collector._contribsRemaining = 1;
-        collector._contribsRemainingById = {
+        collector._responsesRemaining = 1;
+        collector._responsesRemainingById = {
           a: 0
         };
 
-        var result = collector._getContribsRemaining();
+        var result = collector._getResponsesRemaining();
         expect(result).equals(1);
         done();
       });
     });
 
-    describe('_setTimeoutMsForContributorId()', function(done) {
+    describe('_setTimeoutMsForResponderId()', function(done) {
 
       it('will set the timeout for an id', function(done) {
 
-        var result = collector._setTimeoutMsForContributorId('a', 10000);
+        var result = collector._setTimeoutMsForResponderId('a', 10000);
 
         expect(result).equals(10000);
         expect(collector._getMaxTimeoutMs()).equals(10000);
@@ -172,8 +172,8 @@ describe('Collector', function() {
 
       it('will return null when value was not changed', function(done) {
 
-        collector._setTimeoutMsForContributorId('a', 10000);
-        var result = collector._setTimeoutMsForContributorId('a', 10000);
+        collector._setTimeoutMsForResponderId('a', 10000);
+        var result = collector._setTimeoutMsForResponderId('a', 10000);
 
         expect(result).equals(null);
         expect(collector._getMaxTimeoutMs()).equals(10000);
@@ -182,8 +182,8 @@ describe('Collector', function() {
 
       it('will set the timeout for another id', function(done) {
 
-        collector._setTimeoutMsForContributorId('a', 10000);
-        var result = collector._setTimeoutMsForContributorId('b', 20000);
+        collector._setTimeoutMsForResponderId('a', 10000);
+        var result = collector._setTimeoutMsForResponderId('b', 20000);
 
         expect(result).equals(20000);
         expect(collector._getMaxTimeoutMs()).equals(20000);
@@ -191,119 +191,119 @@ describe('Collector', function() {
       });
     });
 
-    describe('_setContribsRemainingForContributorId()', function() {
+    describe('_setResponsesRemainingForResponderId()', function() {
       beforeEach(function(done) {
-        collector._contribsRemaining = 0;
+        collector._responsesRemaining = 0;
         done();
       });
 
       it('will set the remaining for an id', function(done) {
-        var result = collector._setContribsRemainingForContributorId('a', 5);
+        var result = collector._setResponsesRemainingForResponderId('a', 5);
 
         expect(result).equals(5);
-        expect(collector._getContribsRemaining()).equals(5);
+        expect(collector._getResponsesRemaining()).equals(5);
         done();
       });
 
       it('will add to the remaining for an id', function(done) {
-        collector._setContribsRemainingForContributorId('a', 1);
-        var result = collector._setContribsRemainingForContributorId('a', 5);
+        collector._setResponsesRemainingForResponderId('a', 1);
+        var result = collector._setResponsesRemainingForResponderId('a', 5);
 
         expect(result).equals(6);
-        expect(collector._getContribsRemaining()).equals(6);
+        expect(collector._getResponsesRemaining()).equals(6);
         done();
       });
 
       it('will set to the remaining for an id to zero', function(done) {
-        collector._setContribsRemainingForContributorId('a', 1);
-        var result = collector._setContribsRemainingForContributorId('a', 0);
+        collector._setResponsesRemainingForResponderId('a', 1);
+        var result = collector._setResponsesRemainingForResponderId('a', 0);
 
         expect(result).equals(0);
-        expect(collector._getContribsRemaining()).equals(0);
+        expect(collector._getResponsesRemaining()).equals(0);
         done();
       });
 
       it('will return null when value was not changed', function(done) {
 
-        collector._setContribsRemainingForContributorId('a', 5);
-        var result = collector._setContribsRemainingForContributorId('a', 5);
+        collector._setResponsesRemainingForResponderId('a', 5);
+        var result = collector._setResponsesRemainingForResponderId('a', 5);
 
         expect(result).equals(null);
-        expect(collector._getContribsRemaining()).equals(5);
+        expect(collector._getResponsesRemaining()).equals(5);
         done();
       });
 
       it('will return null when subtracting from a non-existent value', function(done) {
-        var result = collector._setContribsRemainingForContributorId('a', -1);
+        var result = collector._setResponsesRemainingForResponderId('a', -1);
 
         expect(result).equals(null);
-        expect(collector._getContribsRemaining()).equals(0);
+        expect(collector._getResponsesRemaining()).equals(0);
         done();
       });
 
       it('will return null when subtracting from a zero value', function(done) {
-        collector._setContribsRemainingForContributorId('a', 0);
-        var result = collector._setContribsRemainingForContributorId('a', -1);
+        collector._setResponsesRemainingForResponderId('a', 0);
+        var result = collector._setResponsesRemainingForResponderId('a', -1);
 
         expect(result).equals(null);
-        expect(collector._getContribsRemaining()).equals(0);
+        expect(collector._getResponsesRemaining()).equals(0);
         done();
       });
 
       it('will subtract where the value is negative', function(done) {
 
-        collector._setContribsRemainingForContributorId('a', 5);
-        var result = collector._setContribsRemainingForContributorId('a', -1);
+        collector._setResponsesRemainingForResponderId('a', 5);
+        var result = collector._setResponsesRemainingForResponderId('a', -1);
 
         expect(result).equals(4);
-        expect(collector._getContribsRemaining()).equals(4);
+        expect(collector._getResponsesRemaining()).equals(4);
         done();
       });
 
       it('will subtract only down to 0', function(done) {
 
-        collector._setContribsRemainingForContributorId('a', 5);
-        var result = collector._setContribsRemainingForContributorId('a', -10);
+        collector._setResponsesRemainingForResponderId('a', 5);
+        var result = collector._setResponsesRemainingForResponderId('a', -10);
 
         expect(result).equals(0);
-        expect(collector._getContribsRemaining()).equals(0);
+        expect(collector._getResponsesRemaining()).equals(0);
         done();
       });
 
       it('can set the remaining for another id', function(done) {
 
-        collector._setContribsRemainingForContributorId('a', 5);
-        var result = collector._setContribsRemainingForContributorId('b', 7);
+        collector._setResponsesRemainingForResponderId('a', 5);
+        var result = collector._setResponsesRemainingForResponderId('b', 7);
 
         expect(result).equals(7);
-        expect(collector._getContribsRemaining()).equals(12);
+        expect(collector._getResponsesRemaining()).equals(12);
         done();
       });
     });
 
-    describe('_incContribsRemaining()', function() {
+    describe('_incResponsesRemaining()', function() {
       beforeEach(function(done) {
-        collector._contribsRemaining = 0;
+        collector._responsesRemaining = 0;
         done();
       });
 
-      it('can add/subtract from base contribs remaining, only down to 0', function(done) {
+      it('can add/subtract from base responses remaining, only down to 0', function(done) {
 
-        expect(collector._incContribsRemaining(2)).equals(2);
-        expect(collector._incContribsRemaining(1)).equals(3);
-        expect(collector._incContribsRemaining(-2)).equals(1);
-        expect(collector._incContribsRemaining(-2)).equals(0);
+        expect(collector._incResponsesRemaining(2)).equals(2);
+        expect(collector._incResponsesRemaining(1)).equals(3);
+        expect(collector._incResponsesRemaining(-2)).equals(1);
+        expect(collector._incResponsesRemaining(-2)).equals(0);
         done();
       });
     });
 
     describe('_processAck()', function() {
       beforeEach(function(done) {
-        collector._contribsRemaining = 0;
+        collector._responsesRemaining = 0;
 
-        simple.mock(collector, '_setTimeoutMsForContributorId');
+        simple.mock(collector, '_setTimeoutMsForResponderId');
         simple.mock(collector, '_enableTimeout').returnWith();
-        simple.mock(collector, '_setContribsRemainingForContributorId');
+        simple.mock(collector, '_setResponsesRemainingForResponderId');
         done();
       });
 
@@ -315,16 +315,16 @@ describe('Collector', function() {
         done();
       });
 
-      it('will enable a timeout per contributor', function(done) {
+      it('will enable a timeout per responder', function(done) {
 
         collector._processAck({
-          contributorId: 'a',
+          responderId: 'a',
           timeoutMs: 5000
         });
 
-        expect(collector._setTimeoutMsForContributorId.called).true();
-        expect(collector._setTimeoutMsForContributorId.lastCall.args[0]).equals('a');
-        expect(collector._setTimeoutMsForContributorId.lastCall.args[1]).equals(5000);
+        expect(collector._setTimeoutMsForResponderId.called).true();
+        expect(collector._setTimeoutMsForResponderId.lastCall.args[0]).equals('a');
+        expect(collector._setTimeoutMsForResponderId.lastCall.args[1]).equals(5000);
         expect(collector._currentTimeoutMs).equals(5000);
         expect(collector._enableTimeout.called).true();
         done();
@@ -332,26 +332,26 @@ describe('Collector', function() {
 
       it('will take the max timeout', function(done) {
         collector._processAck({
-          contributorId: 'a',
+          responderId: 'a',
           timeoutMs: 1500
         });
 
-        expect(collector._setTimeoutMsForContributorId.called).true();
+        expect(collector._setTimeoutMsForResponderId.called).true();
         expect(collector._currentTimeoutMs).equals(3000);
         expect(collector._enableTimeout.called).false();
         done();
       });
 
-      it('will set the contribs remaining per contributor', function(done) {
+      it('will set the responses remaining per responder', function(done) {
         collector._processAck({
-          contributorId: 'a',
-          contribsRemaining: 1
+          responderId: 'a',
+          responsesRemaining: 1
         });
 
-        expect(collector._setContribsRemainingForContributorId.called).true();
-        expect(collector._setContribsRemainingForContributorId.lastCall.args[0]).equals('a');
-        expect(collector._setContribsRemainingForContributorId.lastCall.args[1]).equals(1);
-        expect(collector._getContribsRemaining()).equals(1);
+        expect(collector._setResponsesRemainingForResponderId.called).true();
+        expect(collector._setResponsesRemainingForResponderId.lastCall.args[0]).equals('a');
+        expect(collector._setResponsesRemainingForResponderId.lastCall.args[1]).equals(1);
+        expect(collector._getResponsesRemaining()).equals(1);
         done();
       });
     });
@@ -363,17 +363,17 @@ describe('Collector', function() {
         mockChannel = {};
         simple.mock(mockChannel, 'on').returnWith(mockChannel);
         simple.mock(msb.channelManager, 'findOrCreateConsumer').returnWith(mockChannel);
-        simple.mock(collector, '_onContribMessage').returnWith();
+        simple.mock(collector, '_onResponseMessage').returnWith();
         simple.mock(collector, '_onAckMessage').returnWith();
 
         done();
       });
 
-      it('should listen with _onContribMessage', function(done) {
+      it('should listen with _onResponseMessage', function(done) {
         var shouldAcceptMessageFn = simple.mock();
-        var originalOnContribMessageFn = collector._onContribMessage;
+        var originalOnResponseMessageFn = collector._onResponseMessage;
 
-        collector.listenForContribs('etc', shouldAcceptMessageFn);
+        collector.listenForResponses('etc', shouldAcceptMessageFn);
 
         expect(msb.channelManager.findOrCreateConsumer.called).true();
         expect(msb.channelManager.findOrCreateConsumer.lastCall.args[0]).equals('etc');
@@ -386,9 +386,9 @@ describe('Collector', function() {
         var handlerFn = mockChannel.on.lastCall.args[1];
         handlerFn(message);
 
-        expect(originalOnContribMessageFn.called).true();
-        expect(originalOnContribMessageFn.lastCall.args[0]).equals(shouldAcceptMessageFn);
-        expect(originalOnContribMessageFn.lastCall.args[1]).equals(message);
+        expect(originalOnResponseMessageFn.called).true();
+        expect(originalOnResponseMessageFn.lastCall.args[0]).equals(shouldAcceptMessageFn);
+        expect(originalOnResponseMessageFn.lastCall.args[1]).equals(message);
 
         done();
       });
@@ -420,10 +420,10 @@ describe('Collector', function() {
 
     describe('removeListeners()', function() {
 
-      it('removes the contribChannel and ackChannels if they exist', function(done) {
-        var mockContribChannel = {};
-        simple.mock(mockContribChannel, 'removeListener').returnWith();
-        collector.contribChannel = mockContribChannel;
+      it('removes the responseChannel and ackChannels if they exist', function(done) {
+        var mockResponseChannel = {};
+        simple.mock(mockResponseChannel, 'removeListener').returnWith();
+        collector.responseChannel = mockResponseChannel;
 
         var mockAckChannel = {};
         simple.mock(mockAckChannel, 'removeListener').returnWith();
@@ -431,9 +431,9 @@ describe('Collector', function() {
 
         collector.removeListeners();
 
-        expect(mockContribChannel.removeListener.called).true();
-        expect(mockContribChannel.removeListener.lastCall.args[0]).equals('message');
-        expect(mockContribChannel.removeListener.lastCall.args[1]).equals(collector._onContribMessage);
+        expect(mockResponseChannel.removeListener.called).true();
+        expect(mockResponseChannel.removeListener.lastCall.args[0]).equals('message');
+        expect(mockResponseChannel.removeListener.lastCall.args[1]).equals(collector._onResponseMessage);
 
         expect(mockAckChannel.removeListener.called).true();
         expect(mockAckChannel.removeListener.lastCall.args[0]).equals('message');
@@ -447,7 +447,7 @@ describe('Collector', function() {
       });
     });
 
-    describe('_onContribMessage', function() {
+    describe('_onResponseMessage', function() {
       var shouldAcceptMessageFn;
       var message;
 
@@ -455,9 +455,9 @@ describe('Collector', function() {
         shouldAcceptMessageFn = simple.mock();
 
         simple.mock(collector, 'emit').returnWith();
-        simple.mock(collector, '_incContribsRemaining').returnWith();
+        simple.mock(collector, '_incResponsesRemaining').returnWith();
         simple.mock(collector, '_processAck').returnWith();
-        simple.mock(collector, 'isAwaitingContribs');
+        simple.mock(collector, 'isAwaitingResponses');
         simple.mock(collector, 'isAwaitingAcks');
         simple.mock(collector, '_enableAckTimeout').returnWith();
         simple.mock(collector, 'end').returnWith();
@@ -472,20 +472,21 @@ describe('Collector', function() {
       it('should accept message when passed function returns true', function(done) {
 
         shouldAcceptMessageFn.returnWith(true);
-        collector.isAwaitingContribs.returnWith(0);
+        collector.isAwaitingResponses.returnWith(0);
 
-        collector._onContribMessage(shouldAcceptMessageFn, message);
+        collector._onResponseMessage(shouldAcceptMessageFn, message);
 
         expect(shouldAcceptMessageFn.called).true();
-        expect(collector.contribMessages).length(1);
+        expect(collector.responseMessages).length(1);
         expect(collector.emit.called).true();
-        expect(collector.emit.lastCall.args[0]).equals('contrib');
-        expect(collector.emit.lastCall.args[1]).equals(message);
-        expect(collector._incContribsRemaining.called).true();
-        expect(collector._incContribsRemaining.lastCall.args[0]).equals(-1);
+        expect(collector.emit.lastCall.args[0]).equals('response');
+        expect(collector.emit.lastCall.args[1]).equals(message.payload);
+        expect(collector.emit.lastCall.args[2]).equals(message);
+        expect(collector._incResponsesRemaining.called).true();
+        expect(collector._incResponsesRemaining.lastCall.args[0]).equals(-1);
         expect(collector._processAck.called).true();
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.isAwaitingResponses.called).true();
         expect(collector.end.called).true();
 
         done();
@@ -493,19 +494,20 @@ describe('Collector', function() {
 
       it('should accept message when no function is passed', function(done) {
 
-        collector.isAwaitingContribs.returnWith(0);
+        collector.isAwaitingResponses.returnWith(0);
 
-        collector._onContribMessage(null, message);
+        collector._onResponseMessage(null, message);
 
-        expect(collector.contribMessages).length(1);
+        expect(collector.responseMessages).length(1);
         expect(collector.emit.called).true();
-        expect(collector.emit.lastCall.args[0]).equals('contrib');
-        expect(collector.emit.lastCall.args[1]).equals(message);
-        expect(collector._incContribsRemaining.called).true();
-        expect(collector._incContribsRemaining.lastCall.args[0]).equals(-1);
+        expect(collector.emit.lastCall.args[0]).equals('response');
+        expect(collector.emit.lastCall.args[1]).equals(message.payload);
+        expect(collector.emit.lastCall.args[2]).equals(message);
+        expect(collector._incResponsesRemaining.called).true();
+        expect(collector._incResponsesRemaining.lastCall.args[0]).equals(-1);
         expect(collector._processAck.called).true();
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.isAwaitingResponses.called).true();
         expect(collector.end.called).true();
 
         done();
@@ -515,18 +517,18 @@ describe('Collector', function() {
 
           shouldAcceptMessageFn.returnWith(false);
 
-          collector._onContribMessage(shouldAcceptMessageFn, message);
+          collector._onResponseMessage(shouldAcceptMessageFn, message);
 
-          expect(collector.contribMessages).length(0);
+          expect(collector.responseMessages).length(0);
 
           done();
       });
 
-      it('should not end when still awaiting contribs', function(done) {
+      it('should not end when still awaiting responses', function(done) {
 
-          collector.isAwaitingContribs.returnWith(1);
+          collector.isAwaitingResponses.returnWith(1);
 
-          collector._onContribMessage(shouldAcceptMessageFn, message);
+          collector._onResponseMessage(shouldAcceptMessageFn, message);
 
           expect(collector.end.calls).length(0);
 
@@ -535,12 +537,12 @@ describe('Collector', function() {
 
       it('should enable ack timeout when still awaiting acks', function(done) {
 
-          collector.isAwaitingContribs.returnWith(0);
+          collector.isAwaitingResponses.returnWith(0);
           collector.isAwaitingAcks.returnWith(true);
 
-          collector._onContribMessage(null, message);
+          collector._onResponseMessage(null, message);
 
-          expect(collector.contribMessages).length(1);
+          expect(collector.responseMessages).length(1);
           expect(collector._enableAckTimeout.called).true();
           expect(collector.end.calls).length(0);
 
@@ -551,30 +553,30 @@ describe('Collector', function() {
     describe('_onAckTimeout', function() {
 
       beforeEach(function(done) {
-        simple.mock(collector, 'isAwaitingContribs');
+        simple.mock(collector, 'isAwaitingResponses');
         simple.mock(collector, 'end').returnWith();
         done();
       });
 
-      it('should not end when (again) awaiting contribs', function(done) {
+      it('should not end when (again) awaiting responses', function(done) {
 
-        collector.isAwaitingContribs.returnWith(1);
+        collector.isAwaitingResponses.returnWith(1);
 
         collector._onAckTimeout();
 
-        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.isAwaitingResponses.called).true();
         expect(collector.end.called).false();
 
         done();
       });
 
-      it('should end when not awaiting contribs', function(done) {
+      it('should end when not awaiting responses', function(done) {
 
-        collector.isAwaitingContribs.returnWith(0);
+        collector.isAwaitingResponses.returnWith(0);
 
         collector._onAckTimeout();
 
-        expect(collector.isAwaitingContribs.called).true();
+        expect(collector.isAwaitingResponses.called).true();
         expect(collector.end.called).true();
 
         done();

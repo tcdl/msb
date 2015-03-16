@@ -8,14 +8,14 @@ Components for use in microservices attached to the bus
 
 ## API
 
-## Contributor
+## Responder
 
-A contributor can send acks and contributions via the bus. Contributors can be created from messages received by
+A responder can send acks and responses via the bus. Responders can be created from messages received by
 listening on a topic/namespace.
 
 ## Collector
 
-A collector is a component that listens for multiple messages on a topic, with timeouts and number of contributions determining its lifetime.
+A collector is a component that listens for multiple messages on a topic, with timeouts and number of responses determining its lifetime.
 
 ## Originator
 

@@ -8,7 +8,7 @@ var argv = require('minimist')(process.argv.slice(2), {
   boolean: ['pretty'],
   default: {
     pretty: true,
-    follow: ['contrib', 'ack']
+    follow: ['response', 'ack']
   }
 });
 
@@ -34,9 +34,9 @@ topics.forEach(function(topic) {
 
 function onMessage(message) {
   try {
-    if (message.topics.contrib && eqOrIn(argv.follow, 'contrib')) {
+    if (message.topics.response && eqOrIn(argv.follow, 'response')) {
       channelManager
-      .findOrCreateConsumer(message.topics.contrib)
+      .findOrCreateConsumer(message.topics.response)
       .on('message', onMessage);
     }
     if (message.topics.ack && eqOrIn(argv.follow, 'ack')) {

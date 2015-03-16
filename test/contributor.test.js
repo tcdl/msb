@@ -16,11 +16,11 @@ var expect = Code.expect;
 /* Modules */
 var simple = require('simple-mock');
 var msb = require('..');
-var Contributor = msb.Contributor;
+var Responder = msb.Responder;
 var channelManager = msb.channelManager;
 
 /* Tests */
-describe('Contributor', function() {
+describe('Responder', function() {
   afterEach(function(done) {
     simple.restore();
     done();
@@ -31,7 +31,7 @@ describe('Contributor', function() {
     it('cannot be initialized without a config', function(done) {
 
       expect(function() {
-        var contributor = new Contributor(null, {});
+        var responder = new Responder(null, {});
       }).to.throw();
 
       done();
@@ -40,7 +40,7 @@ describe('Contributor', function() {
     it('cannot be initialized without an original message', function(done) {
 
       expect(function() {
-        var contributor = new Contributor({});
+        var responder = new Responder({});
       }).to.throw();
 
       done();
@@ -48,67 +48,67 @@ describe('Contributor', function() {
 
     it('can be initialized', function(done) {
 
-      var contributor = Contributor({}, { topics: {} });
+      var responder = Responder({}, { topics: {} });
 
       done();
     });
   });
 
   describe('sendAck()', function() {
-    var contributor;
+    var responder;
 
     beforeEach(function(done) {
-      contributor = new Contributor({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { ack: 'ack' } });
 
-      simple.mock(contributor, '_sendMessage').returnWith();
+      simple.mock(responder, '_sendMessage').returnWith();
 
       done();
     });
 
     it('can be called without params', function(done) {
       expect(function() {
-        contributor.sendAck();
+        responder.sendAck();
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(null);
-      expect(contributor.ack.contribsRemaining).equals(1);
+      expect(responder.ack.timeoutMs).equals(null);
+      expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(contributor._sendMessage.called).true();
+      expect(responder._sendMessage.called).true();
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
 
     it('can be called with only a timeout', function(done) {
       expect(function() {
-        contributor.sendAck(333);
+        responder.sendAck(333);
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(333);
-      expect(contributor.ack.contribsRemaining).equals(1);
+      expect(responder.ack.timeoutMs).equals(333);
+      expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(contributor._sendMessage.called).true();
+      expect(responder._sendMessage.called).true();
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
 
-    it('can be called with only a contribs remaining', function(done) {
+    it('can be called with only a responses remaining', function(done) {
       expect(function() {
-        contributor.sendAck(null, 5);
+        responder.sendAck(null, 5);
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(null);
-      expect(contributor.ack.contribsRemaining).equals(5);
+      expect(responder.ack.timeoutMs).equals(null);
+      expect(responder.ack.responsesRemaining).equals(5);
 
-      expect(contributor._sendMessage.called).true();
+      expect(responder._sendMessage.called).true();
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
@@ -117,36 +117,36 @@ describe('Contributor', function() {
       var cb = simple.mock();
 
       expect(function() {
-        contributor.sendAck(cb);
+        responder.sendAck(cb);
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(null);
-      expect(contributor.ack.contribsRemaining).equals(1);
+      expect(responder.ack.timeoutMs).equals(null);
+      expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(contributor._sendMessage.called).true();
-      expect(contributor._sendMessage.lastCall.args[1]).equals(cb);
+      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.lastCall.args[1]).equals(cb);
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
 
-    it('can be called with timeout, contribs remaining and a cb', function(done) {
+    it('can be called with timeout, responses remaining and a cb', function(done) {
       var cb = simple.mock();
 
       expect(function() {
-        contributor.sendAck(444, 5, cb);
+        responder.sendAck(444, 5, cb);
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(444);
-      expect(contributor.ack.contribsRemaining).equals(5);
+      expect(responder.ack.timeoutMs).equals(444);
+      expect(responder.ack.responsesRemaining).equals(5);
 
-      expect(contributor._sendMessage.called).true();
-      expect(contributor._sendMessage.lastCall.args[1]).equals(cb);
+      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.lastCall.args[1]).equals(cb);
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
@@ -155,32 +155,32 @@ describe('Contributor', function() {
       var cb = simple.mock();
 
       expect(function() {
-        contributor.sendAck(); // Setup
-        contributor.ack.contribsRemaining = 10;
+        responder.sendAck(); // Setup
+        responder.ack.responsesRemaining = 10;
       }).to.not.throw();
 
       expect(function() {
-        contributor.sendAck(333, cb);
+        responder.sendAck(333, cb);
       }).to.not.throw();
 
-      expect(contributor.ack.timeoutMs).equals(333);
-      expect(contributor.ack.contribsRemaining).equals(10);
+      expect(responder.ack.timeoutMs).equals(333);
+      expect(responder.ack.responsesRemaining).equals(10);
 
-      expect(contributor._sendMessage.called).true();
+      expect(responder._sendMessage.called).true();
 
-      var message = contributor._sendMessage.lastCall.args[0];
-      expect(message.ack).deep.equals(contributor.ack);
+      var message = responder._sendMessage.lastCall.args[0];
+      expect(message.ack).deep.equals(responder.ack);
 
       done();
     });
   });
 
   describe('send()', function() {
-    var contributor;
+    var responder;
     var mockChannel;
 
     beforeEach(function(done) {
-      contributor = new Contributor({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { ack: 'ack' } });
 
       mockChannel = {};
       simple.mock(mockChannel, 'publish');
@@ -191,11 +191,11 @@ describe('Contributor', function() {
   });
 
   describe('_sendMessage()', function() {
-    var contributor;
+    var responder;
     var mockChannel;
 
     beforeEach(function(done) {
-      contributor = new Contributor({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { ack: 'ack' } });
 
       mockChannel = {};
       simple.mock(mockChannel, 'publish');
@@ -208,7 +208,7 @@ describe('Contributor', function() {
       var cb = simple.mock();
 
       expect(function() {
-        contributor._sendMessage({
+        responder._sendMessage({
           topics: { to: 'example' }
         }, cb);
       }).to.not.throw();
@@ -222,14 +222,14 @@ describe('Contributor', function() {
       expect(function() {
         message = JSON.parse(mockChannel.publish.lastCall.args[0]);
       }).to.not.throw();
-      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(contributor.meta)));
+      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
 
       done();
     });
 
     it('can be called without a cb', function(done) {
       expect(function() {
-        contributor._sendMessage({
+        responder._sendMessage({
           topics: { to: 'example' }
         });
       }).to.not.throw();
@@ -242,7 +242,7 @@ describe('Contributor', function() {
       expect(function() {
         message = JSON.parse(mockChannel.publish.lastCall.args[0]);
       }).to.not.throw();
-      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(contributor.meta)));
+      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
 
       done();
     });

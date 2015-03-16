@@ -82,7 +82,7 @@ describe('Originator', function() {
       var endHandler = simple.mock();
 
       var obj = new Originator({
-        waitForContribs: 0
+        waitForResponses: 0
       });
 
       obj
@@ -95,17 +95,17 @@ describe('Originator', function() {
       done();
     });
 
-    it('can start collecting contributions', function(done) {
+    it('can start collecting responses', function(done) {
       producer.publish.callbackWith();
 
       var endHandler = simple.mock();
 
       var obj = new Originator({
-        waitForContribs: 1
+        waitForResponses: 1
       });
 
       mocks.originator_shouldAcceptMessageFn = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
-      simple.mock(obj, 'listenForContribs').returnWith();
+      simple.mock(obj, 'listenForResponses').returnWith();
       simple.mock(obj, 'listenForAcks').returnWith();
 
       obj
@@ -113,8 +113,8 @@ describe('Originator', function() {
       .publish();
 
       expect(mocks.originator_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
-      expect(obj.listenForContribs.lastCall.args[0]).to.equal(obj.message.topics.contrib);
-      expect(obj.listenForContribs.lastCall.args[1]).to.equal('testValue');
+      expect(obj.listenForResponses.lastCall.args[0]).to.equal(obj.message.topics.response);
+      expect(obj.listenForResponses.lastCall.args[1]).to.equal('testValue');
       expect(obj.listenForAcks.lastCall.args[0]).to.equal(obj.message.topics.ack);
       expect(obj.listenForAcks.lastCall.args[1]).to.equal('testValue');
       expect(producer.publish.called).to.equal(true);
