@@ -33,6 +33,7 @@
     "message-queue": "0.0.0",
     "minimist": "^1.1.1",
     "redis": "^0.12.1",
-    "simple-mock": "^0.2.9"
+    "simple-mock": "^0.2.9",
+    "tv4": "^1.1.9"
   }
 }

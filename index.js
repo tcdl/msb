@@ -9,5 +9,6 @@ msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
 msb.Requester = require('./lib/requester');
 msb.Responder = require('./lib/responder');
+msb.validateWithSchema = require('./lib/validateWithSchema');
 msb.serviceDetails = require('./lib/support/serviceDetails');
 msb.configure = require('lodash').merge.bind(null, require('./lib/config'));

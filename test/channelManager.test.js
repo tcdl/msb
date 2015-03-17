@@ -23,6 +23,7 @@ describe('channelManager', function() {
   beforeEach(function(done) {
     simple.mock(config, 'host', 'mock.host');
     simple.mock(config, 'port', '99999');
+    simple.mock(config, 'schema', null);
     done();
   });
 
