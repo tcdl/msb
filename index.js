@@ -5,6 +5,7 @@
 var msb = exports;
 msb.channelManager = require('./lib/channelManager');
 msb.channelMonitor = require('./lib/channelMonitor');
+msb.channelMonitorAgent = require('./lib/channelMonitorAgent');
 msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
 msb.Requester = require('./lib/requester');

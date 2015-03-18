@@ -15,12 +15,13 @@ var expect = Code.expect;
 var msb = require('..');
 var channelManager = msb.channelManager;
 var channelMonitor = msb.channelMonitor;
+var channelMonitorAgent = msb.channelMonitorAgent;
 var serviceDetails = msb.serviceDetails;
 var simple = require('simple-mock');
 var mockChannels = require('./support/mockChannels');
 
 /* Tests */
-describe('channelManager', function() {
+describe('channelMonitor', function() {
   var originalCreateProducer;
   var originalCreateConsumer;
 
@@ -39,14 +40,14 @@ describe('channelManager', function() {
     channelManager.createConsumer = originalCreateConsumer;
 
     channelMonitor.stopMonitoring();
-    channelMonitor.stopBroadcasting();
+    channelMonitorAgent.stopBroadcasting();
 
     done();
   });
 
   beforeEach(function(done) {
-    channelMonitor.localInfoByTopic = {};
-    channelMonitor.infoByTopic = {};
+    channelMonitorAgent.doc = {};
+    channelMonitor.doc = {};
     done();
   });
 
@@ -62,7 +63,7 @@ describe('channelManager', function() {
     });
 
     it('can update info on the monitor', function(done) {
-      simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 0);
+      simple.mock(channelMonitor, 'heartbeatIntervalMs', 0);
       channelMonitor.startMonitoring();
 
       var onUpdated = simple.mock();
@@ -74,7 +75,7 @@ describe('channelManager', function() {
       // First broadcast
       simple.mock(serviceDetails, 'instanceId', 'abc123');
 
-      channelMonitor.localInfoByTopic = {
+      channelMonitorAgent.doc = {
         'abc': {
           producers: true,
           consumers: false
@@ -85,33 +86,33 @@ describe('channelManager', function() {
           lastConsumedAt: laterDate
         }
       };
-      channelMonitor.doBroadcast();
+      channelMonitorAgent.doBroadcast();
 
       setTimeout(function() {
         // Second broadcast
         simple.mock(serviceDetails, 'instanceId', 'abc456');
 
-        channelMonitor.localInfoByTopic.def.lastConsumedAt = earlierDate;
-        channelMonitor.localInfoByTopic.ghi = {
+        channelMonitorAgent.doc.def.lastConsumedAt = earlierDate;
+        channelMonitorAgent.doc.ghi = {
           producers: true,
           consumers: true
         };
-        channelMonitor.doBroadcast();
+        channelMonitorAgent.doBroadcast();
 
         // On second update
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.infoByTopic.abc).exists();
-          expect(channelMonitor.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.abc).exists();
+          expect(channelMonitor.doc.abc.producers).deep.equal(['abc123', 'abc456']);
 
-          expect(channelMonitor.infoByTopic.def).exists();
-          expect(channelMonitor.infoByTopic.def.consumers).deep.equal(['abc123', 'abc456']);
-          expect(channelMonitor.infoByTopic.def.lastConsumedAt.valueOf()).equals(laterDate.valueOf());
+          expect(channelMonitor.doc.def).exists();
+          expect(channelMonitor.doc.def.consumers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.def.lastConsumedAt.valueOf()).equals(laterDate.valueOf());
 
-          expect(channelMonitor.infoByTopic.ghi).exists();
-          expect(channelMonitor.infoByTopic.ghi.producers).deep.equal(['abc456']);
-          expect(channelMonitor.infoByTopic.ghi.consumers).deep.equal(['abc456']);
+          expect(channelMonitor.doc.ghi).exists();
+          expect(channelMonitor.doc.ghi.producers).deep.equal(['abc456']);
+          expect(channelMonitor.doc.ghi.consumers).deep.equal(['abc456']);
 
           done();
         }, 100);
@@ -122,7 +123,8 @@ describe('channelManager', function() {
   describe('doHeartbeat()', function() {
     afterEach(function(done) {
       channelMonitor.stopMonitoring();
-      channelMonitor.stopBroadcasting();
+      channelMonitorAgent.stopBroadcasting();
+      channelMonitor.removeAllListeners('updated');
       done();
     });
 
@@ -130,10 +132,10 @@ describe('channelManager', function() {
       var onUpdated = simple.mock();
       channelMonitor.on('updated', onUpdated);
 
-      channelMonitor.startBroadcasting();
+      channelMonitorAgent.startBroadcasting();
 
       // Preload info
-      channelMonitor.infoByTopic = {
+      channelMonitor.doc = {
         'abc': {
           producers: [],
           consumers: []
@@ -150,7 +152,7 @@ describe('channelManager', function() {
 
       // Prepare for heartbeat response
       simple.mock(serviceDetails, 'instanceId', 'abc123');
-      channelMonitor.localInfoByTopic = {
+      channelMonitorAgent.doc = {
         'abc': {
           producers: true,
           consumers: true
@@ -160,20 +162,19 @@ describe('channelManager', function() {
           consumers: true
         }
       };
-
       // Listen for broadcasts
-      simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 0);
+      simple.mock(channelMonitor, 'heartbeatIntervalMs', 0);
       channelMonitor.startMonitoring();
 
       // Do a heartbeat
-      simple.mock(channelMonitor.config, 'heartbeatTimeoutMs', 500);
+      simple.mock(channelMonitor, 'heartbeatTimeoutMs', 500);
       channelMonitor.doHeartbeat();
 
       process.nextTick(function() {
         // Do a broadcast while heartbeat collects info
         simple.mock(serviceDetails, 'instanceId', 'abc456');
 
-        channelMonitor.localInfoByTopic = {
+        channelMonitorAgent.doc = {
           'abc': {
             producers: true,
             consumers: false
@@ -183,21 +184,21 @@ describe('channelManager', function() {
             consumers: true
           }
         };
-        channelMonitor.doBroadcast();
+        channelMonitorAgent.doBroadcast();
 
         // Check the state after heartbeat had completed
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.infoByTopic.abc).exists();
-          expect(channelMonitor.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
-          expect(channelMonitor.infoByTopic.abc.consumers).deep.equal(['abc123']);
+          expect(channelMonitor.doc.abc).exists();
+          expect(channelMonitor.doc.abc.producers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.abc.consumers).deep.equal(['abc123']);
 
-          expect(channelMonitor.infoByTopic.def).to.not.exist();
+          expect(channelMonitor.doc.def).to.not.exist();
 
-          expect(channelMonitor.infoByTopic.ghi).exists();
-          expect(channelMonitor.infoByTopic.ghi.producers).deep.equal(['abc123']);
-          expect(channelMonitor.infoByTopic.ghi.consumers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.ghi).exists();
+          expect(channelMonitor.doc.ghi.producers).deep.equal(['abc123']);
+          expect(channelMonitor.doc.ghi.consumers).deep.equal(['abc123', 'abc456']);
 
           done();
         }, 501);
@@ -213,7 +214,7 @@ describe('channelManager', function() {
 
     it('will start heartbeat with interval', function(done) {
       simple.mock(channelMonitor, 'doHeartbeat').returnWith();
-      simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 100);
+      simple.mock(channelMonitor, 'heartbeatIntervalMs', 100);
 
       channelMonitor.startMonitoring();
       channelMonitor.startMonitoring(); // Safe to call repeatedly
@@ -227,7 +228,7 @@ describe('channelManager', function() {
 
   describe('stopMonitoring()', function() {
     it('removes all listeners and stops current heartbeat collector', function(done) {
-      simple.mock(channelMonitor.config, 'heartbeatIntervalMs', 100);
+      simple.mock(channelMonitor, 'heartbeatIntervalMs', 100);
       simple.mock(msb.Requester.prototype, 'removeListeners');
       simple.mock(channelMonitor, 'doHeartbeat');
 
@@ -246,44 +247,44 @@ describe('channelManager', function() {
 
   describe('startBroadcasting()', function() {
     afterEach(function(done) {
-      channelMonitor.stopBroadcasting();
+      channelMonitorAgent.stopBroadcasting();
       done();
     });
 
     it('enables listening to heartbeats and broadcasts new channels', function(done) {
       simple.mock(msb.Responder, 'createEmitter');
 
-      channelMonitor.startBroadcasting();
-      channelMonitor.startBroadcasting(); // Safe to call repeatedly
+      channelMonitorAgent.startBroadcasting();
+      channelMonitorAgent.startBroadcasting(); // Safe to call repeatedly
       expect(msb.Responder.createEmitter.callCount).equals(1);
 
-      simple.mock(channelMonitor, 'doBroadcast');
+      simple.mock(channelMonitorAgent, 'doBroadcast');
 
       channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, 'pt');
-      expect(channelMonitor.localInfoByTopic.pt).exists();
-      expect(channelMonitor.localInfoByTopic.pt.producers).true();
-      expect(channelMonitor.doBroadcast.callCount).equals(1);
+      expect(channelMonitorAgent.doc.pt).exists();
+      expect(channelMonitorAgent.doc.pt.producers).true();
+      expect(channelMonitorAgent.doBroadcast.callCount).equals(1);
 
       channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, 'ct');
-      expect(channelMonitor.localInfoByTopic.ct).exists();
-      expect(channelMonitor.localInfoByTopic.ct.consumers).true();
-      expect(channelMonitor.doBroadcast.callCount).equals(2);
+      expect(channelMonitorAgent.doc.ct).exists();
+      expect(channelMonitorAgent.doc.ct.consumers).true();
+      expect(channelMonitorAgent.doBroadcast.callCount).equals(2);
 
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, '_private');
-      expect(channelMonitor.localInfoByTopic._private).not.exists();
+      expect(channelMonitorAgent.doc._private).not.exists();
 
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, 'cm');
-      expect(channelMonitor.localInfoByTopic.cm).exists();
-      expect(channelMonitor.localInfoByTopic.cm.lastConsumedAt).date();
+      expect(channelMonitorAgent.doc.cm).exists();
+      expect(channelMonitorAgent.doc.cm.lastConsumedAt).date();
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, '_private');
-      expect(channelMonitor.localInfoByTopic._private).not.exists();
+      expect(channelMonitorAgent.doc._private).not.exists();
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, 'cr');
-      expect(channelMonitor.localInfoByTopic.cr).exists();
-      expect(channelMonitor.localInfoByTopic.cr.consumers).false();
+      expect(channelMonitorAgent.doc.cr).exists();
+      expect(channelMonitorAgent.doc.cr.consumers).false();
 
-      expect(channelMonitor.doBroadcast.callCount).equals(2);
+      expect(channelMonitorAgent.doBroadcast.callCount).equals(2);
       done();
     });
   });
