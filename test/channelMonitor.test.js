@@ -103,16 +103,16 @@ describe('channelMonitor', function() {
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.doc.abc).exists();
-          expect(channelMonitor.doc.abc.producers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.infoByTopic.abc).exists();
+          expect(channelMonitor.doc.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
 
-          expect(channelMonitor.doc.def).exists();
-          expect(channelMonitor.doc.def.consumers).deep.equal(['abc123', 'abc456']);
-          expect(channelMonitor.doc.def.lastConsumedAt.valueOf()).equals(laterDate.valueOf());
+          expect(channelMonitor.doc.infoByTopic.def).exists();
+          expect(channelMonitor.doc.infoByTopic.def.consumers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.infoByTopic.def.lastConsumedAt.valueOf()).equals(laterDate.valueOf());
 
-          expect(channelMonitor.doc.ghi).exists();
-          expect(channelMonitor.doc.ghi.producers).deep.equal(['abc456']);
-          expect(channelMonitor.doc.ghi.consumers).deep.equal(['abc456']);
+          expect(channelMonitor.doc.infoByTopic.ghi).exists();
+          expect(channelMonitor.doc.infoByTopic.ghi.producers).deep.equal(['abc456']);
+          expect(channelMonitor.doc.infoByTopic.ghi.consumers).deep.equal(['abc456']);
 
           done();
         }, 100);
@@ -190,15 +190,15 @@ describe('channelMonitor', function() {
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.doc.abc).exists();
-          expect(channelMonitor.doc.abc.producers).deep.equal(['abc123', 'abc456']);
-          expect(channelMonitor.doc.abc.consumers).deep.equal(['abc123']);
+          expect(channelMonitor.doc.infoByTopic.abc).exists();
+          expect(channelMonitor.doc.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.infoByTopic.abc.consumers).deep.equal(['abc123']);
 
-          expect(channelMonitor.doc.def).to.not.exist();
+          expect(channelMonitor.doc.infoByTopic.def).to.not.exist();
 
-          expect(channelMonitor.doc.ghi).exists();
-          expect(channelMonitor.doc.ghi.producers).deep.equal(['abc123']);
-          expect(channelMonitor.doc.ghi.consumers).deep.equal(['abc123', 'abc456']);
+          expect(channelMonitor.doc.infoByTopic.ghi).exists();
+          expect(channelMonitor.doc.infoByTopic.ghi.producers).deep.equal(['abc123']);
+          expect(channelMonitor.doc.infoByTopic.ghi.consumers).deep.equal(['abc123', 'abc456']);
 
           done();
         }, 501);
