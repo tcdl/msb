@@ -1,35 +1,40 @@
 'use strict';
 var Table = require('cli-table');
 var channelMonitor = require('..').channelMonitor;
+var lastDoc;
 
 channelMonitor
 .on('updated', printTable)
 .on('heartbeat', function() {
   printStatus(true);
-})
-.on('heartbeat-completed', function() {
-  printStatus(false);
 });
 
 printTable({});
 channelMonitor.startMonitoring();
+process.stdout.on('resize', printTable);
 
-function printTable(infoByTopic) {
+function printTable(doc) {
+  doc = lastDoc = doc || lastDoc;
+  var infoByTopic = doc.infoByTopic || {};
   var table = new Table({
-    head: ['Topic', 'Producers', 'Consumers', 'Last Consumed'],
-    colWidths: [63, 11, 11, 19]
+    head: ['Topic', 'Producers', 'Last Produced', 'Consumers', 'Last Consumed'],
+    colWidths: [process.stdout.getWindowSize()[0] - 58, 11, 15, 11, 15]
   });
 
+  var data = [];
   Object.keys(infoByTopic).sort().forEach(function(topic) {
     var channelInfo = infoByTopic[topic];
-    table.push([
+    if (!channelInfo.lastProducedAt && !channelInfo.lastConsumedAt) return;
+    data.push([
       topic,
       channelInfo.producers.length,
+      (channelInfo.lastProducedAt) ? timeDiffInWords(channelInfo.lastProducedAt) : 'never',
       channelInfo.consumers.length,
       (channelInfo.lastConsumedAt) ? timeDiffInWords(channelInfo.lastConsumedAt) : 'never'
     ]);
   });
 
+  table.push.apply(table, data);
   console.log('\x1Bc' + table.toString());
   // printStatus(true);
 }
@@ -65,8 +70,8 @@ function timeDiffInWords(date, excludeTime) {
 
   if (diffSeconds < 60) return 'just now';
   // if (diffSeconds < 60) return inWord + [diffSeconds, (diffSeconds > 1) ? 'seconds': 'second'].join(' ') + agoWord;
-  if (diffMinutes < 60) return inWord + [diffMinutes, (diffMinutes > 1) ? 'minutes': 'minute'].join(' ') + agoWord;
-  if (diffHours < 13 && ago) return inWord + [diffHours, (diffHours > 1) ? 'hours': 'hour'].join(' ') + agoWord;
+  if (diffMinutes < 60) return inWord + [diffMinutes, (diffMinutes > 1) ? 'mins': 'min'].join(' ') + agoWord;
+  if (diffHours < 13 && ago) return inWord + [diffHours, (diffHours > 1) ? 'hrs': 'h'].join(' ') + agoWord;
 
 
   var timeFormat = (excludeTime) ? '' : ' \'at\' h:mm tt';
