@@ -24,7 +24,7 @@ function printTable(doc) {
   var data = [];
   Object.keys(infoByTopic).sort().forEach(function(topic) {
     var channelInfo = infoByTopic[topic];
-    if (!channelInfo.lastProducedAt && !channelInfo.lastConsumedAt) return;
+    if (!channelInfo || (!channelInfo.lastProducedAt && !channelInfo.lastConsumedAt)) return;
     data.push([
       topic,
       channelInfo.producers.length,
