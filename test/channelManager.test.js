@@ -24,6 +24,7 @@ describe('channelManager', function() {
     simple.mock(config, 'host', 'mock.host');
     simple.mock(config, 'port', '99999');
     simple.mock(config, 'schema', null);
+    simple.mock(config, 'cleanupConsumers', true);
     done();
   });
 

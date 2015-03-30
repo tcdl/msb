@@ -218,10 +218,7 @@ describe('Responder', function() {
       expect(mockChannel.publish.called).true();
       expect(mockChannel.publish.lastCall.args[1]).equals(cb);
 
-      var message;
-      expect(function() {
-        message = JSON.parse(mockChannel.publish.lastCall.args[0]);
-      }).to.not.throw();
+      var message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
       expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
 
       done();
@@ -238,10 +235,7 @@ describe('Responder', function() {
       expect(channelManager.findOrCreateProducer.lastCall.args[0]).equals('example');
       expect(mockChannel.publish.called).true();
 
-      var message;
-      expect(function() {
-        message = JSON.parse(mockChannel.publish.lastCall.args[0]);
-      }).to.not.throw();
+      var message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
       expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
 
       done();

@@ -39,7 +39,7 @@ var middleware = function(req, res, next) {
     var body = lastResponse.body;
 
     res.writeHead(lastResponse.statusCode, lastResponse.headers);
-    res.end((body && JSON.stringify(body)) || null);
+    res.end(body || null);
   });
 };
 

@@ -8,7 +8,7 @@ mockChannels.bus = new EventEmitter();
 mockChannels.createProducer = function(topic) {
   return {
     publish: function(message, cb) {
-      var clonedMessage = JSON.parse(message);
+      var clonedMessage = JSON.parse(JSON.stringify(message));
 
       process.nextTick(function() {
         mockChannels.bus.emit(topic, clonedMessage);
