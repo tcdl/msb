@@ -1,12 +1,10 @@
 # microservicebus
 
-Components for use in microservices attached to the bus
+Framework with components to use with an Event Bus oriented microservices architecture.
 
 ## Overview
 
 ...
-
-### Examples
 
 ## API
 
