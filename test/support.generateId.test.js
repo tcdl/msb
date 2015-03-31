@@ -15,6 +15,7 @@ var expect = Code.expect;
 var _ = require('lodash');
 var simple = require('simple-mock');
 var generateId = require('../lib/support/generateId');
+var MAX_PER_SECOND = 65536;
 
 describe('generateId', function() {
   afterEach(function(done) {
@@ -42,11 +43,11 @@ describe('generateId', function() {
       return constantDate;
     });
 
-    while (ids.length < 65536) {
+    while (ids.length < MAX_PER_SECOND) {
       ids.push(generateId());
     }
 
-    expect(ids.length).equals(65536);
+    expect(ids.length).equals(MAX_PER_SECOND);
     expect(ids.length).equals(_.uniq(ids).length);
     done();
   });
@@ -64,11 +65,11 @@ describe('generateId', function() {
 
     var ids = [];
 
-    while (ids.length < 65536) {
+    while (ids.length < MAX_PER_SECOND) {
       ids.push(generateId());
     }
 
-    expect(ids.length).equals(65536);
+    expect(ids.length).equals(MAX_PER_SECOND);
     expect(ids.length).equals(_.uniq(ids).length);
     done();
   });
