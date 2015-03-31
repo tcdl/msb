@@ -24,16 +24,16 @@ A responder enables sending of formatted acks and responses in response to each 
 - **responsesRemaining** (optional) A positive value increases the amount of responses the requester should wait for from this responder. A negative value reduces the amount of the responses the requester should wait for from this responder. Default: 1
 - **cb** (optional) cb(err) Function that is called after transmission has completed.
 
-### responder.send(payload, [cb])
+#### responder.send(payload, [cb])
 
 - **payload** An object that can be converted to JSON.
 - **cb** (optional) cb(err) Function that is called after transmission has completed.
 
-## Class: msb.Requester
+### Class: msb.Requester
 
 An requester is a collector component that can also publish new messages on the bus.
 
-## Class: msb.Collector
+### Class: msb.Collector
 
 A collector is a component that listens for multiple response messages, with timeouts and number of responses determining its lifetime.
 
