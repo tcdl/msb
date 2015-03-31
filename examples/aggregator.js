@@ -4,15 +4,13 @@ var validateWithSchema = msb.validateWithSchema;
 var Requester = msb.Requester;
 var Responder = msb.Responder;
 
-msb.channelMonitor.startBroadcasting();
+msb.channelMonitorAgent.start();
 
-var requestSchema = {};
 var responseSchema = {};
 
 Responder.createServer({
   namespace: 'test:aggregator'
 })
-.use(validateWithSchema.middleware(requestSchema))
 .use(function(request, response, next) {
   response.responder.sendAckWithTimeout(5000);
 

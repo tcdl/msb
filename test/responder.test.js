@@ -151,7 +151,7 @@ describe('Responder', function() {
       done();
     });
 
-    it('can be called with only a timeout and cb with existing ack', function(done) {
+    it('can be called with only a timeout and cb', function(done) {
       var cb = simple.mock();
 
       expect(function() {
@@ -164,7 +164,7 @@ describe('Responder', function() {
       }).to.not.throw();
 
       expect(responder.ack.timeoutMs).equals(333);
-      expect(responder.ack.responsesRemaining).equals(10);
+      expect(responder.ack.responsesRemaining).equals(1);
 
       expect(responder._sendMessage.called).true();
 

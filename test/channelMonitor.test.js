@@ -265,6 +265,13 @@ describe('channelMonitor', function() {
       expect(channelMonitorAgent.doc.pt.producers).true();
       expect(channelMonitorAgent.doBroadcast.callCount).equals(1);
 
+      channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, '_private');
+      expect(channelMonitorAgent.doc._private).not.exists();
+
+      channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, 'cm');
+      expect(channelMonitorAgent.doc.cm).exists();
+      expect(channelMonitorAgent.doc.cm.lastProducedAt).date();
+
       channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, 'ct');
       expect(channelMonitorAgent.doc.ct).exists();
       expect(channelMonitorAgent.doc.ct.consumers).true();

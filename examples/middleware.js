@@ -3,7 +3,7 @@ var _ = require('lodash');
 var msb = require('..');
 var Requester = msb.Requester;
 
-msb.channelMonitor.startBroadcasting();
+msb.channelMonitorAgent.start();
 
 /*
   Returns a middleware that publishes incoming requests and responds where a response can be constructed.

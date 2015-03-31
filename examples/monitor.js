@@ -10,7 +10,7 @@ channelMonitor
 });
 
 printTable({});
-channelMonitor.startMonitoring();
+channelMonitor.start();
 process.stdout.on('resize', printTable);
 
 function printTable(doc) {
