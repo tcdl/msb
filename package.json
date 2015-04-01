@@ -1,18 +1,17 @@
 {
   "name": "msb",
   "version": "0.3.0",
-  "description": "",
+  "description": "A framework with components to implement an event oriented microservices architecture",
   "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
   "scripts": {
     "test": "lab -t 100",
     "test-watch": "nodemon node_modules/lab/bin/lab -cv",
     "cs": "jscs **/*.js"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tcdl/msb.git"
+  },
   "bin": {
     "msb": "./bin/msb"
   },
