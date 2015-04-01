@@ -21,7 +21,7 @@ mockChannels.createProducer = function(topic) {
 mockChannels.createConsumer = function(topic) {
   var channel = new EventEmitter();
 
-  mockChannels.bus.on(topic, function(message){
+  mockChannels.bus.on(topic, function(message) {
     channel.emit('message', message);
   });
 

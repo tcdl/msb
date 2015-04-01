@@ -50,7 +50,7 @@ describe('validatedTopic()', function() {
       var validatedTopic;
       try {
         validatedTopic = helpers.validatedTopic(topic);
-      } catch(e) {
+      } catch (e) {
         expect(e, topic).to.not.exist();
       }
       expect(validatedTopic).to.equal(topic);

@@ -102,7 +102,6 @@ describe('examples', function() {
       })
       .once('error', done)
       .once('end', function() {
-        console.log(requester.responseMessages[0]);
         expect(requester.ackMessages).length(1);
         expect(requester.responseMessages).length(1);
         expect(requester.responseMessages[0].payload).deep.equals({

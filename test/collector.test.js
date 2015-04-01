@@ -309,7 +309,7 @@ describe('Collector', function() {
 
       it('does nothing when ack is empty', function(done) {
 
-        expect(function(){
+        expect(function() {
           collector._processAck(null);
         }).to.not.throw();
         done();
@@ -515,38 +515,38 @@ describe('Collector', function() {
 
       it('should not accept message when passed function returns false', function(done) {
 
-          shouldAcceptMessageFn.returnWith(false);
+        shouldAcceptMessageFn.returnWith(false);
 
-          collector._onResponseMessage(shouldAcceptMessageFn, message);
+        collector._onResponseMessage(shouldAcceptMessageFn, message);
 
-          expect(collector.responseMessages).length(0);
+        expect(collector.responseMessages).length(0);
 
-          done();
+        done();
       });
 
       it('should not end when still awaiting responses', function(done) {
 
-          collector.isAwaitingResponses.returnWith(1);
+        collector.isAwaitingResponses.returnWith(1);
 
-          collector._onResponseMessage(shouldAcceptMessageFn, message);
+        collector._onResponseMessage(shouldAcceptMessageFn, message);
 
-          expect(collector.end.calls).length(0);
+        expect(collector.end.calls).length(0);
 
-          done();
+        done();
       });
 
       it('should enable ack timeout when still awaiting acks', function(done) {
 
-          collector.isAwaitingResponses.returnWith(0);
-          collector.isAwaitingAcks.returnWith(true);
+        collector.isAwaitingResponses.returnWith(0);
+        collector.isAwaitingAcks.returnWith(true);
 
-          collector._onResponseMessage(null, message);
+        collector._onResponseMessage(null, message);
 
-          expect(collector.responseMessages).length(1);
-          expect(collector._enableAckTimeout.called).true();
-          expect(collector.end.calls).length(0);
+        expect(collector.responseMessages).length(1);
+        expect(collector._enableAckTimeout.called).true();
+        expect(collector.end.calls).length(0);
 
-          done();
+        done();
       });
     });
 
