@@ -1,16 +1,55 @@
-# microservicebus
+# msb - microservicebus
 
-Framework with components to use with an Event Bus oriented microservices architecture.
+A framework with components to implement an event oriented microservices architecture.
 
-## Overview
+## Installation
 
-...
+```
+$ npm install msb --save
+```
 
-## API
+Use:
 
 ```js
 var msb = require('msb');
 ```
+
+## Configuration
+
+### Environment Variables
+
+- **MSB_SERVICE_NAME** Overrides the default `config.serviceDetails.name`.
+- **MSB_SERVICE_VERSION** Overrides the default `config.serviceDetails.version`.
+- **MSB_SERVICE_INSTANCE_ID** Overrides the default `config.serviceDetails.instanceId`.
+- **MSB_CONFIG_PATH** Loads the JSON file at this path over default app-wide configuration.
+
+### Programmatic Configuration
+
+*Note: It is not recommended that you change configuration after publisher/subscriber channels have been created.*
+
+#### msb.configure(obj)
+
+Loads the object over the existing app-wide configuration.
+
+## Tools
+
+### Command-line
+
+```js
+$ node_modules/msb/bin/msb -t=topic:to:listen:to
+```
+
+Options:
+- **--topic** or **-t**
+- **--follow** or **-f** Default: response,ack – set to empty to disable listenening for responses and acks
+- **--pretty** or **-p** Default: true – set to false to use as a newline-delimited json stream
+
+### Modules
+
+- [http2bus](#missing-link) HTTP server handling the request-response cycle via the bus.
+- [bus2http](#missing-link) Proxies requests picked up from the bus to HTTP services.
+
+## API
 
 ### Class: msb.Responder
 
@@ -71,7 +110,7 @@ Emitted when a new heartbeat has started.
 
 ### Channel Monitor Agent
 
-```
+```js
 var channelMonitor = msb.channelMonitor;
 ```
 
@@ -83,7 +122,7 @@ Starts publishing information about the producers and consumers created on the `
 
 The channel manager enables re-use of channels listening/publishing per topic. It is an EventEmitter instance used as a singleton with the app-wide configuration.
 
-```
+```js
 var channelManager = msb.channelManager;
 ```
 
