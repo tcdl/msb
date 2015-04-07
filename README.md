@@ -14,26 +14,30 @@ Use:
 var msb = require('msb');
 ```
 
+See [implementation examples](examples).
+
 ## Configuration
-
-### Environment Variables
-
-- **MSB_SERVICE_NAME** Overrides the default `config.serviceDetails.name`.
-- **MSB_SERVICE_VERSION** Overrides the default `config.serviceDetails.version`.
-- **MSB_SERVICE_INSTANCE_ID** Overrides the default `config.serviceDetails.instanceId`.
-- **MSB_CONFIG_PATH** Loads the JSON file at this path over default app-wide configuration.
 
 ### Programmatic Configuration
 
-*Note: It is not recommended that you change configuration after publisher/subscriber channels have been created.*
+#### msb.configure(config)
 
-#### msb.configure(obj)
+Loads the config object over the existing app-wide configuration.
 
-Loads the object over the existing app-wide configuration.
+*Note: It is recommended that you do not change configuration after publisher/subscriber channels have been created.*
+
+### Environment Variables
+
+- MSB_SERVICE_NAME Overrides the default `config.serviceDetails.name`.
+- MSB_SERVICE_VERSION Overrides the default `config.serviceDetails.version`.
+- MSB_SERVICE_INSTANCE_ID Overrides the default `config.serviceDetails.instanceId`.
+- MSB_CONFIG_PATH Loads the JSON file at this path over default app-wide configuration.
 
 ## Tools
 
-### Command-line
+### CLI
+
+Listens to a topic on the bus and prints JSON to stdout. By default it will also listen for response and ack topics detected on messages, and JSON is pretty-printed. For [Newline-delimited JSON](http://en.wikipedia.org/wiki/Line_Delimited_JSON) compatibility, specify `--pretty=false`.
 
 ```js
 $ node_modules/msb/bin/msb -t=topic:to:listen:to
@@ -41,13 +45,13 @@ $ node_modules/msb/bin/msb -t=topic:to:listen:to
 
 Options:
 - **--topic** or **-t**
-- **--follow** or **-f** Default: response,ack – set to empty to disable listenening for responses and acks
-- **--pretty** or **-p** Default: true – set to false to use as a newline-delimited json stream
+- **--follow** or **-f** listen for following topics, empty to disable, Default: response,ack
+- **--pretty** or **-p** set to false to use as a newline-delimited json stream, Default: true
 
-### Modules
+### Related Modules
 
-- [http2bus](#missing-link) HTTP server handling the request-response cycle via the bus.
-- [bus2http](#missing-link) Proxies requests picked up from the bus to HTTP services.
+- [http2bus](https://github.com/tcdl/msb-proxies) HTTP server handling the request-response cycle via the bus.
+- [bus2http](https://github.com/tcdl/msb-proxies) Proxies requests picked up from the bus to HTTP services.
 
 ## API
 
@@ -78,7 +82,7 @@ A collector is a component that listens for multiple response messages, with tim
 
 A channel monitor sends heartbeats and listens for information on producers and consumers on remote `channelManager` instances.
 
-```
+```js
 var channelMonitor = msb.channelMonitor;
 ```
 
@@ -132,7 +136,7 @@ Returns a producer for this topic. Either existing or new. Corresponding `channe
 
 #### channelManager.findOrCreateConsumer(topic)
 
-Returns a consumer listening on this topic. Either existing or new. Corresponding channelManager events will be emitted for this consumer. If `config.cleanupConsumers` is set, these consumers will be removed as soon as there are no more listeners for them. If an app-wide schema exists, it will be checked and
+Returns a consumer listening on this topic. Either existing or new. Corresponding channelManager events will be emitted for this consumer. If `config.cleanupConsumers` is set, these consumers will be removed as soon as there are no more listeners for them. If an app-wide schema exists, it will be checked for every incoming message.
 
 #### Event: 'newProducerOnTopic'
 
