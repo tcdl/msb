@@ -12,4 +12,4 @@ msb.Requester = require('./lib/requester');
 msb.Responder = require('./lib/responder');
 msb.validateWithSchema = require('./lib/validateWithSchema');
 msb.serviceDetails = require('./lib/support/serviceDetails');
-msb.configure = require('lodash').merge.bind(null, require('./lib/config'));
+msb.configure = require('./lib/config').configure;

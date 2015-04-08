@@ -31,7 +31,7 @@ Loads the config object over the existing app-wide configuration.
 - MSB_SERVICE_NAME Overrides the default `config.serviceDetails.name`.
 - MSB_SERVICE_VERSION Overrides the default `config.serviceDetails.version`.
 - MSB_SERVICE_INSTANCE_ID Overrides the default `config.serviceDetails.instanceId`.
-- MSB_CONFIG_PATH Loads the JSON file at this path over default app-wide configuration.
+- MSB_CONFIG_PATH Loads the JSON/JS file at this path over default app-wide configuration.
 
 ## Tools
 

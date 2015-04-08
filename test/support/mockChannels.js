@@ -1,5 +1,4 @@
 var EventEmitter = require('events').EventEmitter;
-var simple = require('simple-mock');
 
 var mockChannels = exports;
 
