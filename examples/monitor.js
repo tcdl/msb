@@ -56,23 +56,22 @@ function timeDiffInWords(date, excludeTime) {
   date = new Date(date);
   var now = new Date();
 
-  var diff = (now.valueOf() - date.valueOf()),
-      ago = (diff > 0),
-      agoWord = (ago) ? ' ago': '',
-      inWord = (ago) ? '': 'in ';
+  var diff = (now.valueOf() - date.valueOf());
+  var ago = (diff > 0);
+  var agoWord = (ago) ? ' ago' : '';
+  var inWord = (ago) ? '' : 'in ';
 
   diff = Math.abs(diff);
-  var diffSeconds = Math.round(diff / 1000),
-      diffMinutes = Math.round(diffSeconds / 60),
-      diffHours = Math.round(diffMinutes / 60),
-      diffDays = Math.round(diffHours / 24),
-      diffWeeks = Math.round(diffDays / 7);
+  var diffSeconds = Math.round(diff / 1000);
+  var diffMinutes = Math.round(diffSeconds / 60);
+  var diffHours = Math.round(diffMinutes / 60);
+  var diffDays = Math.round(diffHours / 24);
+  var diffWeeks = Math.round(diffDays / 7);
 
   if (diffSeconds < 60) return 'just now';
   // if (diffSeconds < 60) return inWord + [diffSeconds, (diffSeconds > 1) ? 'seconds': 'second'].join(' ') + agoWord;
-  if (diffMinutes < 60) return inWord + [diffMinutes, (diffMinutes > 1) ? 'mins': 'min'].join(' ') + agoWord;
-  if (diffHours < 13 && ago) return inWord + [diffHours, (diffHours > 1) ? 'hrs': 'h'].join(' ') + agoWord;
-
+  if (diffMinutes < 60) return inWord + [diffMinutes, (diffMinutes > 1) ? 'mins' : 'min'].join(' ') + agoWord;
+  if (diffHours < 13 && ago) return inWord + [diffHours, (diffHours > 1) ? 'hrs' : 'h'].join(' ') + agoWord;
 
   var timeFormat = (excludeTime) ? '' : ' \'at\' h:mm tt';
 
@@ -93,5 +92,5 @@ function timeDiffInWords(date, excludeTime) {
     return date.toString('dddd d MMMM' + timeFormat);
   }
 
-  return date.toString('dddd'+ timeFormat);
+  return date.toString('dddd' + timeFormat);
 }
