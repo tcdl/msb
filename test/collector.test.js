@@ -128,7 +128,7 @@ describe('Collector', function() {
 
         var result = collector._getResponsesRemaining();
 
-        expect(result).equals(Number.MAX_VALUE);
+        expect(result).equals(Infinity);
         done();
       });
 
