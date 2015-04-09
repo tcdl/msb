@@ -14,7 +14,7 @@ Use:
 var msb = require('msb');
 ```
 
-See [implementation examples](examples).
+See [implementation examples](examples) and [message format examples](examples/messages).
 
 ## Configuration
 
@@ -37,7 +37,7 @@ Loads the config object over the existing app-wide configuration.
 
 ### CLI
 
-Listens to a topic on the bus and prints JSON to stdout. By default it will also listen for response and ack topics detected on messages, and JSON is pretty-printed. For [Newline-delimited JSON](http://en.wikipedia.org/wiki/Line_Delimited_JSON) compatibility, specify `--pretty=false`.
+Listens to a topic on the bus and prints JSON to stdout. By default it will also listen for response and ack topics detected on messages, and JSON is pretty-printed. For [Newline-delimited JSON](http://en.wikipedia.org/wiki/Line_Delimited_JSON) compatibility, specify `-p false`.
 
 ```js
 $ node_modules/msb/bin/msb -t=topic:to:listen:to
@@ -57,26 +57,110 @@ Options:
 
 ### Class: msb.Responder
 
-A responder enables sending of formatted acks and responses in response to each request message received on a topic/namespace.
+A responder lets you send of formatted acks and responses in response to a request message received on a topic/namespace.
 
-#### responder.sendAck([timeoutMs], [responsesRemaining], cb)
+#### responder.sendAck([timeoutMs][, responsesRemaining], cb)
 
 - **timeoutMs** (optional) The requester should wait until at least this amount of milliseconds has passed since the request was published before ending. Default: previously set value or the default timeout on the requester.
 - **responsesRemaining** (optional) A positive value increases the amount of responses the requester should wait for from this responder. A negative value reduces the amount of the responses the requester should wait for from this responder. Default: 1
 - **cb** (optional) cb(err) Function that is called after transmission has completed.
 
-#### responder.send(payload, [cb])
+#### responder.send(payload[, cb])
 
 - **payload** An object that can be converted to JSON.
 - **cb** (optional) cb(err) Function that is called after transmission has completed.
+
+#### responder.originalMessage
+
+The request message this responder is responding to.
+
+#### Responder.createServer([options])
+
+See [ResponderServer](#new-responderserveroptions).
+
+### Class: ResponderServer
+
+#### new ResponderServer(options)
+
+- **options.namespace** String topic name to listen on for requests.
+
+(Use `msb.Responder.createServer()` to create instances.)
+
+#### responderServer.use(fnOrArr)
+
+- **fnOrArr** Function or Array of middleware-like functions with signature:
+
+`function handler(request, response, next)`
+- **request** The payload on the incoming message.
+- **response** [ResponderResponse](#class-responderresponse) object.
+- **next** Function To call if response was not fulfilled, with an error object where an error occurred.
+
+`function errorHandler(err, request, response, next)`
+- **err** Error Passed to a previous `next()` call.
+- **request**, **response**, **next** as above.
+
+### Class: ResponderResponse
+
+Passed to [ResponderServer](#new-responderserveroptions) middelware-like functions. The interface is kept similar to core HttpServerResponse for convenience.
+
+#### response.setHeader(name, value), response.getHeader(name), response.removeHeader(name)
+
+See [http](https://nodejs.org/api/http.html#http_class_http_serverresponse).
+
+#### response.writeHead(statusCode[, statusMessage][, headers])
+
+- **statusCode** Number Corresponding HTTP status code.
+- **statusMessage** String Corresponding HTTP status message.
+- **headers** Object
+
+#### response.end([body][, cb])
+
+- **body** Optional String|Object|Buffer
+- **cb** Optional Function Callback to be called when response has been successfully sent or on error.
+
+#### response.responder
+
+The Responder object used to send acks and responses.
 
 ### Class: msb.Requester
 
 An requester is a collector component that can also publish new messages on the bus.
 
+#### new Requester(options[, originalMessage])
+
+- **options.namespace** String Publish request message on this topic and listen on this appended by ':response' and ':ack'.
+- **options.ackTimeout** Optional Milliseconds to allow for acks to increase the timeout or number of responses to expect.
+- **options.responseTimeout** Optional Milliseconds before ending this request. Default: 3000.
+- **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.
+- **originalMessage** Optional Object Message this request should correlate with.
+
+#### requester.publish([payload][, cb])
+
+- payload Object Contains typical payload.
+- cb Function Callback to be called on success or error.
+
+#### Event: 'response'
+
+`function(payload, _message) { }`
+
+- **payload** Object Response message payload.
+- **_message** Object The full response message. In most cases it should not be needed.
+
+#### Event: 'ack'
+
+`function(_message) { }`
+
+- **_message** Object The full ack-containing message. In most cases it should not be needed.
+
+#### Event: 'end'
+
+Emitted either on timeout or when the expected number of responses has been received.
+
 ### Class: msb.Collector
 
 A collector is a component that listens for multiple response messages, with timeouts and number of responses determining its lifetime.
+
+(For events and instantiation, see [Requester](#new-requesteroptions-originalmessage).)
 
 ### Channel Monitor
 
@@ -91,6 +175,8 @@ var channelMonitor = msb.channelMonitor;
 Starts sending heartbeats and listening.
 
 #### Event: 'update'
+
+`function(doc) { }`
 
 - **doc** Object
 - **doc.infoByTopic** Object with topics as keys with objects as values e.g.

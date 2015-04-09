@@ -23,9 +23,9 @@ var middleware = function(req, res, next) {
   .publish({
     url: req.url,
     method: req.method,
-    headers: req.headers,
     params: req.params,
     query: req.query,
+    headers: req.headers,
     body: req.body
   })
   .once('error', next)

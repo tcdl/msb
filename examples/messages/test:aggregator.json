@@ -1,0 +1,30 @@
+{
+  "id": "3c0e9800323209b300062b2a",
+  "correlationId": "3c0e9800323209b30007512d",
+  "topics": {
+    "to": "test:aggregator",
+    "ack": "test:aggregator:ack:3c0e97ff323209b300011905",
+    "response": "test:aggregator:response:3c0e97ff323209b300011905"
+  },
+  "meta": {
+    "createdAt": "2015-04-09T14:22:56.121Z",
+    "durationMs": 1,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.44",
+      "pid": 68019,
+      "name": "msb",
+      "version": "0.3.0",
+      "instanceId": "3c0e97ff323209b300011905"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "url": "http://mock",
+    "method": "GET",
+    "params": {},
+    "query": {},
+    "headers": {},
+    "body": {}
+  }
+}

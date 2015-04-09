@@ -19,7 +19,7 @@ Responder.createServer({
     waitForResponses: 2,
     ackTimeout: 100,
     responseTimeout: 2000
-  });
+  }, response.responder.originalMessage);
 
   var results = [];
 

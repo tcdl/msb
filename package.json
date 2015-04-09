@@ -4,9 +4,10 @@
   "description": "A framework with components to implement an event oriented microservices architecture",
   "main": "index.js",
   "scripts": {
-    "test": "lab -t 100",
-    "test-watch": "nodemon node_modules/lab/bin/lab -cv",
-    "cs": "jscs **/*.js"
+    "test": "lab -t 90",
+    "test-watch": "nodemon node_modules/lab/bin/lab -cv -t 90",
+    "cs": "jscs **/*.js",
+    "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "minimist": "^1.1.1",
     "redis": "^0.12.1",
     "simple-mock": "^0.2.9",
+    "split": "^0.3.3",
     "tv4": "^1.1.9"
   }
 }
