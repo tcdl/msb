@@ -59,3 +59,27 @@ describe('validatedTopic()', function() {
     done();
   });
 });
+
+describe('topicWithoutInstanceId()', function() {
+  it('should return topics stripped of instance id', function(done) {
+    var topics = {
+      'without:words': 'without:words',
+      'with:abc123': 'with',
+      'simple': 'simple',
+      'simple:multi:aaa:levels': 'simple:multi:aaa:levels',
+      'simple:multi:aaa:levels:abc': 'simple:multi:aaa:levels'
+    };
+
+    Object.keys(topics).forEach(function(topic) {
+      var cleanTopic;
+      try {
+        cleanTopic = helpers.topicWithoutInstanceId(topic);
+      } catch (e) {
+        expect(e, topic).to.not.exist();
+      }
+      expect(cleanTopic).to.equal(topics[topic]);
+    });
+
+    done();
+  });
+});

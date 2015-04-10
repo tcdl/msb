@@ -66,7 +66,39 @@ describe('config', function() {
       done();
     });
 
+    it('should handle a valid package.json', function(done) {
+      simple.mock(process, 'mainModule', { paths: [require('path').join(__dirname, 'fixtures', 'package.json')] });
+
+      config._init();
+
+      expect(config.serviceDetails.name).equals('example');
+      expect(config.serviceDetails.version).equals('1.0.0');
+      expect(config.serviceDetails.instanceId).length(24);
+
+      done();
+    });
+
+    it('should handle a valid package.json without version and name fields', function(done) {
+      var path = require('path').join(__dirname, 'fixtures', 'package.json');
+      var pkg = require(path);
+
+      simple.mock(pkg, 'name', undefined);
+      simple.mock(pkg, 'version', undefined);
+
+      simple.mock(process, 'mainModule', { paths: [path] });
+
+      config._init();
+
+      expect(config.serviceDetails.name).equals(undefined);
+      expect(config.serviceDetails.version).equals(undefined);
+      expect(config.serviceDetails.instanceId).length(24);
+
+      done();
+    });
+
     it('should set some of config.serviceDetails by environment variables', function(done) {
+      simple.mock(process, 'mainModule', { paths: [require('path').join(__dirname, 'fixtures', 'package.json')] });
+
       simple.mock(process.env, 'MSB_SERVICE_NAME', 'special-name');
       simple.mock(process.env, 'MSB_SERVICE_VERSION', '999');
       simple.mock(process.env, 'MSB_SERVICE_INSTANCE_ID', 'abc123');
