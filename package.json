@@ -2,9 +2,12 @@
   "name": "msb",
   "version": "0.3.0",
   "description": "A framework with components to implement an event oriented microservices architecture",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "test": "lab -t 90",
+    "npmrc": "printf \"_auth = $NPM_AUTH_TOKEN\nemail = $NPM_EMAIL\n\" > .npmrc",
+    "test": "npm run test-no-publish && if [ -n \"${TRAVIS_TAG}\" ]; then npm run npmrc && npm publish; fi",
+    "test-no-publish": "lab -t 95",
     "test-watch": "nodemon node_modules/lab/bin/lab -cv -t 90",
     "cs": "jscs **/*.js -x",
     "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages"
