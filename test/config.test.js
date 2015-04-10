@@ -36,7 +36,7 @@ describe('config', function() {
       expect(config.serviceDetails.pid).equals(999999);
 
       expect(config.serviceDetails.name).equals('lab');
-      expect(config.serviceDetails.version).equals('5.2.0');
+      expect(!!config.serviceDetails.version.match(/\d\.\d\.\d/)).true();
       expect(config.serviceDetails.instanceId).length(24);
 
       done();
