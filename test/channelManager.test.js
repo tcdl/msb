@@ -14,15 +14,17 @@ var expect = Code.expect;
 /* Modules */
 var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
-var queue = require('../lib/drivers/queue');
+var queue = require('../lib/adapters/redis');
 var msb = require('..');
 var config = require('../lib/config');
 var channelManager = msb.channelManager;
 
 describe('channelManager', function() {
   beforeEach(function(done) {
-    simple.mock(config, 'host', 'mock.host');
-    simple.mock(config, 'port', '99999');
+    simple.mock(config, 'redis', {
+      host: 'mock.host',
+      port: '99999'
+    });
     simple.mock(config, 'schema', null);
     simple.mock(config, 'cleanupConsumers', true);
     done();
