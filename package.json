@@ -28,6 +28,7 @@
     "simple-mock": "^0.2.6"
   },
   "dependencies": {
+    "amqp": "^0.2.4",
     "async": "^0.9.0",
     "debug": "^2.1.1",
     "hiredis": "^0.2.0",
