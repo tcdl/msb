@@ -181,6 +181,7 @@ describe('channelManager', function() {
         expect(channelManager.CONSUMER_REMOVED_TOPIC_EVENT).exists();
 
         var mockSubscriber = new EventEmitter();
+        simple.mock(mockSubscriber, 'close').returnWith();
         simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
 
         var onEvent = simple.mock();
@@ -198,6 +199,7 @@ describe('channelManager', function() {
         channel.removeListener('message', singleListener);
 
         setImmediate(function() {
+          expect(mockSubscriber.close.callCount).equals(1);
           expect(channelManager.createConsumer.callCount).equals(1);
           expect(onEvent.callCount).equals(1);
 
@@ -210,6 +212,8 @@ describe('channelManager', function() {
       });
 
       it('will remove multiple cached channels in one go', function(done) {
+        simple.mock(EventEmitter.prototype, 'close').returnWith();
+
         simple
         .mock(channelManager, 'createConsumer')
         .returnWith(new EventEmitter())
@@ -231,6 +235,7 @@ describe('channelManager', function() {
         channelB.removeListener('message', singleListener);
 
         setImmediate(function() {
+          expect(EventEmitter.prototype.close.callCount).equals(1);
           expect(channelManager.createConsumer.callCount).equals(2);
           expect(onEvent.callCount).equals(1);
           expect(onEvent.lastCall.args[0]).equals('crm:b');

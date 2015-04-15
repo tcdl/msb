@@ -23,6 +23,33 @@ describe('config', function() {
     done();
   });
 
+  describe('configure()', function() {
+    it('should merge provided options and set post-configuration defaults', function(done) {
+      simple.mock(config, '_afterConfigure').returnWith();
+
+      config.configure({
+        etc: 'abc'
+      });
+
+      expect(config.etc).equals('abc');
+      expect(config._afterConfigure.called).true();
+      done();
+    });
+  });
+
+  describe('_afterConfigure()', function() {
+    it('can set groupId', function(done) {
+      simple.mock(config, 'kafka', { consumerOptions: {} });
+      simple.mock(config, 'amqp', {});
+
+      config._afterConfigure();
+
+      expect(config.kafka.consumerOptions.groupId).equals('lab');
+      expect(config.amqp.groupId).equals('lab');
+      done();
+    });
+  });
+
   describe('_init()', function() {
     it('should set config.serviceDetails dynamically', function(done) {
       simple.mock(require('os'), 'hostname').returnWith('abchost');

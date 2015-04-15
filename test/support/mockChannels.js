@@ -20,9 +20,15 @@ mockChannels.createProducer = function(topic) {
 mockChannels.createConsumer = function(topic) {
   var channel = new EventEmitter();
 
-  mockChannels.bus.on(topic, function(message) {
+  function onMessage(message) {
     channel.emit('message', message);
-  });
+  }
+
+  mockChannels.bus.on(topic, onMessage);
+
+  channel.close = function() {
+    mockChannels.bus.removeListener('message', onMessage);
+  };
 
   return channel;
 };

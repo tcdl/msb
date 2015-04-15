@@ -49,11 +49,10 @@ describe('Requester', function() {
     beforeEach(function(done) {
       producer = {};
 
+      simple.mock(producer, 'publish');
       simple.mock(msb.channelManager, 'findOrCreateProducer', function(topic) {
         return producer;
       });
-
-      simple.mock(producer, 'publish');
 
       done();
     });
@@ -63,7 +62,9 @@ describe('Requester', function() {
       var expectedErr = new Error();
       producer.publish.callbackWith(expectedErr);
 
-      var obj = new Requester({});
+      var obj = new Requester({
+        waitForResponses: 0
+      });
 
       obj
       .on('error', errHandler)
