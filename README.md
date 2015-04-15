@@ -2,6 +2,33 @@
 
 A framework to implement an event oriented microservices architecture.
 
+<!-- MarkdownTOC -->
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Programmatic Configuration](#programmatic-configuration)
+  - [Environment Variables](#environment-variables)
+- [Tools](#tools)
+  - [CLI](#cli)
+  - [Related Modules](#related-modules)
+- [Message Brokers / Adapters](#message-brokers--adapters)
+  - [Redis](#redis)
+  - [AMQP / RabbitMQ](#amqp--rabbitmq)
+  - [Kafka](#kafka)
+- [API](#api)
+  - [Class: msb.Responder](#class-msbresponder)
+  - [Class: ResponderServer](#class-responderserver)
+  - [Class: ResponderResponse](#class-responderresponse)
+  - [Class: msb.Requester](#class-msbrequester)
+  - [Class: msb.Collector](#class-msbcollector)
+  - [Channel Monitor](#channel-monitor)
+  - [Channel Monitor Agent](#channel-monitor-agent)
+  - [Channel Manager](#channel-manager)
+  - [Producer](#producer)
+  - [Consumer](#consumer)
+
+<!-- /MarkdownTOC -->
+
 ## Installation
 
 ```
@@ -45,13 +72,27 @@ $ node_modules/msb/bin/msb -t=topic:to:listen:to
 
 Options:
 - **--topic** or **-t**
-- **--follow** or **-f** listen for following topics, empty to disable, Default: response,ack
-- **--pretty** or **-p** set to false to use as a newline-delimited json stream, Default: true
+- **--follow** or **-f** listen for following topics, empty to disable (Default: response,ack)
+- **--pretty** or **-p** set to false to use as a newline-delimited json stream, (Default: true)
 
 ### Related Modules
 
 - [http2bus](https://github.com/tcdl/msb-proxies) HTTP server handling the request-response cycle via the bus.
 - [bus2http](https://github.com/tcdl/msb-proxies) Proxies requests picked up from the bus to HTTP services.
+
+## Message Brokers / Adapters
+
+### Redis
+
+Redis Pub/Sub is the default message broker used. Setup of Redis is practically effortless on most platforms, making it great for development. Redis Pub/Sub is limited in that all published messages will be received by all subscribers per topic. This means that services backed by Redis will not scale out horizontally, i.e. you cannot distribute the work over multiple processes.
+
+### AMQP / RabbitMQ
+
+The AMQP adapter is tested with RabbitMQ and it implements a limited topology for simplification. One exchange is created per topic and a queue is created for every group of similar services, configured using a groupId. This means that you can have different types of services listening on the same topic, and multiple processes of the same type of service would receive a fair distribution of messages.
+
+### Kafka
+
+The Kafka adapter uses the Kafka 8.2 High-level Producer/Consumer APIs, which fairly distributes messages to consumer groups using partition allocation by Zookeeper. The Kafka adapter is highly experimental and does not handle many situations related to rebalancing and clustering.
 
 ## API
 
@@ -61,7 +102,7 @@ A responder lets you send of formatted acks and responses in response to a reque
 
 #### responder.sendAck([timeoutMs][, responsesRemaining], cb)
 
-- **timeoutMs** (optional) The requester should wait until at least this amount of milliseconds has passed since the request was published before ending. Default: previously set value or the default timeout on the requester.
+- **timeoutMs** (optional) The requester should wait until at least this amount of milliseconds has passed since the request was published before ending. (Default: previously set value or the default timeout on the requester.)
 - **responsesRemaining** (optional) A positive value increases the amount of responses the requester should wait for from this responder. A negative value reduces the amount of the responses the requester should wait for from this responder. Default: 1
 - **cb** (optional) cb(err) Function that is called after transmission has completed.
 
@@ -130,8 +171,8 @@ An requester is a collector component that can also publish new messages on the 
 
 - **options.namespace** String Publish request message on this topic and listen on this appended by ':response' and ':ack'.
 - **options.ackTimeout** Optional Milliseconds to allow for acks to increase the timeout or number of responses to expect.
-- **options.responseTimeout** Optional Milliseconds before ending this request. Default: 3000.
-- **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.
+- **options.responseTimeout** Optional Milliseconds before ending this request. (Default: 3000).
+- **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. (Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.)
 - **originalMessage** Optional Object Message this request should correlate with.
 
 #### requester.publish([payload][, cb])
