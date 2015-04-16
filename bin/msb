@@ -26,7 +26,7 @@ if (typeof argv.topic === 'string') {
 
 topics.forEach(function(topic) {
   channelManager
-  .createConsumer(topic)
+  .createRawConsumer(topic)
   .on('message', onMessage);
 });
 

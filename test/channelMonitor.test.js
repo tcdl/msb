@@ -26,18 +26,18 @@ describe('channelMonitor', function() {
   var originalCreateConsumer;
 
   before(function(done) {
-    originalCreateProducer = channelManager.createProducer;
-    originalCreateConsumer = channelManager.createConsumer;
+    originalCreateProducer = channelManager.createRawProducer;
+    originalCreateConsumer = channelManager.createRawConsumer;
 
-    channelManager.createProducer = mockChannels.createProducer;
-    channelManager.createConsumer = mockChannels.createConsumer;
+    channelManager.createRawProducer = mockChannels.createRawProducer;
+    channelManager.createRawConsumer = mockChannels.createRawConsumer;
 
     done();
   });
 
   after(function(done) {
-    channelManager.createProducer = originalCreateProducer;
-    channelManager.createConsumer = originalCreateConsumer;
+    channelManager.createRawProducer = originalCreateProducer;
+    channelManager.createRawConsumer = originalCreateConsumer;
 
     channelMonitor.stopMonitoring();
     channelMonitorAgent.stopBroadcasting();

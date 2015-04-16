@@ -20,8 +20,8 @@ var mockChannels = require('./support/mockChannels');
 describe('examples', function() {
   before(function(done) {
     simple.mock(msb.channelMonitorAgent, 'start').returnWith();
-    simple.mock(msb.channelManager, 'createProducer', mockChannels.createProducer);
-    simple.mock(msb.channelManager, 'createConsumer', mockChannels.createConsumer);
+    simple.mock(msb.channelManager, 'createRawProducer', mockChannels.createRawProducer);
+    simple.mock(msb.channelManager, 'createRawConsumer', mockChannels.createRawConsumer);
     done();
   });
 

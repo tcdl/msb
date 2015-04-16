@@ -4,7 +4,7 @@ var mockChannels = exports;
 
 mockChannels.bus = new EventEmitter();
 
-mockChannels.createProducer = function(topic) {
+mockChannels.createRawProducer = function(topic) {
   return {
     publish: function(message, cb) {
       var clonedMessage = JSON.parse(JSON.stringify(message));
@@ -17,7 +17,7 @@ mockChannels.createProducer = function(topic) {
   };
 };
 
-mockChannels.createConsumer = function(topic) {
+mockChannels.createRawConsumer = function(topic) {
   var channel = new EventEmitter();
 
   function onMessage(message) {

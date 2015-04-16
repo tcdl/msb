@@ -73,7 +73,7 @@ describe('channelManager', function() {
     });
 
     it('will emit a new channel event', function(done) {
-      simple.mock(channelManager, 'createProducer').returnWith({});
+      simple.mock(channelManager, 'createRawProducer').returnWith({});
 
       expect(channelManager.PRODUCER_NEW_TOPIC_EVENT).exists();
 
@@ -138,7 +138,7 @@ describe('channelManager', function() {
       var mockSubscriber = {};
       simple.mock(mockSubscriber, 'setMaxListeners');
       simple.mock(mockSubscriber, 'on');
-      simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+      simple.mock(channelManager, 'createRawConsumer').returnWith(mockSubscriber);
 
       expect(channelManager.CONSUMER_NEW_TOPIC_EVENT).exists();
 
@@ -154,7 +154,7 @@ describe('channelManager', function() {
     it('will listen for messages and emit a new message event', function(done) {
       var mockSubscriber = {};
       simple.mock(mockSubscriber, 'on');
-      simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+      simple.mock(channelManager, 'createRawConsumer').returnWith(mockSubscriber);
 
       var consumer = channelManager.findOrCreateConsumer('c:etc');
 
@@ -185,7 +185,7 @@ describe('channelManager', function() {
 
         var mockSubscriber = new EventEmitter();
         simple.mock(mockSubscriber, 'close').returnWith();
-        simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
+        simple.mock(channelManager, 'createRawConsumer').returnWith(mockSubscriber);
 
         var onEvent = simple.mock();
         channelManager.on(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, onEvent);
@@ -203,12 +203,12 @@ describe('channelManager', function() {
 
         setImmediate(function() {
           expect(mockSubscriber.close.callCount).equals(1);
-          expect(channelManager.createConsumer.callCount).equals(1);
+          expect(channelManager.createRawConsumer.callCount).equals(1);
           expect(onEvent.callCount).equals(1);
 
           // Cache was cleared
           channelManager.findOrCreateConsumer('cr:etc');
-          expect(channelManager.createConsumer.callCount).equals(2);
+          expect(channelManager.createRawConsumer.callCount).equals(2);
 
           done();
         });
@@ -218,7 +218,7 @@ describe('channelManager', function() {
         simple.mock(EventEmitter.prototype, 'close').returnWith();
 
         simple
-        .mock(channelManager, 'createConsumer')
+        .mock(channelManager, 'createRawConsumer')
         .returnWith(new EventEmitter())
         .returnWith(new EventEmitter());
 
@@ -241,17 +241,17 @@ describe('channelManager', function() {
 
         setImmediate(function() {
           expect(EventEmitter.prototype.close.callCount).equals(1);
-          expect(channelManager.createConsumer.callCount).equals(2);
+          expect(channelManager.createRawConsumer.callCount).equals(2);
           expect(onEvent.callCount).equals(1);
           expect(onEvent.lastCall.args[0]).equals('crm:b');
 
           // Cache not cleared
           channelManager.findOrCreateConsumer('crm:a');
-          expect(channelManager.createConsumer.callCount).equals(2);
+          expect(channelManager.createRawConsumer.callCount).equals(2);
 
           // Cache was cleared
           channelManager.findOrCreateConsumer('crm:b');
-          expect(channelManager.createConsumer.callCount).equals(3);
+          expect(channelManager.createRawConsumer.callCount).equals(3);
 
           done();
         });
