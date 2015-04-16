@@ -1,6 +1,6 @@
 {
   "name": "msb",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A framework to implement an event oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
