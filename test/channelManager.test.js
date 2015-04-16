@@ -131,8 +131,6 @@ describe('channelManager', function() {
       expect(queue.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
       expect(consumer1a).equals(consumer1b);
-      expect(mockSubscriber1.setMaxListeners.callCount).equals(1);
-      expect(mockSubscriber2.setMaxListeners.callCount).equals(1);
       done();
     });
 
@@ -155,24 +153,29 @@ describe('channelManager', function() {
 
     it('will listen for messages and emit a new message event', function(done) {
       var mockSubscriber = {};
-      simple.mock(mockSubscriber, 'setMaxListeners');
       simple.mock(mockSubscriber, 'on');
       simple.mock(channelManager, 'createConsumer').returnWith(mockSubscriber);
 
-      channelManager.findOrCreateConsumer('c:etc');
+      var consumer = channelManager.findOrCreateConsumer('c:etc');
 
-      expect(mockSubscriber.on.callCount).equals(2);
+      expect(mockSubscriber.on.callCount).equals(1);
       expect(mockSubscriber.on.calls[0].args[0]).equals('message');
-      expect(mockSubscriber.on.lastCall.args[0]).equals('removeListener');
+      expect(consumer.listeners('removeListener')).length(1);
       expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
 
+      var onMessageFn = mockSubscriber.on.calls[0].args[1];
       var onEvent = simple.mock();
       channelManager.once(channelManager.CONSUMER_NEW_MESSAGE_EVENT, onEvent);
 
-      mockSubscriber.on.calls[0].args[1]();
+      // With expired message
+      onMessageFn({ meta: { ttl: 1000, createdAt: new Date(Date.now() - 1001) } });
+      expect(onEvent.called).false();
 
+      // With normal message
+      onMessageFn({});
       expect(onEvent.called).true();
       expect(onEvent.lastCall.args[0]).equals('c:etc');
+
       done();
     });
 
@@ -230,6 +233,8 @@ describe('channelManager', function() {
         channelA.on('message', singleListener);
         channelA.removeListener('message', singleListener);
         channelA.on('message', singleListener); // Added listener after remove
+        channelA.removeListener('message', singleListener); // Removed again
+        channelA.on('message', singleListener); // Added again
 
         channelB.on('message', singleListener);
         channelB.removeListener('message', singleListener);

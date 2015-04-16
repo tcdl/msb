@@ -15,6 +15,7 @@ module.exports = {
     meta: {
       type: 'object',
       properties: {
+        ttl: { type: ['integer', 'null'] },
         createdAt: { type: 'string', format: 'date-time' },
         durationMs: { type: 'number' },
         serviceDetails: { $ref: '#/definitions/serviceDetails' }
