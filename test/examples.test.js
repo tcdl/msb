@@ -59,8 +59,8 @@ describe('examples', function() {
       .once('error', done)
       .once('end', function() {
         expect(requester.ackMessages).length(0);
-        expect(requester.responseMessages).length(1);
-        expect(requester.responseMessages[0].payload).deep.equals({
+        expect(requester.payloadMessages).length(1);
+        expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 422,
           body: null
         });
@@ -77,8 +77,8 @@ describe('examples', function() {
       .once('error', done)
       .once('end', function() {
         expect(requester.ackMessages).length(0);
-        expect(requester.responseMessages).length(1);
-        expect(requester.responseMessages[0].payload).deep.equals({
+        expect(requester.payloadMessages).length(1);
+        expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 500,
           body: 'Special Message'
         });
@@ -103,8 +103,8 @@ describe('examples', function() {
       .once('error', done)
       .once('end', function() {
         expect(requester.ackMessages).length(1);
-        expect(requester.responseMessages).length(1);
-        expect(requester.responseMessages[0].payload).deep.equals({
+        expect(requester.payloadMessages).length(1);
+        expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 200,
           body: 1002
         });

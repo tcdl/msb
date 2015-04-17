@@ -12,7 +12,7 @@ Responder.createServer({
   namespace: 'test:aggregator'
 })
 .use(function(request, response, next) {
-  response.responder.sendAckWithTimeout(5000);
+  response.responder.sendAck(5000);
 
   var requester = new Requester({
     namespace: 'test:general',

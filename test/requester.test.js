@@ -107,7 +107,6 @@ describe('Requester', function() {
 
       mocks.requester_shouldAcceptMessageFn = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
       simple.mock(obj, 'listenForResponses').returnWith();
-      simple.mock(obj, 'listenForAcks').returnWith();
 
       obj
       .on('end', endHandler)
@@ -116,8 +115,6 @@ describe('Requester', function() {
       expect(mocks.requester_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
       expect(obj.listenForResponses.lastCall.args[0]).to.equal(obj.message.topics.response);
       expect(obj.listenForResponses.lastCall.args[1]).to.equal('testValue');
-      expect(obj.listenForAcks.lastCall.args[0]).to.equal(obj.message.topics.ack);
-      expect(obj.listenForAcks.lastCall.args[1]).to.equal('testValue');
       expect(producer.publish.called).to.equal(true);
       expect(endHandler.called).to.equal(false);
 

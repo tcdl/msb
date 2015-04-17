@@ -32,7 +32,7 @@ var middleware = function(req, res, next) {
   .on('ack', console.log)
   .on('response', console.log)
   .once('end', function() {
-    var lastResponse = _.last(requester.responseMessages).payload;
+    var lastResponse = _.last(requester.payloadMessages).payload;
 
     var statusCode = lastResponse.statusCode;
     var headers = lastResponse.headers;
