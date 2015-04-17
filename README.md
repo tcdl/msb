@@ -6,7 +6,7 @@ A framework to implement an event oriented microservices architecture.
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-  - [Programmatic Configuration](#programmatic-configuration)
+  - [msb.configure(config)](#msbconfigureconfig)
   - [Environment Variables](#environment-variables)
 - [Tools](#tools)
   - [CLI](#cli)
@@ -45,20 +45,27 @@ See [implementation examples](examples) and [message format examples](examples/m
 
 ## Configuration
 
-### Programmatic Configuration
+### msb.configure(config)
 
-#### msb.configure(config)
-
-Loads the config object over the existing app-wide configuration.
+Loads the provided config object over the existing/default app-wide configuration.
 
 *Note: It is recommended that you do not change configuration after publisher/subscriber channels have been created.*
+
+- `config.serviceDetails` Object included in all messages:
+  - `name` String used to identify the type of service, also used as the default for the broker groupId. (Default: `name` in the package.json of the main module.)
+  - `version` (Default: `version` in the package.json of the main module.)
+  - `instanceId` (Default: generated universally unique 12-byte/24-char hex string.)
+- `config.brokerAdapter` One of 'redis', 'amqp' or 'kafka' (Default: 'redis')
+- `config.redis`, `config.amqp` and `config.kafka` Used to configure the broker adapter (See [lib/config.js](lib/config.js).)
 
 ### Environment Variables
 
 - MSB_SERVICE_NAME Overrides the default `config.serviceDetails.name`.
 - MSB_SERVICE_VERSION Overrides the default `config.serviceDetails.version`.
 - MSB_SERVICE_INSTANCE_ID Overrides the default `config.serviceDetails.instanceId`.
-- MSB_CONFIG_PATH Loads the JSON/JS file at this path over default app-wide configuration.
+- MSB_BROKER_ADAPTER Overrides the default `config.brokerAdapter`.
+- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.redis`, `config.amqp` and `config.kafka`, overriding defaults.
+- MSB_CONFIG_PATH Loads the JSON/JS file at this path over default app-wide configuration. Similar to calling `msb.configure(config)` programmatically.
 
 ## Tools
 
