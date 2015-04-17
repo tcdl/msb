@@ -176,7 +176,7 @@ An requester is a collector component that can also publish new messages on the 
 
 #### new Requester(options[, originalMessage])
 
-- **options.namespace** String Publish request message on this topic and listen on this appended by ':response' and ':ack'.
+- **options.namespace** String Publish request message on this topic and listen on this appended by ':response'.
 - **options.ackTimeout** Optional Milliseconds to allow for acks to increase the timeout or number of responses to expect.
 - **options.responseTimeout** Optional Milliseconds before ending this request. (Default: 3000).
 - **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. (Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.)
@@ -196,8 +196,9 @@ An requester is a collector component that can also publish new messages on the 
 
 #### Event: 'ack'
 
-`function(_message) { }`
+`function(ack, _message) { }`
 
+- **ack** Object Response message ack.
 - **_message** Object The full ack-containing message. In most cases it should not be needed.
 
 #### Event: 'end'

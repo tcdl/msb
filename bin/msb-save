@@ -15,7 +15,7 @@ process
 .pipe(require('split')(JSON.parse))
 .on('data', function(obj) {
   var filename = getNested(obj, argv.by) + '.' + argv.ext;
-  fs.writeFileSync(path.join(argv._[0] || '.', filename), JSON.stringify(obj, null, '  '));
+  fs.appendFileSync(path.join(argv._[0] || '.', filename), JSON.stringify(obj, null, '  '));
 })
 .on('error', console.error);
 

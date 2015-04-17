@@ -1,38 +1,8 @@
 {
-  "id": "3c19407a167011b7000cf717",
-  "correlationId": "3c19407acf3218000003598f",
-  "topics": {
-    "to": "test:general",
-    "response": "test:general:response:3c194002167011b700017e02"
-  },
-  "meta": {
-    "ttl": null,
-    "createdAt": "2015-04-17T16:24:26.746Z",
-    "durationMs": 0,
-    "serviceDetails": {
-      "hostname": "Pieter-s-MacBook-Pro.local",
-      "ip": "10.166.139.50",
-      "pid": 4535,
-      "name": "msb",
-      "version": "0.3.4",
-      "instanceId": "3c194002167011b700017e02"
-    }
-  },
-  "ack": null,
-  "payload": {
-    "url": "http://mock",
-    "method": "GET",
-    "params": {},
-    "query": {},
-    "headers": {},
-    "body": {}
-  }
-}{
-  "id": "3c1940b1167011b700126399",
+  "id": "3c1940b1167011b700119840",
   "correlationId": "3c1940b1f39e196100038f93",
   "topics": {
-    "to": "test:general",
-    "response": "test:general:response:3c194002167011b700017e02"
+    "to": "test:aggregator:response:3c1940b1f39e19610001bea8"
   },
   "meta": {
     "ttl": null,
@@ -47,13 +17,44 @@
       "instanceId": "3c194002167011b700017e02"
     }
   },
-  "ack": null,
+  "ack": {
+    "responderId": "3c1940b1167011b7001086d3",
+    "responsesRemaining": 1,
+    "timeoutMs": 5000
+  },
+  "payload": null
+}{
+  "id": "3c1940b3167011b70015f529",
+  "correlationId": "3c1940b1f39e196100038f93",
+  "topics": {
+    "to": "test:aggregator:response:3c1940b1f39e19610001bea8"
+  },
+  "meta": {
+    "ttl": null,
+    "createdAt": "2015-04-17T16:25:21.878Z",
+    "durationMs": 2002,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.50",
+      "pid": 4535,
+      "name": "msb",
+      "version": "0.3.4",
+      "instanceId": "3c194002167011b700017e02"
+    }
+  },
+  "ack": {
+    "responderId": "3c1940b1167011b7001086d3",
+    "responsesRemaining": -1,
+    "timeoutMs": 5000
+  },
   "payload": {
-    "url": "http://mock",
-    "method": "GET",
-    "params": {},
-    "query": {},
-    "headers": {},
-    "body": {}
+    "statusCode": 200,
+    "body": {
+      "body": {
+        "results": [
+          null
+        ]
+      }
+    }
   }
 }
