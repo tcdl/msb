@@ -364,7 +364,6 @@ describe('Collector', function() {
         simple.mock(mockChannel, 'on').returnWith(mockChannel);
         simple.mock(msb.channelManager, 'findOrCreateConsumer').returnWith(mockChannel);
         simple.mock(collector, '_onResponseMessage').returnWith();
-        simple.mock(collector, '_onAckMessage').returnWith();
 
         done();
       });
@@ -392,52 +391,20 @@ describe('Collector', function() {
 
         done();
       });
-
-      it('should listen with _onAckMessage', function(done) {
-        var shouldAcceptMessageFn = simple.mock();
-        var originalOnAckMessageFn = collector._onAckMessage;
-
-        collector.listenForAcks('etc', shouldAcceptMessageFn);
-
-        expect(msb.channelManager.findOrCreateConsumer.called).true();
-        expect(msb.channelManager.findOrCreateConsumer.lastCall.args[0]).equals('etc');
-
-        expect(mockChannel.on.called).true();
-        expect(mockChannel.on.lastCall.args[0]).equals('message');
-        expect(mockChannel.on.lastCall.args[1]).to.be.a.function();
-
-        var message = {};
-        var handlerFn = mockChannel.on.lastCall.args[1];
-        handlerFn(message);
-
-        expect(originalOnAckMessageFn.called).true();
-        expect(originalOnAckMessageFn.lastCall.args[0]).equals(shouldAcceptMessageFn);
-        expect(originalOnAckMessageFn.lastCall.args[1]).equals(message);
-
-        done();
-      });
     });
 
     describe('removeListeners()', function() {
 
-      it('removes the responseChannel and ackChannels if they exist', function(done) {
+      it('removes the responseChannel if it exists', function(done) {
         var mockResponseChannel = {};
         simple.mock(mockResponseChannel, 'removeListener').returnWith();
         collector.responseChannel = mockResponseChannel;
-
-        var mockAckChannel = {};
-        simple.mock(mockAckChannel, 'removeListener').returnWith();
-        collector.ackChannel = mockAckChannel;
 
         collector.removeListeners();
 
         expect(mockResponseChannel.removeListener.called).true();
         expect(mockResponseChannel.removeListener.lastCall.args[0]).equals('message');
         expect(mockResponseChannel.removeListener.lastCall.args[1]).equals(collector._onResponseMessage);
-
-        expect(mockAckChannel.removeListener.called).true();
-        expect(mockAckChannel.removeListener.lastCall.args[0]).equals('message');
-        expect(mockAckChannel.removeListener.lastCall.args[1]).equals(collector._onAckMessage);
 
         expect(function() {
           collector.removeListeners();
@@ -463,7 +430,8 @@ describe('Collector', function() {
         simple.mock(collector, 'end').returnWith();
 
         message = {
-          ack: 'ack'
+          ack: 'ack',
+          payload: {}
         };
 
         done();
@@ -477,7 +445,7 @@ describe('Collector', function() {
         collector._onResponseMessage(shouldAcceptMessageFn, message);
 
         expect(shouldAcceptMessageFn.called).true();
-        expect(collector.responseMessages).length(1);
+        expect(collector.payloadMessages).length(1);
         expect(collector.emit.called).true();
         expect(collector.emit.lastCall.args[0]).equals('response');
         expect(collector.emit.lastCall.args[1]).equals(message.payload);
@@ -498,9 +466,10 @@ describe('Collector', function() {
 
         collector._onResponseMessage(null, message);
 
-        expect(collector.responseMessages).length(1);
+        expect(collector.payloadMessages).length(1);
         expect(collector.emit.called).true();
-        expect(collector.emit.lastCall.args[0]).equals('response');
+        expect(collector.emit.calls[0].args[0]).equals('payload');
+        expect(collector.emit.lastCall.args[0]).equals('response'); // Backward-compatibility
         expect(collector.emit.lastCall.args[1]).equals(message.payload);
         expect(collector.emit.lastCall.args[2]).equals(message);
         expect(collector._incResponsesRemaining.called).true();
@@ -513,13 +482,30 @@ describe('Collector', function() {
         done();
       });
 
+      it('should handle ack when no payload is passed', function(done) {
+        message.payload = null;
+
+        collector._onResponseMessage(null, message);
+
+        expect(collector.ackMessages).length(1);
+        expect(collector.emit.called).true();
+        expect(collector.emit.lastCall.args[0]).equals('ack');
+        expect(collector.emit.lastCall.args[1]).equals(message.ack);
+        expect(collector.emit.lastCall.args[2]).equals(message);
+        expect(collector._processAck.called).true();
+        expect(collector._processAck.lastCall.args[0]).equals(message.ack);
+        expect(collector.isAwaitingResponses.called).true();
+
+        done();
+      });
+
       it('should not accept message when passed function returns false', function(done) {
 
         shouldAcceptMessageFn.returnWith(false);
 
         collector._onResponseMessage(shouldAcceptMessageFn, message);
 
-        expect(collector.responseMessages).length(0);
+        expect(collector.payloadMessages).length(0);
 
         done();
       });
@@ -542,7 +528,7 @@ describe('Collector', function() {
 
         collector._onResponseMessage(null, message);
 
-        expect(collector.responseMessages).length(1);
+        expect(collector.payloadMessages).length(1);
         expect(collector._enableAckTimeout.called).true();
         expect(collector.end.calls).length(0);
 
@@ -617,47 +603,6 @@ describe('Collector', function() {
 
         expect(Collector.prototype._onAckTimeout.called).true();
         expect(Collector.prototype._onAckTimeout.lastCall.context).equals(collector);
-
-        done();
-      });
-    });
-
-    describe('_onAckMessage', function() {
-      var shouldAcceptMessageFn;
-
-      beforeEach(function(done) {
-        shouldAcceptMessageFn = simple.mock();
-
-        simple.mock(collector, 'emit').returnWith();
-        simple.mock(collector, '_processAck').returnWith();
-
-        done();
-      });
-
-      it('should accept message', function(done) {
-        var message = {
-          ack: 'ack'
-        };
-
-        shouldAcceptMessageFn.returnWith(true);
-        collector._onAckMessage(shouldAcceptMessageFn, message);
-
-        expect(shouldAcceptMessageFn.called).true();
-        expect(collector.ackMessages).length(1);
-        expect(collector.emit.called).true();
-        expect(collector.emit.lastCall.args[0]).equals('ack');
-        expect(collector.emit.lastCall.args[1]).equals(message);
-        expect(collector._processAck.called).true();
-        expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-
-        // Alternative shouldAcceptMessageFn
-        shouldAcceptMessageFn.returnWith(false);
-        collector._onAckMessage(shouldAcceptMessageFn, message);
-        expect(collector.ackMessages).length(1);
-
-        // Empty shouldAcceptMessageFn
-        collector._onAckMessage(null, message);
-        expect(collector.ackMessages).length(2);
 
         done();
       });
