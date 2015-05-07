@@ -10,6 +10,7 @@ msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
 msb.Requester = require('./lib/requester');
 msb.Responder = require('./lib/responder');
+msb.request = require('./lib/request');
 msb.validateWithSchema = require('./lib/validateWithSchema');
 msb.serviceDetails = require('./lib/support/serviceDetails');
 msb.configure = require('./lib/config').configure;
