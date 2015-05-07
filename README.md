@@ -14,7 +14,6 @@ A framework to implement an event oriented microservices architecture.
 - [Message Brokers / Adapters](#message-brokers--adapters)
   - [Redis](#redis)
   - [AMQP / RabbitMQ](#amqp--rabbitmq)
-  - [Kafka](#kafka)
 - [API](#api)
   - [Class: msb.Responder](#class-msbresponder)
   - [Class: ResponderServer](#class-responderserver)
@@ -55,8 +54,8 @@ Loads the provided config object over the existing/default app-wide configuratio
   - `name` String used to identify the type of service, also used as the default for the broker groupId. (Default: `name` in the package.json of the main module.)
   - `version` (Default: `version` in the package.json of the main module.)
   - `instanceId` (Default: generated universally unique 12-byte/24-char hex string.)
-- `config.brokerAdapter` One of 'redis', 'amqp' or 'kafka' (Default: 'redis')
-- `config.redis`, `config.amqp` and `config.kafka` Used to configure the broker adapter (See [lib/config.js](lib/config.js).)
+- `config.brokerAdapter` One of 'redis', 'amqp' or 'local' (Default: 'redis')
+- `config.redis` and `config.amqp` Used to configure the broker adapter (See [lib/config.js](lib/config.js).)
 
 ### Environment Variables
 
@@ -64,7 +63,7 @@ Loads the provided config object over the existing/default app-wide configuratio
 - MSB_SERVICE_VERSION Overrides the default `config.serviceDetails.version`.
 - MSB_SERVICE_INSTANCE_ID Overrides the default `config.serviceDetails.instanceId`.
 - MSB_BROKER_ADAPTER Overrides the default `config.brokerAdapter`.
-- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.redis`, `config.amqp` and `config.kafka`, overriding defaults.
+- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.redis` and `config.amqp` overriding defaults.
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over default app-wide configuration. Similar to calling `msb.configure(config)` programmatically.
 
 ## Tools
@@ -96,10 +95,6 @@ Redis Pub/Sub is the default message broker used. Setup of Redis is practically 
 ### AMQP / RabbitMQ
 
 The AMQP adapter is tested with RabbitMQ and it implements a limited topology for simplification. One exchange is created per topic and a queue is created for every group of similar services, configured using a groupId. This means that you can have different types of services listening on the same topic, and multiple processes of the same type of service would receive a fair distribution of messages.
-
-### Kafka
-
-The Kafka adapter uses the Kafka 8.2 High-level Producer/Consumer APIs, which fairly distributes messages to consumer groups using partition allocation by Zookeeper. The Kafka adapter is highly experimental and does not handle many situations related to rebalancing and clustering.
 
 ## API
 

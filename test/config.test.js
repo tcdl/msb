@@ -39,12 +39,10 @@ describe('config', function() {
 
   describe('_afterConfigure()', function() {
     it('can set groupId', function(done) {
-      simple.mock(config, 'kafka', { consumerOptions: {} });
       simple.mock(config, 'amqp', {});
 
       config._afterConfigure();
 
-      expect(config.kafka.consumerOptions.groupId).equals('lab');
       expect(config.amqp.groupId).equals('lab');
       done();
     });
