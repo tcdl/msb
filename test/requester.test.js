@@ -20,12 +20,6 @@ var Requester = msb.Requester;
 
 /* Tests */
 describe('Requester', function() {
-  var mocks;
-
-  beforeEach(function(done) {
-    mocks = {};
-    done();
-  });
 
   afterEach(function(done) {
     simple.restore();
@@ -33,13 +27,13 @@ describe('Requester', function() {
   });
 
   it('can be initialized', function(done) {
-    mocks.messageFactory_createRequestMessage = simple.mock(msb.messageFactory, 'createRequestMessage');
-    mocks.Requester_super_ = simple.mock(Requester, 'super_');
+    simple.mock(msb.messageFactory, 'createRequestMessage');
+    simple.mock(Requester, 'super_');
 
     var obj = Requester({}); // jshint ignore:line
 
-    expect(mocks.messageFactory_createRequestMessage.called).to.equal(true);
-    expect(mocks.Requester_super_.called).to.equal(true);
+    expect(msb.messageFactory.createRequestMessage.called).to.equal(true);
+    expect(Requester.super_.called).to.equal(true);
     done();
   });
 
@@ -105,14 +99,14 @@ describe('Requester', function() {
         waitForResponses: 1
       });
 
-      mocks.requester_shouldAcceptMessageFn = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
+      var bindMock = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
       simple.mock(obj, 'listenForResponses').returnWith();
 
       obj
       .on('end', endHandler)
       .publish();
 
-      expect(mocks.requester_shouldAcceptMessageFn.lastCall.args[0]).to.equal(obj);
+      expect(bindMock.lastCall.args[0]).to.equal(obj);
       expect(obj.listenForResponses.lastCall.args[0]).to.equal(obj.message.topics.response);
       expect(obj.listenForResponses.lastCall.args[1]).to.equal('testValue');
       expect(producer.publish.called).to.equal(true);
