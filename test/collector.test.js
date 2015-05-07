@@ -302,7 +302,7 @@ describe('Collector', function() {
         collector._responsesRemaining = 0;
 
         simple.mock(collector, '_setTimeoutMsForResponderId');
-        simple.mock(collector, '_enableTimeout').returnWith();
+        simple.mock(collector, 'enableTimeout').returnWith();
         simple.mock(collector, '_setResponsesRemainingForResponderId');
         done();
       });
@@ -326,7 +326,7 @@ describe('Collector', function() {
         expect(collector._setTimeoutMsForResponderId.lastCall.args[0]).equals('a');
         expect(collector._setTimeoutMsForResponderId.lastCall.args[1]).equals(5000);
         expect(collector._currentTimeoutMs).equals(5000);
-        expect(collector._enableTimeout.called).true();
+        expect(collector.enableTimeout.called).true();
         done();
       });
 
@@ -338,7 +338,7 @@ describe('Collector', function() {
 
         expect(collector._setTimeoutMsForResponderId.called).true();
         expect(collector._currentTimeoutMs).equals(3000);
-        expect(collector._enableTimeout.called).false();
+        expect(collector.enableTimeout.called).false();
         done();
       });
 
