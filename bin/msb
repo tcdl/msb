@@ -6,7 +6,7 @@ var argv = require('minimist')(process.argv.slice(2), {
   boolean: ['pretty'],
   default: {
     pretty: true,
-    follow: ['response', 'ack']
+    follow: ['response']
   }
 });
 
@@ -35,11 +35,6 @@ function onMessage(message) {
     if (message.topics.response && eqOrIn(argv.follow, 'response')) {
       channelManager
       .findOrCreateConsumer(message.topics.response)
-      .on('message', onMessage);
-    }
-    if (message.topics.ack && eqOrIn(argv.follow, 'ack')) {
-      channelManager
-      .findOrCreateConsumer(message.topics.ack)
       .on('message', onMessage);
     }
     message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');
