@@ -70,10 +70,10 @@ Loads the provided config object over the existing/default app-wide configuratio
 
 ### CLI
 
-Listens to a topic on the bus and prints JSON to stdout. By default it will also listen for response and ack topics detected on messages, and JSON is pretty-printed. For [Newline-delimited JSON](http://en.wikipedia.org/wiki/Line_Delimited_JSON) compatibility, specify `-p false`.
+Listens to a topic on the bus and prints JSON to stdout. By default it will also listen for response topics detected on messages, and JSON is pretty-printed. For [Newline-delimited JSON](http://en.wikipedia.org/wiki/Line_Delimited_JSON) compatibility, specify `-p false`.
 
 ```js
-$ node_modules/msb/bin/msb -t=topic:to:listen:to
+$ node_modules/msb/bin/msb -t topic:to:listen:to
 ```
 
 Options:
