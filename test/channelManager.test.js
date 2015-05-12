@@ -158,8 +158,9 @@ describe('channelManager', function() {
 
       var consumer = channelManager.findOrCreateConsumer('c:etc');
 
-      expect(mockSubscriber.on.callCount).equals(1);
-      expect(mockSubscriber.on.calls[0].args[0]).equals('message');
+      expect(mockSubscriber.on.callCount).equals(2);
+      expect(mockSubscriber.on.calls[0].arg).equals('message');
+      expect(mockSubscriber.on.calls[1].arg).equals('error');
       expect(consumer.listeners('removeListener')).length(1);
       expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
 

@@ -17,7 +17,7 @@ module.exports = {
       properties: {
         ttl: { type: ['integer', 'null'] },
         createdAt: { type: 'string', format: 'date-time' },
-        durationMs: { type: 'number' },
+        durationMs: { type: ['number', 'null'] },
         serviceDetails: { $ref: '#/definitions/serviceDetails' }
       },
       required: ['createdAt']

@@ -264,9 +264,13 @@ var channelManager = msb.channelManager;
 
 Returns a producer for this topic. Either existing or new. Corresponding `channelManager` events will be emitted for this producer.
 
-#### channelManager.findOrCreateConsumer(topic)
+#### channelManager.findOrCreateConsumer(topic[, options])
 
 Returns a consumer listening on this topic. Either existing or new. Corresponding channelManager events will be emitted for this consumer. If `config.cleanupConsumers` is set, these consumers will be removed as soon as there are no more listeners for them. If an app-wide schema exists, it will be checked for every incoming message.
+
+- **topic** String
+- **options.groupId** String Custom group identifier for round-robin message queue.
+- **options.groupId** Boolean Set to `false` for broadcast-style message queue.
 
 #### Event: 'newProducerOnTopic'
 
