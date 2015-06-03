@@ -34,7 +34,7 @@ describe('request()', function() {
     it('calls back on end with a response', function(done) {
       var returnValue = 'rv';
 
-      msb.Requester.prototype.publish.callFn(function(){
+      msb.Requester.prototype.publish.callFn(function() {
         return this;
       });
 
@@ -59,7 +59,7 @@ describe('request()', function() {
     it('calls back on error', function(done) {
       var returnValue = 'rv';
 
-      msb.Requester.prototype.publish.callFn(function(){
+      msb.Requester.prototype.publish.callFn(function() {
         return this;
       });
 
@@ -95,7 +95,7 @@ describe('request()', function() {
     it('calls back on end with a response', function(done) {
       var returnValue = 'rv';
 
-      msb.Requester.prototype.publish.callFn(function(){
+      msb.Requester.prototype.publish.callFn(function() {
         return this;
       });
 
@@ -122,7 +122,7 @@ describe('request()', function() {
     it('calls back on validation error', function(done) {
       var returnValue = 'rv';
 
-      msb.Requester.prototype.publish.callFn(function(){
+      msb.Requester.prototype.publish.callFn(function() {
         return this;
       });
 

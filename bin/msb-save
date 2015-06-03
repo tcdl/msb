@@ -14,23 +14,9 @@ process
 .stdin
 .pipe(require('split')(JSON.parse))
 .on('data', function(obj) {
-  var filename = getNested(obj, argv.by) + '.' + argv.ext;
+  var filename = _.get(obj, argv.by).replace(/\:/g, '_') + '.' + argv.ext;
   fs.appendFileSync(path.join(argv._[0] || '.', filename), JSON.stringify(obj, null, '  '));
 })
-.on('error', console.error);
-
-function getNested(obj, path, defaultValue) {
-  var self = this;
-
-  if (_.isUndefined(obj) || obj === null) return defaultValue;
-
-  var fields = path.split('.');
-  var result = obj;
-  for (var i = 0, n = fields.length; i < n; i++) {
-    if (!_.isObject(result) && !_.isArray(result)) {
-      return (!_.isUndefined(defaultValue)) ? defaultValue : undefined;
-    }
-    result = result[fields[i]];
-  }
-  return (_.isUndefined(result) && !_.isUndefined(defaultValue)) ? defaultValue : result;
-}
+.on('error', function(err) {
+  throw err;
+});
