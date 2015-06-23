@@ -174,7 +174,7 @@ An requester is a collector component that can also publish new messages on the 
 #### new Requester(options[, originalMessage])
 
 - **options.namespace** String Publish request message on this topic and listen on this appended by ':response'.
-- **options.ackTimeout** Optional Milliseconds to allow for acks to increase the timeout or number of responses to expect.
+- **options.ackTimeout** Optional Rquester will wait at least this amount of milliseconds for acks, before ending this request.
 - **options.responseTimeout** Optional Milliseconds before ending this request. (Default: 3000).
 - **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. (Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.)
 - **options.collaboration** String Topic name where responses should be published for further collaboration by other responders.
