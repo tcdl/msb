@@ -17,6 +17,7 @@ var simple = require('simple-mock');
 var generateId = require('../lib/support/generateId');
 var MAX_PER_SECOND = 65536;
 
+// NOTE: Requires lodash@2.n as version 3 will time out on performing `_.uniq()` operation.
 describe('generateId', function() {
   afterEach(function(done) {
     simple.restore();
