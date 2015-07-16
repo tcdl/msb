@@ -54,7 +54,7 @@ describe('examples', function() {
       requester
       .publish({
         headers: {},
-        body: {}
+        body: 'not_object'
       })
       .once('error', done)
       .once('end', function() {
@@ -72,7 +72,7 @@ describe('examples', function() {
       requester
       .publish({
         headers: {},
-        body: 'error'
+        body: { instruction: 'error' }
       })
       .once('error', done)
       .once('end', function() {
@@ -90,7 +90,7 @@ describe('examples', function() {
       requester
       .publish({
         headers: {},
-        body: 'okay'
+        body: {}
       })
       .once('error', done);
 
@@ -98,7 +98,7 @@ describe('examples', function() {
       requester
       .publish({
         headers: {},
-        body: 'okay'
+        body: {}
       })
       .once('error', done)
       .once('end', function() {

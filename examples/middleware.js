@@ -32,6 +32,8 @@ var middleware = function(req, res, next) {
   .on('ack', console.log)
   .on('response', console.log)
   .once('end', function() {
+    if (!requester.payloadMessages.length) return console.log('nothing returned');
+
     var lastResponse = _.last(requester.payloadMessages).payload;
 
     var statusCode = lastResponse.statusCode;

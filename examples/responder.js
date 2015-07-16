@@ -6,7 +6,7 @@ var i = 1001;
 var payloadSchema = {
   type: 'object',
   properties: {
-    body: { type: 'string' }
+    body: { type: 'object' }
   }
 };
 
@@ -20,7 +20,7 @@ module.exports = Responder.createServer({
 // Arrays of middleware
 .use([
   function(request, response, next) {
-    if (request.body === 'error') return next(new Error());
+    if (request.body && request.body.instruction === 'error') return next(new Error());
     next();
   },
   function(request, response, next) {
