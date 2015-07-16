@@ -25,10 +25,9 @@ Responder.createServer({
 
   requester
   .publish(request)
-  .on('response', function(response) {
-    validateWithSchema(responseSchema, response);
+  .on('response', validateWithSchema.onEvent(responseSchema, function(response) {
     results.push(response.body);
-  })
+  }))
   .on('error', next)
   .on('end', function() {
     response.writeHead(200);
