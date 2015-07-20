@@ -128,6 +128,7 @@ See [ResponderServer](#new-responderserveroptions).
 #### new ResponderServer(options)
 
 - **options.namespace** String topic name to listen on for requests.
+- **options.responseChannelTimeoutMs** Number of milliseconds for the producer channel to be kept after the last publish. (Default: 15 * 60000/15 minutes)
 
 (Use `msb.Responder.createServer()` to create instances.)
 
