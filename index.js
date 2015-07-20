@@ -25,5 +25,9 @@ msb.plugins = {};
 try {
   require('msb-newrelic');
 } catch(e) {
-  if (process.env.NEW_RELIC_LICENSE_KEY) debug(e);
 }
+try {
+  require('msb-loggly');
+} catch(e) {
+}
+
