@@ -176,8 +176,8 @@ An requester is a collector component that can also publish new messages on the 
 #### new Requester(options[, originalMessage])
 
 - **options.namespace** String Publish request message on this topic and listen on this appended by ':response'.
-- **options.ackTimeout** Optional Rquester will wait at least this amount of milliseconds for acks, before ending this request.
-- **options.responseTimeout** Optional Milliseconds before ending this request. (Default: 3000).
+- **options.waitForAcksMs** Optional Will wait at least this amount of ms for acks, before ending.
+- **options.waitForResponsesMs** Optional Will wait at least this amount of ms to receive the expected number of responses, before ending. (Default: 3000).
 - **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. (Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.)
 - **originalMessage** Optional (Object|null) Message this request should correlate with. If `null` it will override current `messageFactory` context for correlation.
 - **options.requestChannelTimeoutMs** Number of milliseconds for the producer channel to be kept after the request is published. (Default: 15 * 60000/15 minutes)
