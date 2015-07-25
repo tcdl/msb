@@ -58,7 +58,7 @@ describe('Responder', function() {
     var responder;
 
     beforeEach(function(done) {
-      responder = new Responder({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { response: 'response' } });
 
       simple.mock(responder, '_sendMessage').returnWith();
 
@@ -185,62 +185,6 @@ describe('Responder', function() {
       simple.mock(responder, '_sendMessage');
 
       done();
-    });
-
-    describe('for collaborations', function() {
-      beforeEach(function(done) {
-        responder.originalMessage.topics.collaboration = 'collabt';
-
-        done();
-      });
-
-      it('can initiate a collaboration', function(done) {
-        var payload = {};
-
-        responder._sendMessage.callbackWith();
-
-        responder.send(payload, function(err) {
-          if (err) return done(err);
-
-          expect(responder._sendMessage.callCount).equals(2);
-
-          var firstMessage = responder._sendMessage.calls[0].arg;
-          expect(firstMessage.collaborationId).string();
-          expect(firstMessage.topics.to).equals('response');
-          expect(firstMessage.payload).equals(payload);
-
-          var secondMessage = responder._sendMessage.calls[1].arg;
-          expect(secondMessage.topics.to).equals('collabt');
-          expect(secondMessage.topics.response).equals('response');
-          expect(secondMessage.payload).equals(payload);
-
-          expect(firstMessage.collaborationId).equals(secondMessage.collaborationId);
-
-          done();
-        });
-      });
-
-      it('can respond as part of a collaboration', function(done) {
-        var payload = {};
-
-        responder.originalMessage.collaborationId = 'abc123';
-
-        responder._sendMessage.callbackWith();
-
-        responder.send(payload, function(err) {
-          if (err) return done(err);
-
-          expect(responder._sendMessage.callCount).equals(1);
-
-          var lastMessage = responder._sendMessage.lastCall.arg;
-          expect(lastMessage.collaborationId).equals(responder.originalMessage.collaborationId);
-          expect(lastMessage.topics.to).equals('response');
-          expect(lastMessage.payload).equals(payload);
-
-          done();
-        });
-      });
-
     });
   });
 
