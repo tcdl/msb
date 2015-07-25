@@ -58,7 +58,7 @@ describe('Responder', function() {
     var responder;
 
     beforeEach(function(done) {
-      responder = new Responder({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { response: 'response' } });
 
       simple.mock(responder, '_sendMessage').returnWith();
 
@@ -180,11 +180,9 @@ describe('Responder', function() {
     var mockChannel;
 
     beforeEach(function(done) {
-      responder = new Responder({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { response: 'response' } });
 
-      mockChannel = {};
-      simple.mock(mockChannel, 'publish');
-      simple.mock(channelManager, 'findOrCreateProducer').returnWith(mockChannel);
+      simple.mock(responder, '_sendMessage');
 
       done();
     });
@@ -195,7 +193,7 @@ describe('Responder', function() {
     var mockChannel;
 
     beforeEach(function(done) {
-      responder = new Responder({}, { topics: { ack: 'ack' } });
+      responder = new Responder({}, { topics: { response: 'response' } });
 
       mockChannel = {};
       simple.mock(mockChannel, 'publish');
