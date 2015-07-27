@@ -1,6 +1,6 @@
 # msb - microservicebus [![Build Status](https://travis-ci.org/tcdl/msb.svg?branch=master)](https://travis-ci.org/tcdl/msb)
 
-A framework to implement an event oriented microservices architecture.
+A framework to simplify the implementation of an event-bus oriented microservices architecture.
 
 <!-- MarkdownTOC -->
 

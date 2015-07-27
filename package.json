@@ -1,7 +1,7 @@
 {
   "name": "msb",
   "version": "0.7.0",
-  "description": "A framework to implement an event oriented microservices architecture",
+  "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
