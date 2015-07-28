@@ -18,6 +18,7 @@ var queue = require('../lib/adapters/redis');
 var msb = require('..');
 var config = require('../lib/config');
 var channelManager = msb.channelManager;
+var messageFactory = msb.messageFactory;
 
 describe('channelManager', function() {
   beforeEach(function(done) {
@@ -165,17 +166,36 @@ describe('channelManager', function() {
       expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
 
       var onMessageFn = mockSubscriber.on.calls[0].args[1];
-      var onEvent = simple.mock();
-      channelManager.once(channelManager.CONSUMER_NEW_MESSAGE_EVENT, onEvent);
+      var onNewMessageEvent = simple.mock();
+      channelManager.once(channelManager.CONSUMER_NEW_MESSAGE_EVENT, onNewMessageEvent);
+
+      var onMessageEvent = simple.mock();
+      consumer.on('message', onMessageEvent);
+
+      simple.mock(messageFactory, 'startContext');
+      simple.mock(messageFactory, 'endContext');
 
       // With expired message
       onMessageFn({ meta: { ttl: 1000, createdAt: new Date(Date.now() - 1001) } });
-      expect(onEvent.called).false();
+      expect(onNewMessageEvent.called).false();
+      expect(onMessageEvent.called).false();
 
       // With normal message
       onMessageFn({});
-      expect(onEvent.called).true();
-      expect(onEvent.lastCall.args[0]).equals('c:etc');
+      expect(onNewMessageEvent.called).true();
+      expect(onNewMessageEvent.lastCall.args[0]).equals('c:etc');
+      expect(onMessageEvent.called).true();
+      expect(messageFactory.startContext.called).true();
+      expect(messageFactory.endContext.called).true();
+      expect(onMessageEvent.lastCall.k).above(messageFactory.startContext.lastCall.k);
+      expect(onMessageEvent.lastCall.k).below(messageFactory.endContext.lastCall.k);
+
+      // With autoMessageContext turned off
+      simple.mock(config, 'autoMessageContext', false);
+      onMessageFn({});
+      expect(onMessageEvent.callCount).equals(2);
+      expect(messageFactory.startContext.callCount).equals(1);
+      expect(messageFactory.endContext.callCount).equals(1);
 
       done();
     });
