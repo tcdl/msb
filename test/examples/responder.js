@@ -1,5 +1,5 @@
 'use strict';
-var msb = require('..');
+var msb = require('../..');
 var Responder = msb.Responder;
 var validateWithSchema = msb.validateWithSchema;
 var i = 1001;
@@ -9,8 +9,6 @@ var payloadSchema = {
     body: { type: 'object' }
   }
 };
-
-msb.channelMonitorAgent.start();
 
 module.exports = Responder.createServer({
   namespace: 'test:general',

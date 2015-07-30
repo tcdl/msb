@@ -17,10 +17,10 @@
     "url": "https://github.com/tcdl/msb.git"
   },
   "bin": {
-    "msb": "./bin/msb"
+    "msb": "./bin/msb",
+    "msb-monitor": "./bin/msb-monitor"
   },
   "devDependencies": {
-    "cli-table": "^0.3.1",
     "code": "^1.4.0",
     "jscs": "^1.12.0",
     "lab": "^5.5.0",
@@ -30,8 +30,8 @@
   "dependencies": {
     "amqp-coffee": "^0.1.22",
     "async": "^0.9.0",
+    "cli-table": "^0.3.1",
     "debug": "^2.1.1",
-    "hiredis": "^0.2.0",
     "ip": "^0.3.2",
     "lodash": "^2.4.1",
     "minimist": "^1.1.1",
