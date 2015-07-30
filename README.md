@@ -128,7 +128,8 @@ See [ResponderServer](#new-responderserveroptions).
 #### new ResponderServer(options)
 
 - **options.namespace** String topic name to listen on for requests.
-- **options.responseChannelTimeoutMs** Number of milliseconds for the producer channel to be kept after the last publish. (Default: 15 * 60000/15 minutes)
+- **options.responseChannelTimeoutMs** Optional Number of milliseconds for the producer channel to be kept after the last publish. (Default: 15 * 60000/15 minutes)
+- **options.groupId** Optional See [channelManager.findOrCreateConsumer](#channelManager-findOrCreateConsumer)
 
 (Use `msb.Responder.createServer()` to create instances.)
 
@@ -179,6 +180,7 @@ An requester is a collector component that can also publish new messages on the 
 - **options.responseTimeout** Optional Milliseconds before ending this request. (Default: 3000).
 - **options.waitForResponses** Optional Number of responses the collector expects before either ending or timing out. (Default: Infinity/-1, i.e. only end on timeout. You will typically set this to 1.)
 - **originalMessage** Optional (Object|null) Message this request should correlate with. If `null` it will override current `messageFactory` context for correlation.
+- **options.requestChannelTimeoutMs** Number of milliseconds for the producer channel to be kept after the request is published. (Default: 15 * 60000/15 minutes)
 
 #### requester.publish([payload][, cb])
 

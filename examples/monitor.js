@@ -28,9 +28,9 @@ function printTable(doc) {
     data.push([
       topic,
       channelInfo.producers.length,
-      (channelInfo.lastProducedAt) ? timeDiffInWords(channelInfo.lastProducedAt) : 'never',
+      (channelInfo.lastProducedAt) ? timeDiffInWords(channelInfo.lastProducedAt) : 'unknown',
       channelInfo.consumers.length,
-      (channelInfo.lastConsumedAt) ? timeDiffInWords(channelInfo.lastConsumedAt) : 'never'
+      (channelInfo.lastConsumedAt) ? timeDiffInWords(channelInfo.lastConsumedAt) : 'unknown'
     ]);
   });
 
