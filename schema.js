@@ -3,6 +3,12 @@ module.exports = {
   properties: {
     id: { type: 'string' },
     correlationId: { type: 'string' },
+    tags: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
     topics: {
       type: 'object',
       properties: {

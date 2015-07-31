@@ -94,7 +94,12 @@ describe('examples', function() {
       })
       .once('error', done);
 
-      requester = new msb.Requester({ namespace: 'test:general', ackTimeout: 100, responseTimeout: 1000 });
+      requester = new msb.Requester({
+        namespace: 'test:general',
+        ackTimeout: 100,
+        responseTimeout: 1000,
+        tags: ['a']
+      });
       requester
       .publish({
         headers: {},
@@ -108,6 +113,7 @@ describe('examples', function() {
           statusCode: 200,
           body: 1002
         });
+        expect(requester.payloadMessages[0].tags.sort()).deep.equals(['a', 'b']);
         done();
       });
     });

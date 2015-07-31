@@ -13,7 +13,8 @@ var payloadSchema = {
 msb.channelMonitorAgent.start();
 
 module.exports = Responder.createServer({
-  namespace: 'test:general'
+  namespace: 'test:general',
+  tags: ['b']
 })
 // Validation middleware
 .use(validateWithSchema.middleware(payloadSchema))
