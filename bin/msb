@@ -26,16 +26,16 @@ if (typeof argv.topic === 'string') {
 
 topics.forEach(function(topic) {
   channelManager
-  .createRawConsumer(topic)
-  .on('message', onMessage);
+  .createRawConsumer(topic, { groupId: false })
+  .on('message', onMessage.bind(null, topic));
 });
 
-function onMessage(message) {
+function onMessage(topic, message) {
   try {
     if (message.topics.response && eqOrIn(argv.follow, 'response')) {
       channelManager
-      .findOrCreateConsumer(message.topics.response)
-      .on('message', onMessage);
+      .findOrCreateConsumer(message.topics.response, { groupId: false })
+      .on('message', onMessage.bind(null, topic));
     }
     message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');
   } catch(e) {
