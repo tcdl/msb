@@ -1,0 +1,30 @@
+{
+  "id": "3cb3831cb4de8c9900021404",
+  "correlationId": "3cb3831cb4de8c990003c65b",
+  "tags": [],
+  "topics": {
+    "to": "example:topic",
+    "response": "example:topic:response:3cb3831cb4de8c990001c7d2"
+  },
+  "meta": {
+    "ttl": null,
+    "createdAt": "2015-08-12T16:37:48.791Z",
+    "durationMs": 41,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 35993,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb3831cb4de8c990001c7d2"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "doc": {
+        "z": 0
+      }
+    }
+  }
+}

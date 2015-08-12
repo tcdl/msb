@@ -22,6 +22,8 @@ Output should be like this, with one response sent and received for each request
 <-requestOne:2:2
 ```
 
+_See [messages/1-1](messages/1-1)._
+
 Load will be distributed over additional responders when using AMQP. Try adding another `respondOnce`, or even a `respondMulti`:
 
 ```
@@ -69,6 +71,8 @@ Produces one response for every request:
 <-requestMulti:1:1
 --requestMulti:1:end
 ```
+
+_See [messages/1-n](messages/1-n)._
 
 And:
 
