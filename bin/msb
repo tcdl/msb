@@ -31,10 +31,13 @@ topics.forEach(function(topic) {
 });
 
 function onMessage(topic, message) {
+  var responseTopic = message.topics.response;
   try {
-    if (message.topics.response && eqOrIn(argv.follow, 'response')) {
+
+    if (responseTopic && !eqOrIn(topics, responseTopic) && eqOrIn(argv.follow, 'response')) {
+      topics.push(responseTopic);
       channelManager
-      .findOrCreateConsumer(message.topics.response, { groupId: false })
+      .findOrCreateConsumer(responseTopic, { groupId: false })
       .on('message', onMessage.bind(null, topic));
     }
     message = JSON.stringify(message, null, (argv.pretty) ? '  ' : '');

@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+/**
+ * Usage:
+ * ```
+ * $ MSB_BROKER_ADAPTER=amqp bin/msb --topic=example:topic --pretty=false | bin/msb-save --by=topics.to example/messages
+ * ```
+ */
 var argv = require('minimist')(process.argv.slice(2), {
   default: {
     by: 'topics.to',
