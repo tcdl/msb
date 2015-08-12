@@ -35,7 +35,7 @@ describe('examples', function() {
     var requester;
 
     before(function(done) {
-      responder = require('../examples/responder');
+      responder = require('./examples/responder');
       responder.listen();
       done();
     });

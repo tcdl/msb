@@ -1,0 +1,131 @@
+{
+  "id": "3cb385e43945901a000289f8",
+  "correlationId": "3cb385e43945901a0003e092",
+  "tags": [],
+  "topics": {
+    "to": "test:pubsub"
+  },
+  "meta": {
+    "ttl": 30000,
+    "createdAt": "2015-08-12T16:49:40.524Z",
+    "durationMs": null,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 36890,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb385e43945901a000107ed"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "i": 0
+    }
+  }
+}{
+  "id": "3cb385e43945901a000476b8",
+  "correlationId": "3cb385e43945901a00050bd3",
+  "tags": [],
+  "topics": {
+    "to": "test:pubsub"
+  },
+  "meta": {
+    "ttl": 30000,
+    "createdAt": "2015-08-12T16:49:40.709Z",
+    "durationMs": null,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 36890,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb385e43945901a000107ed"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "i": 1
+    }
+  }
+}{
+  "id": "3cb385e43945901a0006c40c",
+  "correlationId": "3cb385e43945901a000735e1",
+  "tags": [],
+  "topics": {
+    "to": "test:pubsub"
+  },
+  "meta": {
+    "ttl": 30000,
+    "createdAt": "2015-08-12T16:49:40.813Z",
+    "durationMs": null,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 36890,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb385e43945901a000107ed"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "i": 2
+    }
+  }
+}{
+  "id": "3cb385e43945901a000896cd",
+  "correlationId": "3cb385e43945901a0009a531",
+  "tags": [],
+  "topics": {
+    "to": "test:pubsub"
+  },
+  "meta": {
+    "ttl": 30000,
+    "createdAt": "2015-08-12T16:49:40.918Z",
+    "durationMs": null,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 36890,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb385e43945901a000107ed"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "i": 3
+    }
+  }
+}{
+  "id": "3cb385e53945901a000a334a",
+  "correlationId": "3cb385e53945901a000bd0f7",
+  "tags": [],
+  "topics": {
+    "to": "test:pubsub"
+  },
+  "meta": {
+    "ttl": 30000,
+    "createdAt": "2015-08-12T16:49:41.022Z",
+    "durationMs": null,
+    "serviceDetails": {
+      "hostname": "Pieter-s-MacBook-Pro.local",
+      "ip": "10.166.139.58",
+      "pid": 36890,
+      "name": "msb",
+      "version": "0.8.0",
+      "instanceId": "3cb385e43945901a000107ed"
+    }
+  },
+  "ack": null,
+  "payload": {
+    "body": {
+      "i": 4
+    }
+  }
+}

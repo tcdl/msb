@@ -15,11 +15,11 @@ var expect = Code.expect;
 var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
 var msb = require('..');
-var AMQPPublisher = require('../lib/adapters/amqp/publisher').AMQPPublisher;
+var AMQPPublisherAdapter = require('../lib/adapters/amqp/publisher').AMQPPublisherAdapter;
 var AMQP = require('amqp-coffee');
 var config = require('../lib/config');
 
-describe('AMQPPublisher', function() {
+describe('AMQPPublisherAdapter', function() {
   var connection;
   var publisher;
   var exchange;
@@ -28,7 +28,7 @@ describe('AMQPPublisher', function() {
 
     before(function(done) {
       connection = new AMQP({});
-      publisher = new AMQPPublisher(null, connection);
+      publisher = new AMQPPublisherAdapter(null, connection);
       exchange = {};
       done();
     });
