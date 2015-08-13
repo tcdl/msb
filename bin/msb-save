@@ -5,6 +5,7 @@
  * $ MSB_BROKER_ADAPTER=amqp bin/msb --topic=example:topic --pretty=false | bin/msb-save --by=topics.to example/messages
  * ```
  */
+var get = require('lodash.get');
 var argv = require('minimist')(process.argv.slice(2), {
   default: {
     by: 'topics.to',
@@ -20,7 +21,7 @@ process
 .stdin
 .pipe(require('split')(JSON.parse))
 .on('data', function(obj) {
-  var filename = _.get(obj, argv.by).replace(/\:/g, '_') + '.' + argv.ext;
+  var filename = get(obj, argv.by).replace(/\:/g, '_') + '.' + argv.ext;
   fs.appendFileSync(path.join(argv._[0] || '.', filename), JSON.stringify(obj, null, '  '));
 })
 .on('error', function(err) {
