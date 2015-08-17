@@ -205,6 +205,15 @@ describe('Collector', function() {
         done();
       });
 
+      it('will add to the remaining for an id, same as before', function(done) {
+        collector._setResponsesRemainingForResponderId('a', 1);
+        var result = collector._setResponsesRemainingForResponderId('a', 1);
+
+        expect(result).equals(2);
+        expect(collector._getResponsesRemaining()).equals(2);
+        done();
+      });
+
       it('will add to the remaining for an id', function(done) {
         collector._setResponsesRemainingForResponderId('a', 1);
         var result = collector._setResponsesRemainingForResponderId('a', 5);
@@ -220,16 +229,6 @@ describe('Collector', function() {
 
         expect(result).equals(0);
         expect(collector._getResponsesRemaining()).equals(0);
-        done();
-      });
-
-      it('will return null when value was not changed', function(done) {
-
-        collector._setResponsesRemainingForResponderId('a', 5);
-        var result = collector._setResponsesRemainingForResponderId('a', 5);
-
-        expect(result).equals(null);
-        expect(collector._getResponsesRemaining()).equals(5);
         done();
       });
 
