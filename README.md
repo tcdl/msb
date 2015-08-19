@@ -45,7 +45,7 @@ $ npm install msb --save
 var msb = require('msb');
 ```
 
-See [examples](examples) of the patterns below.
+See [examples](example) of the patterns below.
 
 ### Pub/Sub
 
