@@ -390,8 +390,6 @@ Redis Pub/Sub is the default message broker used. Setup of Redis is practically 
 
 The AMQP adapter is tested with RabbitMQ and it implements a limited topology for simplification. One exchange is created per topic and a queue is created for every group of similar services, configured using a groupId. This means that you can have different types of services listening on the same topic, and multiple processes of the same type of service would receive a fair distribution of messages.
 
-Note: the AMQP driver will handle `SIGINT`, `SIGTERM` and `uncaughtException` events on `process` to ensure graceful shutdown. It will only exit if there are no other listeners registered for these events. If your application implements a listener for these events, your listener should exit, preferably within a 1-2 second timeout to allow for the AMQP driver to complete graceful shutdown.
-
 ## API
 
 ### Class: msb.Responder
