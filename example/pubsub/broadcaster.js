@@ -19,6 +19,8 @@ function sendBroadcast() {
     }
   };
 
+  messageFactory.completeMeta(message, message.meta);
+
   msb
   .channelManager
   .findOrCreateProducer(message.topics.to)
