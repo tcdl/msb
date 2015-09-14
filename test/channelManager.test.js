@@ -48,8 +48,8 @@ describe('channelManager', function() {
 
       simple
       .mock(mockPublisher, 'channel')
-      .returnWith(1)
-      .returnWith(2)
+      .returnWith({})
+      .returnWith({})
       .returnWith(null);
 
       var producer1a = channelManager.findOrCreateProducer('prod1:1');

@@ -52,13 +52,12 @@ describe('config', function() {
     it('should set config.serviceDetails dynamically', function(done) {
       simple.mock(require('os'), 'hostname').returnWith('abchost');
       simple.mock(require('ip'), 'address').returnWith('1.2.3.4');
-      simple.mock(process, 'pid', 999999);
 
       config._init();
 
       expect(config.serviceDetails.hostname).equals('abchost');
       expect(config.serviceDetails.ip).equals('1.2.3.4');
-      expect(config.serviceDetails.pid).equals(999999);
+      expect(config.serviceDetails.pid).equals(process.pid);
 
       expect(config.serviceDetails.name).equals('lab');
       expect(!!config.serviceDetails.version.match(/\d+\.\d+\.\d+/)).true();
