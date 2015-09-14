@@ -30,7 +30,7 @@ module.exports = {
       required: ['createdAt']
     }
   },
-  required: ['id', 'correlationId', 'meta', 'ack', 'payload'],
+  required: ['id', 'correlationId', 'meta'],
   definitions: {
     topic: {
       type: 'string',
