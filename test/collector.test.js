@@ -46,7 +46,8 @@ describe('Collector', function() {
 
       expect(collector.startedAt).exists();
       expect(Date.now() - collector.startedAt.valueOf()).below(10);
-      expect(collector.waitForAcksUntil - config.ackTimeout - Date.now()).below(10);
+      expect(collector.waitForAcksUntil).equals(null);
+      expect(collector.waitForAcksMs).equals(config.ackTimeout);
       expect(collector.timeoutMs).equals(555);
       done();
     });
@@ -387,6 +388,21 @@ describe('Collector', function() {
         expect(originalOnResponseMessageFn.called).true();
         expect(originalOnResponseMessageFn.lastCall.args[0]).equals(shouldAcceptMessageFn);
         expect(originalOnResponseMessageFn.lastCall.args[1]).equals(message);
+
+        expect(collector.waitForAcksUntil).equals(null);
+
+        done();
+      });
+
+      it('should initialize the ackTimeout where appropriate', function(done) {
+        var shouldAcceptMessageFn = simple.mock();
+
+        collector.waitForAcksMs = 100;
+
+        collector.listenForResponses('etc', shouldAcceptMessageFn);
+
+        expect(collector.waitForAcksUntil).instanceOf(Date);
+        expect(collector.waitForAcksUntil - 100 - Date.now()).below(10);
 
         done();
       });

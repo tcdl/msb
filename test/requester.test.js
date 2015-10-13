@@ -114,6 +114,33 @@ describe('Requester', function() {
 
       done();
     });
+
+    it('can wait for acks without any determined number of responses', function(done) {
+      producer.publish.callbackWith();
+
+      var endHandler = simple.mock();
+
+      var obj = new Requester({
+        waitForResponses: 0,
+        waitForAcksMs: 800
+      });
+
+      var bindMock = simple.mock(obj.shouldAcceptMessageFn, 'bind').returnWith('testValue');
+      simple.mock(obj, 'listenForResponses').returnWith();
+      simple.mock(obj, 'isAwaitingAcks').returnWith(true);
+
+      obj
+      .on('end', endHandler)
+      .publish();
+
+      expect(bindMock.lastCall.args[0]).to.equal(obj);
+      expect(obj.listenForResponses.lastCall.args[0]).to.equal(obj.message.topics.response);
+      expect(obj.listenForResponses.lastCall.args[1]).to.equal('testValue');
+      expect(producer.publish.called).to.equal(true);
+      expect(endHandler.called).to.equal(false);
+
+      done();
+    });
   });
 
   describe('shouldAcceptMessageFn()', function(done) {
