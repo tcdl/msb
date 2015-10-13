@@ -25,10 +25,10 @@
     "jscs": "^1.12.0",
     "lab": "^5.5.0",
     "nodemon": "^1.3.7",
-    "simple-mock": "^0.3.0"
+    "simple-mock": "^0"
   },
   "dependencies": {
-    "amqp-coffee": "^0.1.22",
+    "amqp-coffee": "^0.1.25",
     "async": "^0.9.0",
     "cli-table": "^0.3.1",
     "debug": "^2.1.1",
