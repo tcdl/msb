@@ -549,6 +549,20 @@ describe('Collector', function() {
 
         done();
       });
+
+      it('should not proceed if already canceled (e.g. error happened during event)', function(done) {
+
+        collector.cancel();
+
+        collector._onResponseMessage(null, message);
+
+        expect(collector._processAck.calls).length(0);
+        expect(collector.isAwaitingResponses.calls).length(0);
+        expect(collector.isAwaitingAcks.calls).length(0);
+        expect(collector.end.calls).length(0);
+
+        done();
+      });
     });
 
     describe('_onAckTimeout', function() {
