@@ -16,7 +16,14 @@ msb.Responder = require('./lib/responder');
 msb.request = require('./lib/request');
 msb.validateWithSchema = require('./lib/validateWithSchema');
 msb.serviceDetails = require('./lib/support/serviceDetails');
-msb.configure = require('./lib/config').configure;
+msb.logger = require('./lib/support/logger');
+
+msb.configure = function(config) {
+  if (msb.channelManager.hasChannels()) {
+    msb.logger.warn('`msb.configure()` must be called before channels are created.')
+  }
+  require('./lib/config').configure(config);
+};
 
 /**
  *  Load plugins where provided

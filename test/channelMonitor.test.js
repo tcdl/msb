@@ -19,6 +19,7 @@ var channelMonitorAgent = msb.channelMonitorAgent;
 var serviceDetails = msb.serviceDetails;
 var simple = require('simple-mock');
 var mockChannels = require('./support/mockChannels');
+var logger = require('../lib/support/logger');
 
 /* Tests */
 describe('channelMonitor', function() {
@@ -46,6 +47,7 @@ describe('channelMonitor', function() {
   });
 
   beforeEach(function(done) {
+    simple.mock(logger, 'warn').returnWith();
     channelMonitorAgent.doc = {};
     channelMonitor.doc = {};
     done();

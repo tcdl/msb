@@ -361,10 +361,20 @@ describe('Collector', function() {
 
       beforeEach(function(done) {
         mockChannel = {};
+        simple.mock(msb.logger, 'warn').returnWith();
         simple.mock(mockChannel, 'on').returnWith(mockChannel);
         simple.mock(msb.channelManager, 'findOrCreateConsumer').returnWith(mockChannel);
         simple.mock(collector, '_onResponseMessage').returnWith();
 
+        done();
+      });
+
+      it('should warn if there is no error listener', function(done) {
+        var shouldAcceptMessageFn = simple.mock();
+
+        collector.listenForResponses('etc', shouldAcceptMessageFn);
+
+        expect(msb.logger.warn.calls).length(1);
         done();
       });
 
