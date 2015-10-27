@@ -87,7 +87,7 @@ describe('request()', function() {
         namespace: 'my:topic',
         responseSchema: { type: 'object' },
         waitForResponses: 5,
-        responseTimeout: 5000
+        waitForResponsesMs: 5000
       };
       done();
     });
@@ -120,25 +120,59 @@ describe('request()', function() {
     });
 
     it('calls back on validation error', function(done) {
-      var returnValue = 'rv';
-
       msb.Requester.prototype.publish.callFn(function() {
         return this;
       });
 
+      var cb = simple.mock();
+
       var requester = msb.request(config , {
         my: 'payload'
-      }, function(err, responsePayload, responseMessage) {
-
-        expect(err instanceof Error).true();
-        done();
-      });
+      }, cb);
 
       expect(requester instanceof msb.Requester).true();
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
 
       requester.emit('response', 'willfail', 'message');
+
+      setTimeout(function() {
+
+        expect(cb.callCount).equals(1);
+        expect(cb.lastCall.arg instanceof Error).true();
+
+        done();
+      }, 300);
+    });
+
+    it('calls back only once on validation error after timeout', function(done) {
+      config.waitForResponsesMs = 100;
+
+      msb.Requester.prototype.publish.callFn(function() {
+        this.enableTimeout();
+        return this;
+      });
+
+      var cb = simple.mock();
+
+      var requester = msb.request(config , {
+        my: 'payload'
+      }, cb);
+
+      expect(requester instanceof msb.Requester).true();
+      expect(requester.timeoutMs).equals(100);
+      expect(requester.waitForResponses).equals(5);
+
+      setTimeout(function() {
+        requester.emit('response', 'willfail', 'message');
+      }, 200);
+
+      setTimeout(function() {
+        expect(cb.callCount).equals(1);
+        expect(cb.lastCall.arg instanceof Error).false();
+
+        done();
+      }, 300);
     });
   });
 });
