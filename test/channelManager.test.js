@@ -36,6 +36,27 @@ describe('channelManager', function() {
     done();
   });
 
+  describe('hasChannels', function() {
+    it('should return false when no channels have been created', function(done) {
+      expect(channelManager.hasChannels()).false();
+      done();
+    });
+
+    it('should return true when publisher channels have been created', function(done) {
+      simple.mock(channelManager._producersByTopic, 'a:test:producer');
+
+      expect(channelManager.hasChannels()).true();
+      done();
+    });
+
+    it('should return true when publisher channels have been created', function(done) {
+      simple.mock(channelManager._consumersByTopic, 'a:test:consumer');
+
+      expect(channelManager.hasChannels()).true();
+      done();
+    });
+  });
+
   describe('findOrCreateProducer', function() {
     beforeEach(function(done) {
       done();
