@@ -6,9 +6,12 @@ var debug = require('debug')('msb');
 
 var msb = exports;
 
-msb.channelManager = require('./lib/channelManager');
-msb.channelMonitor = require('./lib/channelMonitor');
-msb.channelMonitorAgent = require('./lib/channelMonitorAgent');
+/* Default singletons */
+msb.channelManager = require('./lib/channelManager').default;
+msb.channelMonitor = msb.channelManager.monitor; //require('./lib/channelMonitor').create(msb.channelManager);
+msb.channelMonitorAgent = msb.channelManager.monitorAgent; //require('./lib/channelMonitorAgent').create(msb.channelManager);
+
+/* Classes and shared singletons */
 msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
 msb.Requester = require('./lib/requester');
