@@ -114,3 +114,48 @@ $ MSB_BROKER_ADAPTER=amqp node example/pubsub/deliverOnceQueued
 ```
 
 Try starting up additonal broadcasters and consumers in separate terminal sessions to see how it behaves with the number of services changing.
+
+## Multi-adapter Forward
+
+Start some consumers on AMQP:
+
+```
+$ MSB_BROKER_ADAPTER=amqp node \
+example/util/start \
+example/pubsub/deliverAll \
+example/pubsub/deliverOnceQueued
+```
+
+Then start the broadcaster and forwarder with the default adapter, Redis:
+
+```
+$ node example/util/start \
+example/pubsub/forwardOneWay \
+example/pubsub/broadcaster
+```
+
+You should get an output where messages broadcasted on Redis can be received on AMQP:
+
+```
+deliverOnceQueued:0
+deliverAll:0
+deliverOnceQueued:1
+deliverAll:1
+deliverOnceQueued:2
+deliverAll:2
+```
+
+When breaking the consumers and starting again, you'll see that the AMQP consumer configuration works:
+
+```
+deliverOnceQueued:27
+deliverOnceQueued:28
+deliverOnceQueued:29
+deliverOnceQueued:30
+deliverOnceQueued:31
+deliverAll:31
+deliverOnceQueued:32
+deliverAll:32
+deliverOnceQueued:33
+deliverAll:33
+```
