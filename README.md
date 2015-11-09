@@ -10,7 +10,7 @@ A framework to simplify the implementation of an event-bus oriented microservice
   - [Request/Response](#requestresponse)
   - [Monitoring](#monitoring)
 - [Configuration](#configuration)
-  - [msb.configure(config)](#msbconfigureconfig)
+  - [channelManager.configure(config)](#channelmanagerconfigureconfig)
   - [Environment Variables](#environment-variables)
 - [Tools](#tools)
   - [CLI Listener](#cli-listener)
@@ -303,27 +303,25 @@ The [CLI tools](#cli-listener) as well as the [archiver service](https://github.
 
 ## Configuration
 
-### msb.configure(config)
+### channelManager.configure(config)
 
-Loads the provided config object over the existing/default app-wide configuration.
+Loads the provided config object over the configuration for the channelManager. E.g.
 
-*Note: It is recommended that you do not change configuration after publisher/subscriber channels have been created.*
+```js
+msb.configure(config); // Default channelManager, or
+msb.createChannelManager().configure(config); // Additional channelManager
+```
 
-- `config.serviceDetails` Object included in all messages:
-  - `name` String used to identify the type of service, also used as the default for the broker groupId. (Default: `name` in the package.json of the main module.)
-  - `version` (Default: `version` in the package.json of the main module.)
-  - `instanceId` (Default: generated universally unique 12-byte/24-char hex string.)
-- `config.brokerAdapter` One of 'redis', 'amqp' or 'local' (Default: 'redis')
-- `config.redis` and `config.amqp` Used to configure the broker adapter (See [lib/config.js](lib/config.js).)
+*Note: It is recommended that you do not re-configure after publisher/subscriber channels have been created.*
 
 ### Environment Variables
 
-- MSB_SERVICE_NAME Overrides the default `config.serviceDetails.name`.
-- MSB_SERVICE_VERSION Overrides the default `config.serviceDetails.version`.
-- MSB_SERVICE_INSTANCE_ID Overrides the default `config.serviceDetails.instanceId`.
-- MSB_BROKER_ADAPTER Overrides the default `config.brokerAdapter`.
+- MSB_SERVICE_NAME The string used to identify the type of service, also used as the default for the broker groupId. (Default: `name` in the package.json of the main module.)
+- MSB_SERVICE_VERSION (Default: `version` in the package.json of the main module.)
+- MSB_SERVICE_INSTANCE_ID (Default: generated universally unique 12-byte/24-char hex string.)
+- MSB_BROKER_ADAPTER One of 'redis', 'amqp' or 'local' (Default: 'redis')
 - MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.redis` and `config.amqp` overriding defaults.
-- MSB_CONFIG_PATH Loads the JSON/JS file at this path over default app-wide configuration. Similar to calling `msb.configure(config)` programmatically.
+- MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
 
 ## Tools
 
@@ -411,9 +409,15 @@ A responder lets you send of formatted acks and responses in response to a reque
 
 The request message this responder is responding to.
 
+#### Responder.createEmitter(options, [channelManager])
+
+- **options.namespace** String topic name to listen on for messages.
+- **options.groupId** Optional See [channelManager.findOrCreateConsumer](#channelManager-findOrCreateConsumer)
+- **channelManager** Optional channelManager. (Default: `msb.channelManager`)
+
 #### Responder.createServer([options])
 
-See [ResponderServer](#new-responderserveroptions).
+See [ResponderServer](#new-responderserveroptions) for options.
 
 ### Class: ResponderServer
 
@@ -438,6 +442,12 @@ See [ResponderServer](#new-responderserveroptions).
 `function errorHandler(err, request, response, next)`
 - **err** Error Passed to a previous `next()` call.
 - **request**, **response**, **next** as above.
+
+#### responderServer.listen([channelManager])
+
+Call this to start listening for requests.
+
+- **channelManager** Optional channelManager. (Default: `msb.channelManager`)
 
 ### Class: ResponderResponse
 
@@ -510,7 +520,8 @@ A collector is a component that listens for multiple response messages, with tim
 A channel monitor sends heartbeats and listens for information on producers and consumers on remote `channelManager` instances.
 
 ```js
-var channelMonitor = msb.channelMonitor;
+var channelMonitor = msb.channelMonitor; // Default channelManager monitor, or
+var channelMonitor = channelManager.monitor; // Additional channelManager monitor
 ```
 
 #### channelMonitor.start()
@@ -544,7 +555,8 @@ Emitted when a new heartbeat has started.
 ### Channel Monitor Agent
 
 ```js
-var channelMonitor = msb.channelMonitor;
+var channelMonitorAgent = msb.channelMonitorAgent; // Default channelManager monitoring agent, or
+var channelMonitorAgent = channelManager.monitorAgent; // Additional channelManager monitoring agent
 ```
 
 #### channelMonitorAgent.start()

@@ -86,6 +86,7 @@ describe('request()', function() {
       config = {
         namespace: 'my:topic',
         responseSchema: { type: 'object' },
+        channelManager: {},
         waitForResponses: 5,
         responseTimeout: 5000
       };
@@ -112,6 +113,7 @@ describe('request()', function() {
       });
 
       expect(requester instanceof msb.Requester).true();
+      expect(requester.channelManager).equals(config.channelManager);
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
 

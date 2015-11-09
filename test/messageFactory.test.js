@@ -47,7 +47,7 @@ describe('messageFactory', function() {
 
       expect(message.meta).exists();
       expect(message.meta.publishedAt instanceof Date).true();
-      expect(Date.now() - message.meta.publishedAt.valueOf()).below(2);
+      expect(Date.now() - message.meta.publishedAt.valueOf()).below(15);
 
       done();
     });

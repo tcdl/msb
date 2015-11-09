@@ -14,20 +14,34 @@ var expect = Code.expect;
 /* Modules */
 var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
-var queue = require('../lib/adapters/redis');
+var redis = require('../lib/adapters/redis');
 var msb = require('..');
 var config = require('../lib/config');
-var channelManager = msb.channelManager;
+var createChannelManager = require('../lib/channelManager').create;
 var messageFactory = msb.messageFactory;
 
 describe('channelManager', function() {
+  var queue;
+  var channelManager;
+
+  before(function(done) {
+    queue = redis.create();
+    done();
+  });
+
   beforeEach(function(done) {
+    channelManager = createChannelManager();
+
+    simple.mock(redis, 'create').returnWith(queue);
     simple.mock(config, 'redis', {
       host: 'mock.host',
       port: '99999'
     });
     simple.mock(config, 'schema', null);
     simple.mock(config, 'cleanupConsumers', true);
+
+    channelManager.configure(config);
+
     done();
   });
 
@@ -85,6 +99,7 @@ describe('channelManager', function() {
 
       var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
+      expect(redis.create.callCount).equals(1);
       expect(queue.Publish.callCount).equals(1);
       expect(queue.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
       expect(mockPublisher.channel.callCount).equals(2);
@@ -150,6 +165,7 @@ describe('channelManager', function() {
 
       var consumer1b = channelManager.findOrCreateConsumer('con1:1');
 
+      expect(redis.create.callCount).equals(1);
       expect(queue.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
       expect(consumer1a).equals(consumer1b);
@@ -212,7 +228,7 @@ describe('channelManager', function() {
       expect(onMessageEvent.lastCall.k).below(messageFactory.endContext.lastCall.k);
 
       // With autoMessageContext turned off
-      simple.mock(config, 'autoMessageContext', false);
+      simple.mock(channelManager._config, 'autoMessageContext', false);
       onMessageFn({});
       expect(onMessageEvent.callCount).equals(2);
       expect(messageFactory.startContext.callCount).equals(1);
