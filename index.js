@@ -6,12 +6,12 @@ var debug = require('debug')('msb');
 
 var msb = exports;
 
-/* Default singletons */
+msb.createChannelManager = require('./lib/channelManager').create;
 msb.channelManager = require('./lib/channelManager').default;
-msb.channelMonitor = msb.channelManager.monitor; //require('./lib/channelMonitor').create(msb.channelManager);
-msb.channelMonitorAgent = msb.channelManager.monitorAgent; //require('./lib/channelMonitorAgent').create(msb.channelManager);
+msb.channelMonitor = msb.channelManager.monitor;
+msb.channelMonitorAgent = msb.channelManager.monitorAgent;
+msb.configure = msb.channelManager.configure
 
-/* Classes and shared singletons */
 msb.messageFactory = require('./lib/messageFactory');
 msb.Collector = require('./lib/collector');
 msb.Requester = require('./lib/requester');
@@ -20,13 +20,6 @@ msb.request = require('./lib/request');
 msb.validateWithSchema = require('./lib/validateWithSchema');
 msb.serviceDetails = require('./lib/support/serviceDetails');
 msb.logger = require('./lib/support/logger');
-
-msb.configure = function(config) {
-  if (msb.channelManager.hasChannels()) {
-    msb.logger.warn('`msb.configure()` must be called before channels are created.')
-  }
-  require('./lib/config').configure(config);
-};
 
 /**
  *  Load plugins where provided

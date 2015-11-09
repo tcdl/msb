@@ -30,7 +30,7 @@ describe('channelManager', function() {
   });
 
   beforeEach(function(done) {
-    channelManager = createChannelManager(config);
+    channelManager = createChannelManager();
 
     simple.mock(redis, 'create').returnWith(queue);
     simple.mock(config, 'redis', {
@@ -39,6 +39,8 @@ describe('channelManager', function() {
     });
     simple.mock(config, 'schema', null);
     simple.mock(config, 'cleanupConsumers', true);
+
+    channelManager.configure(config);
 
     done();
   });
@@ -226,7 +228,7 @@ describe('channelManager', function() {
       expect(onMessageEvent.lastCall.k).below(messageFactory.endContext.lastCall.k);
 
       // With autoMessageContext turned off
-      simple.mock(config, 'autoMessageContext', false);
+      simple.mock(channelManager._config, 'autoMessageContext', false);
       onMessageFn({});
       expect(onMessageEvent.callCount).equals(2);
       expect(messageFactory.startContext.callCount).equals(1);
