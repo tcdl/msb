@@ -582,6 +582,7 @@ Returns a consumer listening on this topic. Either existing or new. Correspondin
 - **topic** String
 - **options.groupId** String Custom group identifier for round-robin message queue.
 - **options.groupId** Boolean Set to `false` for broadcast-style message queue.
+- **options.autoConfirm** Optional Boolean Set to `false` to require explicit confirmation of processed messages. (Default: true)
 
 #### Event: 'newProducerOnTopic'
 
@@ -619,6 +620,22 @@ Returns a consumer listening on this topic. Either existing or new. Correspondin
 #### consumer.close()
 
 Stops listening for messages on this topic. If `config.cleanupConsumers` is set, and this consumer was created using `channelManager.findOrCreateConsumer`, it would be removed from the `channelManager`.
+
+#### consumer.onceConsuming(cb)
+
+- **cb** Function that is called if the consumer is already consuming or once when it next starts consuming.
+
+#### consumer.confirmProcessedMessage(message)
+
+Confirms with the broker (where supported) that processing of this message has completed. Only works where `config.autoConfirm` is set to `false`.
+
+- **message** The message originally emitted by this consumer, by reference.
+
+#### consumer.rejectMessage(message)
+
+Confirms with the broker (where supported) that this message should not be processed, e.g. in cases such as invalid message or TTL reached. Only works where `config.autoConfirm` is set to `false`.
+
+- **message** The message originally emitted by this consumer, by reference.
 
 #### Event: 'message'
 
