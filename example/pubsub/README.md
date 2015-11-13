@@ -1,5 +1,7 @@
 # Pub/Sub
 
+(All of these examples use [example/pubsub/broadcaster.js](broadcaster.js))
+
 ## Broadcaster (x1) + Deliver to All (x2)
 
 ```
@@ -25,12 +27,15 @@ deliverAll:2
 
 You can test this with more broadcasters and more consumers.
 
+(See [example/pubsub/deliverOnce.js](deliverOnce.js))
+
 ## Broadcaster (x1) + Deliver Once (x2)
 
 ```
 $ MSB_BROKER_ADAPTER=amqp node \
 example/util/start \
-example/pubsub/deliverOnce example/pubsub/deliverOnce \
+example/pubsub/deliverOnce \
+example/pubsub/deliverOnce \
 example/pubsub/broadcaster
 ```
 
@@ -48,6 +53,8 @@ broadcaster:3
 ```
 
 You can test this with more broadcasters and more consumers.
+
+(See [example/pubsub/deliverOnce.js](deliverOnce.js))
 
 ## Broadcaster (x1) + Deliver Once Queued (x1)
 
@@ -77,6 +84,8 @@ deliverOnceQueued:7
 ```
 
 Add more consumers in different terminal sessions and vary their numbers to see how messages are delivered. Note that killing a process may mean that the message has technically been delivered without having printed to screen.
+
+(See [example/pubsub/deliverOnceQueued.js](deliverOnceQueued.js))
 
 ## Combined
 
@@ -159,3 +168,32 @@ deliverAll:32
 deliverOnceQueued:33
 deliverAll:33
 ```
+
+(See [example/pubsub/forwardOneWay.js](forwardOneWay.js))
+
+## Broker Confirm/Reject
+
+```
+$ MSB_BROKER_ADAPTER=amqp node \
+example/util/start \
+example/pubsub/deliverConfirmReject \
+example/pubsub/broadcaster
+```
+
+You should get an output where for every broadcast there would be an alternatively confirmed or rejected delivery, with a delay after each rejection:
+
+```
+broadcaster:0
+deliverReject:0
+broadcaster:1
+broadcaster:2
+deliverConfirm:1
+deliverReject:2
+broadcaster:3
+broadcaster:4
+broadcaster:5
+deliverConfirm:3
+deliverReject:4
+```
+
+(See [example/pubsub/deliverConfirmReject.js](deliverConfirmReject.js))
