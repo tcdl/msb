@@ -53,7 +53,10 @@ describe('AMQP Integration', function() {
         '_onMessage');
 
       channelManager = msb.createChannelManager().configure({
-        brokerAdapter: 'amqp'
+        brokerAdapter: 'amqp',
+        amqp: {
+          prefetchCount: 1
+        }
       });
 
       consumer = channelManager
@@ -297,7 +300,10 @@ describe('AMQP Integration', function() {
         '_onMessage');
 
       channelManager = msb.createChannelManager().configure({
-        brokerAdapter: 'amqp'
+        brokerAdapter: 'amqp',
+        amqp: {
+          prefetchCount: 1
+        }
       });
 
       consumer = channelManager
