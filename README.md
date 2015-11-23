@@ -627,13 +627,13 @@ Stops listening for messages on this topic. If `config.cleanupConsumers` is set,
 
 #### consumer.confirmProcessedMessage(message)
 
-Confirms with the broker (where supported) that processing of this message has completed. Only works where `config.autoConfirm` is set to `false`.
+Confirms with the broker (where supported) that processing of this message has completed. Only works where the broker-adapter is AMQP, and where `config.autoConfirm` is set to `false`.
 
 - **message** The message originally emitted by this consumer, by reference.
 
 #### consumer.rejectMessage(message)
 
-Confirms with the broker (where supported) that this message should not be processed, e.g. in cases such as invalid message or TTL reached. Only works where `config.autoConfirm` is set to `false`.
+Confirms with the broker (where supported) that this message should not be processed, e.g. in cases such as invalid message or TTL reached. Only works where the broker-adapter is AMQP, and where `config.autoConfirm` is set to `false`.
 
 - **message** The message originally emitted by this consumer, by reference.
 
