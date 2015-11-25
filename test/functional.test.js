@@ -256,3 +256,69 @@ describe('Requester/Collector', function() {
     });
   });
 });
+
+describe('AMQP Adapter', function() {
+  var channelManager;
+  var consumer;
+
+  beforeEach(function(done) {
+    channelManager = msb.createChannelManager().configure({
+      brokerAdapter: 'amqp',
+      connectionTimeoutMs: 1000,
+      amqp: {
+        host: '8.8.8.8' // Won't work
+      }
+    });
+
+    done();
+  });
+
+  it('should timeout connection on publishing to a non-existent server', function(done) {
+    channelManager.findOrCreateProducer('abc:def').publish({}, noop);
+    channelManager.on('connectionTimeout', function() {
+      done();
+    });
+  });
+
+  it('should timeout connection on subcribing through a non-existent server', function(done) {
+    consumer = channelManager.findOrCreateConsumer('abc:def');
+    channelManager.on('connectionTimeout', function() {
+      done();
+    });
+  });
+
+});
+
+describe('Redis Adapter', function() {
+  var channelManager;
+  var consumer;
+
+  beforeEach(function(done) {
+    channelManager = msb.createChannelManager().configure({
+      brokerAdapter: 'redis',
+      connectionTimeoutMs: 1000,
+      redis: {
+        host: '8.8.8.8' // Won't work
+      }
+    });
+
+    done();
+  });
+
+  it('should timeout connection on publishing to a non-existent server', function(done) {
+    channelManager.findOrCreateProducer('abc:def').publish({}, noop);
+    channelManager.on('connectionTimeout', function() {
+      done();
+    });
+  });
+
+  it('should timeout connection on subscribing through a non-existent server', function(done) {
+    consumer = channelManager.findOrCreateConsumer('abc:def');
+    channelManager.on('connectionTimeout', function() {
+      done();
+    });
+  });
+
+});
+
+function noop() {}
