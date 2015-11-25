@@ -16,7 +16,6 @@ var expect = Code.expect;
 /* Modules */
 var simple = require('simple-mock');
 
-
 describe('config', function() {
   afterEach(function(done) {
     simple.restore();
