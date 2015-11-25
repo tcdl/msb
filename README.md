@@ -25,6 +25,8 @@ A framework to simplify the implementation of an event-bus oriented microservice
   - [Class: ResponderResponse](#class-responderresponse)
   - [Class: msb.Requester](#class-msbrequester)
   - [Class: msb.Collector](#class-msbcollector)
+  - [Module: msb.request](#module-msbrequest)
+  - [Module: msb.validateWithSchema](#module-msbvalidatewithschema)
   - [Channel Monitor](#channel-monitor)
   - [Channel Monitor Agent](#channel-monitor-agent)
   - [Channel Manager](#channel-manager)
@@ -453,7 +455,7 @@ Call this to start listening for requests.
 
 Passed to [ResponderServer](#new-responderserveroptions) middelware-like functions. The interface is kept similar to core HttpServerResponse for convenience.
 
-#### response.setHeader(name, value), response.getHeader(name), response.removeHeader(name)
+#### response.setHeader(name, value)<br/>response.getHeader(name)<br/>response.removeHeader(name)
 
 See [http](https://nodejs.org/api/http.html#http_class_http_serverresponse).
 
@@ -515,6 +517,57 @@ A collector is a component that listens for multiple response messages, with tim
 
 (For events and instantiation, see [Requester](#new-requesteroptions-originalmessage).)
 
+### Module: msb.request
+
+A simpler API for 1-1 request/responses.
+
+#### msb.request(options, payload, cb)<br/>msb.request(namespace, payload, cb)
+
+- **options** Object See [Requester](#new-requesteroptions-originalmessage) common options.
+- **namespace** or **options.namespace** String The namespace to send the request on.
+- **options.responseSchema** [JSON schema](http://json-schema.org) schema object, describing the expected response payload.
+- **options.channelManager** Optional Alternative [channelManager](#channel-manager) to use.
+- **options.originalMessage** Optional See [originalMessage](#new-requesteroptions-originalmessage) provided to Requesters.
+
+### Module: msb.validateWithSchema
+
+#### msb.validateWithSchema(schema, message)
+
+A function that throws a validation error if the message does not validate.
+
+- **schema** [JSON schema](http://json-schema.org) schema object.
+- **message** The message to be validated.
+
+#### middleware(payloadSchema)
+
+Returns a middleware-style function, e.g. `function(request, response, next) { }`, to be used in a [ResponderServer](#new-responderserveroptions) middleware chain, that will pass a validation error to `next()` for invalid incoming requests.
+
+- **payloadSchema** [JSON schema](http://json-schema.org) schema object, describing the incoming `request`.
+
+E.g. `responderServer.use(msb.validateWithSchema.middleware(payloadSchema));`
+
+#### onEvent(schema, successFn[, errorFn])
+
+Returns an event handler function, e.g. `function(payload) { ... }`.
+
+- **schema** [JSON schema](http://json-schema.org) schema object, describing the incoming event message.
+- **successFn** Function `function(payload) { }` An event handler that will only be called if the incoming payload validates.
+- **errorFn** Optional Function `function(err, payload) { }` A function that will be called with the validation error and original payload if the incoming message fails validation.
+
+Note: Without an `errorEventHandlerFn`, errors will be emitted on the original event emitter.
+
+E.g.
+
+```js
+  requester
+  .on(msb.validateWithSchema.onEvent(messageSchema, function(payload) {
+    ...
+  }))
+  .on('error', function(err, payload) {
+    console.error(err);
+    requester.end();
+  }));
+```
 ### Channel Monitor
 
 A channel monitor sends heartbeats and listens for information on producers and consumers on remote `channelManager` instances.
