@@ -18,7 +18,6 @@ var channelMonitor = msb.channelMonitor;
 var channelMonitorAgent = msb.channelMonitorAgent;
 var serviceDetails = msb.serviceDetails;
 var simple = require('simple-mock');
-var mockChannels = require('./support/mockChannels');
 var logger = require('../lib/support/logger');
 
 /* Tests */
@@ -27,19 +26,14 @@ describe('channelMonitor', function() {
   var originalCreateConsumer;
 
   before(function(done) {
-    originalCreateProducer = channelManager.createRawProducer;
-    originalCreateConsumer = channelManager.createRawConsumer;
-
-    channelManager.createRawProducer = mockChannels.createRawProducer;
-    channelManager.createRawConsumer = mockChannels.createRawConsumer;
+    msb.configure({
+      brokerAdapter: 'local'
+    });
 
     done();
   });
 
   after(function(done) {
-    channelManager.createRawProducer = originalCreateProducer;
-    channelManager.createRawConsumer = originalCreateConsumer;
-
     channelMonitor.stopMonitoring();
     channelMonitorAgent.stopBroadcasting();
 

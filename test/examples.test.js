@@ -14,15 +14,17 @@ var expect = Code.expect;
 /* Modules */
 var msb = require('..');
 var simple = require('simple-mock');
-var mockChannels = require('./support/mockChannels');
 
 /* Tests */
 describe('examples', function() {
   before(function(done) {
     simple.mock(msb.logger, 'warn').returnWith();
     simple.mock(msb.channelMonitorAgent, 'start').returnWith();
-    simple.mock(msb.channelManager, 'createRawProducer', mockChannels.createRawProducer);
-    simple.mock(msb.channelManager, 'createRawConsumer', mockChannels.createRawConsumer);
+
+    msb.configure({
+      brokerAdapter: 'local'
+    });
+
     done();
   });
 
