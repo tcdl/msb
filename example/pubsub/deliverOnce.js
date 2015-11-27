@@ -10,6 +10,6 @@ msb
   groupId: 'example-string'
 })
 .on('message', function(message) {
-  console.log('deliverOnce:' + message.payload.body.i);
+  console.log('deliverOnce:' + message.payload.body.i, '(' + process.pid + ')');
 })
 .on('error', console.error);
