@@ -88,3 +88,45 @@ If you want to run tests without code style check:
 If you just want to run with automatic restarting on a file change (no linting):
 
     $ npm run test-watch
+
+The integration tests requires access to an AMQP instance, for example RabbitMQ, by default it expect it to be installed locally as it looks for localhost:5672.
+
+###### RabbitMQ in Docker
+[RabbitMQ](https://www.rabbitmq.com/) can be installed locally, or hosted in [Docker](https://www.docker.com/). 
+
+To start an instance in docker:
+
+```
+docker run -d -p 5672:5672 --hostname msbRabbitMQ --name rabbitmq rabbitmq:3
+```
+
+To find out the ip address of the docker machine:
+
+```
+docker-machine ip default
+```
+
+Set the env variable `MSB_BROKER_HOST` to the ip address and run the test. 
+
+On Linux and OSX:
+
+```
+MSB_BROKER_HOST=192.168.99.100 npm run test
+``` 
+
+
+
+###### Display AMQP connection info when running tests
+Set the env variables `DEBUG=amqp*` and `AMQP=3`.
+
+On Linux and OSX:
+
+```
+DEBUG=amqp* AMQP=3 node_modules/.bin/lab --verbose
+``` 
+
+... or using custom amqp instance:
+
+```
+MSB_BROKER_HOST=192.168.99.100 DEBUG=amqp* AMQP=3 node_modules/.bin/lab --verbose
+``` 
