@@ -21,7 +21,6 @@ describe('serviceDetails', function() {
   var serviceDetails;
 
   beforeEach(function(done) {
-    delete(require.cache[serviceDetailsModulePath]);
     done();
   });
 
@@ -34,7 +33,7 @@ describe('serviceDetails', function() {
     simple.mock(require('os'), 'hostname').returnWith('abchost');
     simple.mock(require('ip'), 'address').returnWith('1.2.3.4');
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.hostname).equals('abchost');
     expect(serviceDetails.ip).equals('1.2.3.4');
@@ -50,7 +49,7 @@ describe('serviceDetails', function() {
   it('should safely handle a lack of mainModule', function(done) {
     simple.mock(process, 'mainModule', undefined);
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals(undefined);
     expect(serviceDetails.version).equals(undefined);
@@ -62,7 +61,7 @@ describe('serviceDetails', function() {
   it('should safely handle a missing package.json', function(done) {
     simple.mock(process, 'mainModule', { paths: ['/tmp/etc.js'] });
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals(undefined);
     expect(serviceDetails.version).equals(undefined);
@@ -74,7 +73,7 @@ describe('serviceDetails', function() {
   it('should handle a valid package.json', function(done) {
     simple.mock(process, 'mainModule', { paths: [require('path').join(__dirname, 'fixtures', 'package.json')] });
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals('example');
     expect(serviceDetails.version).equals('1.0.0');
@@ -92,7 +91,7 @@ describe('serviceDetails', function() {
 
     simple.mock(process, 'mainModule', { paths: [path] });
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals(undefined);
     expect(serviceDetails.version).equals(undefined);
@@ -108,7 +107,7 @@ describe('serviceDetails', function() {
     simple.mock(process.env, 'MSB_SERVICE_VERSION', '999');
     simple.mock(process.env, 'MSB_SERVICE_INSTANCE_ID', 'abc123');
 
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals('special-name');
     expect(serviceDetails.version).equals('999');
@@ -120,7 +119,7 @@ describe('serviceDetails', function() {
   it('should use package.json from cwd when on iisnode using interceptor.js', function(done) {
     simple.mock(process, 'mainModule', { filename: 'c:\\Program Files (x86)\\iisnode\\interceptor.js' });
     simple.mock(process, 'cwd').returnWith(require('path').join(__dirname, 'fixtures'));
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals('example');
     expect(serviceDetails.version).equals('1.0.0');
@@ -129,11 +128,11 @@ describe('serviceDetails', function() {
     done();
   });
 
-  it('should use package.json from cwd when on iisnode using interceptor.js', function(done) {
+  it('should use package.json from cwd when on iisnode using something else than interceptor.js', function(done) {
     simple.mock(process, 'mainModule', { filename: 'c:\\Program Files (x86)\\iisnode\\another-interceptor-file.js' });
     simple.mock(process.env, 'IISNODE_WHATEVER', 'whatever');
     simple.mock(process, 'cwd').returnWith(require('path').join(__dirname, 'fixtures'));
-    serviceDetails = require(serviceDetailsModulePath);
+    serviceDetails = require(serviceDetailsModulePath)._createForTest();
 
     expect(serviceDetails.name).equals('example');
     expect(serviceDetails.version).equals('1.0.0');
