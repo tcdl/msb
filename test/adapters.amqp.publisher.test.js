@@ -17,7 +17,7 @@ var simple = require('simple-mock');
 var msb = require('..');
 var AMQPPublisherAdapter = require('../lib/adapters/amqp/publisher').AMQPPublisherAdapter;
 var AMQP = require('amqp-coffee');
-var config = require('../lib/config');
+var config = require('../lib/config').create();
 
 describe('AMQPPublisherAdapter', function() {
   var connection;
@@ -27,7 +27,7 @@ describe('AMQPPublisherAdapter', function() {
   describe('publish()', function() {
 
     before(function(done) {
-      connection = new AMQP({});
+      connection = new AMQP(config.amqp);
       publisher = new AMQPPublisherAdapter(null, connection);
       exchange = {};
       done();

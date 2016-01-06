@@ -2,9 +2,9 @@ var _ = require('lodash');
 var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var AMQP = require('amqp-coffee');
-
+var config = require('../../lib/config').create()
 exports.create = function(topic, cb) {
-  var connection = new AMQP({});
+  var connection = new AMQP(config.amqp);
 
   connection.once('ready', function() {
     var publisher = {
