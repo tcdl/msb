@@ -1,3 +1,10 @@
+.idea
 .npmrc
-.travis.yml
 test
+.editorconfig
+.gitignore
+.jscsrc
+.jshintrc
+.npmignore
+.travis.yml
+CONTRIBUTING.md
