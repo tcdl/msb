@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "code": "^1.4.0",
-    "husky": "^0.10.2",
+    "husky": "^0.11.3",
     "jscs": "^2.11.0",
     "lab": "^5.5.0",
     "msb-test-utils": "^2.0.0",
@@ -39,11 +39,11 @@
     "cli-table": "^0.3.1",
     "debug": "^2.1.1",
     "ip": "^1.1.2",
-    "lodash": "^2.4.1",
-    "lodash.get": "^3.7.0",
+    "lodash": "^4.6.1",
+    "lodash.get": "^4.1.2",
     "minimist": "^1.1.1",
-    "redis": "^0.12.1",
-    "split": "^0.3.3",
+    "redis": "^2.4.2",
+    "split": "^1.0.0",
     "tv4": "^1.1.9",
     "weak-map": "^1.0.5"
   }
