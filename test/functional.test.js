@@ -65,7 +65,7 @@ describe('Requester/Collector', function() {
       requester = msb.Requester({
         namespace: mockNamespace,
         waitForResponsesMs: 500
-      })
+      });
 
       requester.channelManager = channelManager;
 
@@ -128,7 +128,7 @@ describe('Requester/Collector', function() {
         }, 550);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(1)
+          expect(onResponseMock.callCount).equals(1);
           expect(onEndMock.callCount).equals(1);
           done();
         }, 700);
@@ -144,7 +144,7 @@ describe('Requester/Collector', function() {
         namespace: mockNamespace,
         waitForResponses: 2,
         waitForResponsesMs: 500
-      })
+      });
 
       requester.channelManager = channelManager;
 
@@ -168,12 +168,12 @@ describe('Requester/Collector', function() {
         expect(onEndMock.callCount).equals(0);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(1)
+          expect(onResponseMock.callCount).equals(1);
           expect(onEndMock.callCount).equals(0);
         }, 100);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(1)
+          expect(onResponseMock.callCount).equals(1);
           expect(onEndMock.callCount).equals(1);
           done();
         }, 600);
@@ -193,12 +193,12 @@ describe('Requester/Collector', function() {
         expect(onEndMock.callCount).equals(0);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(1)
+          expect(onResponseMock.callCount).equals(1);
           expect(onEndMock.callCount).equals(0);
         }, 100);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(2)
+          expect(onResponseMock.callCount).equals(2);
           expect(onEndMock.callCount).equals(1);
           done();
         }, 300);
@@ -229,7 +229,7 @@ describe('Requester/Collector', function() {
         }, 100);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(4)
+          expect(onResponseMock.callCount).equals(4);
           expect(onEndMock.callCount).equals(1);
           done();
         }, 625);
@@ -248,7 +248,7 @@ describe('Requester/Collector', function() {
         expect(onEndMock.callCount).equals(0);
 
         setTimeout(function() {
-          expect(onResponseMock.callCount).equals(1)
+          expect(onResponseMock.callCount).equals(1);
           expect(onEndMock.callCount).equals(1);
           done();
         }, 625);
