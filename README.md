@@ -1,6 +1,11 @@
-# msb - microservicebus [![Build Status](https://travis-ci.org/tcdl/msb.svg?branch=master)](https://travis-ci.org/tcdl/msb)
+# msb - microservicebus
+[![NPM](https://nodei.co/npm/msb.png?downloads=true&stars=true)](https://nodei.co/npm/msb/)
+>A framework to simplify the implementation of an event-bus oriented microservices architecture.
 
-A framework to simplify the implementation of an event-bus oriented microservices architecture.
+[![Build Status](https://travis-ci.org/tcdl/msb.svg?branch=master)](https://travis-ci.org/tcdl/msb)
+[![Dependency Status](https://david-dm.org/tcdl/msb.svg)](https://david-dm.org/tcdl/msb)
+[![devDependency Status](https://david-dm.org/tcdl/msb/dev-status.svg)](https://david-dm.org/tcdl/msb#info=devDependencies)
+[![Coverage Status](https://coveralls.io/repos/github/tcdl/msb/badge.svg?branch=master)](https://coveralls.io/github/tcdl/msb?branch=master)
 
 <!-- MarkdownTOC -->
 
