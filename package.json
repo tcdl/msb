@@ -8,7 +8,7 @@
     "npmrc": "printf \"_auth = $NPM_AUTH_TOKEN\nemail = $NPM_EMAIL\n\" > .npmrc",
     "test": "npm run test-no-publish && if [ -n \"${TRAVIS_TAG}\" ]; then npm run npmrc && npm publish; fi",
     "test-no-publish": "npm run cs && npm run test-no-cs",
-    "test-no-cs": "lab -t 95",
+    "test-no-cs": "if [ -n \"${TRAVIS}\" ]; then lab -t 95 -r lcov | coveralls; else lab -t 95; fi",
     "test-watch": "nodemon node_modules/lab/bin/lab -cv -t 95",
     "test-watch-functional": "nodemon node_modules/lab/bin/lab -vP functional",
     "cs": "jscs **/*.js",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "code": "^1.4.0",
+    "coveralls": "^2.11.8",
     "husky": "^0.11.3",
     "jscs": "^2.11.0",
     "lab": "^5.5.0",
