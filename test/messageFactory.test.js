@@ -22,10 +22,16 @@ describe('messageFactory', function() {
 
   describe('completeMeta()', function() {
     var meta;
+    var config;
 
     beforeEach(function(done) {
       meta = messageFactory.createMeta({});
-
+      config = {
+        namespace: 'my:topic',
+        channelManager: {},
+        waitForResponses: 5,
+        responseTimeout: 5000
+      };
       done();
     });
 
@@ -35,6 +41,35 @@ describe('messageFactory', function() {
 
       expect(message.meta).exists();
       expect(message.meta).deep.equals(meta);
+
+      done();
+    });
+
+    it('should add to to the topics', function(done) {
+      var message = messageFactory.createDirectedMessage(config, {});
+
+      expect(message.topics.to).exists();
+      expect(message.topics.to).equals(config.namespace);
+
+      done();
+    });
+
+    it('should add forward to the topics on middlewareNamespace', function(done) {
+      config.middlewareNamespace = 'custom:topic';
+      var message = messageFactory.createDirectedMessage(config, {});
+
+      expect(message.topics.forward).exists();
+      expect(message.topics.forward).equals(config.namespace);
+      expect(message.topics.to).exists();
+      expect(message.topics.to).equals(config.middlewareNamespace);
+
+      done();
+    });
+
+    it('should not add forward to the topics without on middlewareNamespace', function(done) {
+      var message = messageFactory.createDirectedMessage(config, {});
+
+      expect(message.topics.forward).not.exists();
 
       done();
     });
