@@ -29,7 +29,17 @@
         "serviceDetails": { "$ref": "#/definitions/serviceDetails" }
       },
       "required": ["createdAt"]
-    }
+    },
+    "ack": {
+      "type": ["object", "null"],
+      "properties": {
+        "responderId": { "type": "string" },
+        "responsesRemaining": { "type": "number"},
+        "timeoutMs": { "type": ["number", "null"] }
+      },
+      "required": ["responderId", "responsesRemaining"]
+    },
+    "payload": {}
   },
   "required": ["id", "correlationId", "meta"],
   "definitions": {
