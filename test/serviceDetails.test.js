@@ -42,6 +42,21 @@ describe('serviceDetails', function() {
     done();
   });
 
+  it('should set host "unknown" on configured incorrectly host', function(done) {
+    simple.mock(require('os'), 'hostname').throwWith(new Error());
+
+    serviceDetails = require(serviceDetailsModulePath);
+
+    expect(serviceDetails.hostname).equals('unknown');
+    expect(serviceDetails.pid).equals(process.pid);
+
+    expect(serviceDetails.name).equals('lab');
+    expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).true();
+    expect(serviceDetails.instanceId).length(24);
+
+    done();
+  });
+
   it('should safely handle a lack of mainModule', function(done) {
     simple.mock(process, 'mainModule', undefined);
 
