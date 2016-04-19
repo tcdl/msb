@@ -8,3 +8,11 @@ node_js:
 - 'iojs'
 services:
   - rabbitmq
+deploy:
+  provider: npm
+  email: integration-dev@thomascookonline.com
+  api_key:
+    secure: eAnDeDBA4JRj9OgijQ7XhV+v2xHM7eebRZ5kfRbbP52tIVq2mPpKcBM6eZHkodIfSrr4YQ6AJrezlszDkK5794lnjz1LhzhUwSwMYgCZ0TUPJEZpgrfSiHlNJuaLOBea2uro8DblWepwJA4urd3wAXi/jlZ/lFcaQofe6ybCPOA=
+  on:
+    tags: true
+    repo: tcdl/msb
