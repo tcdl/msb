@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "amqp-coffee": "^0.1.25",
-    "async": "^0.9.0",
+    "async": "^2.0.0",
     "cli-table": "^0.3.1",
     "debug": "^2.1.1",
     "ip": "^1.1.2",
