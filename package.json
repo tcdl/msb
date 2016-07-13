@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "code": "^1.4.0",
-    "coveralls": "^2.11.8",
+    "coveralls": "^2.11.10",
     "husky": "^0.11.3",
     "jscs": "^3.0.2",
     "lab": "^5.5.0",
