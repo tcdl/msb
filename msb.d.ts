@@ -272,7 +272,7 @@ declare namespace msb {
     timeoutMs?: number;
   }
 
-  interface CollectorConfig {
+  interface CollectorConfig extends MessageConfig {
     waitForAcksMs?: number;
     waitForResponsesMs?: number;
     waitForResponses?: number;
