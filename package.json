@@ -1,9 +1,10 @@
 {
   "name": "msb",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
+  "typings": "msb.d.ts",
   "scripts": {
     "test": "npm run cs && npm run test-no-cs",
     "test-no-cs": "if [ -n \"${TRAVIS}\" ]; then lab -t 95 -r lcov | coveralls; else lab -t 95; fi",
