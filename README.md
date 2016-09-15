@@ -22,7 +22,6 @@
   - [CLI Monitor](#cli-monitor)
   - [Related Modules](#related-modules)
 - [Message Brokers / Adapters](#message-brokers--adapters)
-  - [Redis](#redis)
   - [AMQP / RabbitMQ](#amqp--rabbitmq)
 - [API](#api)
   - [Class: msb.Responder](#class-msbresponder)
@@ -326,8 +325,8 @@ msb.createChannelManager().configure(config); // Additional channelManager
 - MSB_SERVICE_NAME The string used to identify the type of service, also used as the default for the broker groupId. (Default: `name` in the package.json of the main module.)
 - MSB_SERVICE_VERSION (Default: `version` in the package.json of the main module.)
 - MSB_SERVICE_INSTANCE_ID (Default: generated universally unique 12-byte/24-char hex string.)
-- MSB_BROKER_ADAPTER One of 'redis', 'amqp' or 'local' (Default: 'redis')
-- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.redis` and `config.amqp` overriding defaults.
+- MSB_BROKER_ADAPTER One of 'amqp' or 'local' (Default: 'amqp')
+- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.amqp` overriding defaults.
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
 
 ## Tools
@@ -387,13 +386,9 @@ Producing a table such as:
 
 ## Message Brokers / Adapters
 
-### Redis
-
-Redis Pub/Sub is the default message broker used. Setup of Redis is practically effortless on most platforms, making it great for development. Redis Pub/Sub is limited in that all published messages will be received by all subscribers per topic. This means that services backed by Redis will not scale out horizontally, i.e. you cannot distribute the work over multiple processes.
-
 ### AMQP / RabbitMQ
 
-The AMQP adapter is tested with RabbitMQ and it implements a limited topology for simplification. One exchange is created per topic and a queue is created for every group of similar services, configured using a groupId. This means that you can have different types of services listening on the same topic, and multiple processes of the same type of service would receive a fair distribution of messages.
+RabbitMQ is the default message broker used. The AMQP adapter is tested with RabbitMQ and it implements a limited topology for simplification. One exchange is created per topic and a queue is created for every group of similar services, configured using a groupId. This means that you can have different types of services listening on the same topic, and multiple processes of the same type of service would receive a fair distribution of messages.
 
 ## API
 
