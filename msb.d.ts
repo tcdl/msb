@@ -1,5 +1,4 @@
 import {EventEmitter} from "events";
-import {Handler} from "express";
 
 export let createChannelManager: msb.createChannelManager;
 export let channelManager: msb.channelManager;
@@ -110,7 +109,7 @@ declare namespace msb {
     originalMessage: Message;
     requestChannelTimeoutMs: number;
 
-    publish(payload?: MessagePayload): this;
+    publish(payload?: MessagePayload, cb?: (err?: Error) => void): this;
   }
 
   interface Responder {
@@ -185,23 +184,13 @@ declare namespace msb {
     cleanupConsumers?: boolean;
     autoMessageContext?: boolean;
     brokerAdapter?: brokerAdapters;
-    redis?: ConfigRedis;
     amqp?: ConfigAMQP;
     local?: Object;
 
   }
 
-  type brokerAdapters = "redis" | "amqp" | "local";
+  type brokerAdapters = "amqp" | "local";
 
-  interface ConfigRedis {
-    [key: string]: any;
-    host?: string;
-    port?: number;
-    options?: {
-      [key: string]: any;
-      auth_pass?: string;
-    };
-  }
   interface ConfigAMQP {
     [key: string]: any;
     host?: string;
@@ -228,7 +217,7 @@ declare namespace msb {
     close: () => void;
   }
 
-  interface consumerOptions extends ConfigRedis, ConfigAMQP {
+  interface consumerOptions extends ConfigAMQP {
   }
 
   interface MessageConfig {
@@ -300,5 +289,9 @@ declare namespace msb {
     use: (middleware: Handler) => this;
     listen: (channelManager: channelManager) => this;
     close: () => void;
+  }
+
+  interface Handler {
+    (req: Object, res: Object, next?: Function): any;
   }
 }

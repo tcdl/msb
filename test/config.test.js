@@ -78,9 +78,6 @@ describe('config', function() {
       var config = require('../lib/config').create();
 
       expect(config.brokerAdapter).equals('a');
-      expect(config.redis.host).equals('c');
-      expect(config.redis.port).equals('e');
-      expect(config.redis.options.auth_pass).equals('g');
       expect(config.amqp.host).equals('c');
       expect(config.amqp.port).equals('e');
       expect(config.amqp.login).equals('i');
