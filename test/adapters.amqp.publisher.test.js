@@ -1,15 +1,5 @@
 /* Setup */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var EventEmitter = require('events').EventEmitter;

@@ -1,17 +1,5 @@
-'use strict';
 /* Setup */
-/*jshint camelcase: false */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var simple = require('simple-mock');
@@ -30,7 +18,7 @@ describe('Collector', function() {
     it('can be initialized without a config', function(done) {
       var collector = Collector();
 
-      expect(collector.startedAt).exists();
+      expect(collector.startedAt).to.exist;
       expect(Date.now() - collector.startedAt.valueOf()).below(10);
       expect(collector.timeoutMs).equals(3000);
       done();
@@ -44,7 +32,7 @@ describe('Collector', function() {
       };
       var collector = new Collector(config);
 
-      expect(collector.startedAt).exists();
+      expect(collector.startedAt).to.exist;
       expect(Date.now() - collector.startedAt.valueOf()).below(10);
       expect(collector.waitForAcksUntil).equals(null);
       expect(collector.waitForAcksMs).equals(config.ackTimeout);
@@ -70,13 +58,13 @@ describe('Collector', function() {
 
       it('will be true if waiting for acks', function(done) {
         collector.waitForAcksUntil = new Date(Date.now() + 1000);
-        expect(collector.isAwaitingAcks()).true();
+        expect(collector.isAwaitingAcks()).to.be.true;
         done();
       });
 
       it('will be false if not waiting for acks', function(done) {
         collector.waitForAcksUntil = new Date();
-        expect(collector.isAwaitingAcks()).false();
+        expect(collector.isAwaitingAcks()).to.be.false;
         done();
       });
     });
@@ -322,11 +310,11 @@ describe('Collector', function() {
           timeoutMs: 5000
         });
 
-        expect(collector._setTimeoutMsForResponderId.called).true();
+        expect(collector._setTimeoutMsForResponderId.called).to.be.true;
         expect(collector._setTimeoutMsForResponderId.lastCall.args[0]).equals('a');
         expect(collector._setTimeoutMsForResponderId.lastCall.args[1]).equals(5000);
         expect(collector._currentTimeoutMs).equals(5000);
-        expect(collector.enableTimeout.called).true();
+        expect(collector.enableTimeout.called).to.be.true;
         done();
       });
 
@@ -336,9 +324,9 @@ describe('Collector', function() {
           timeoutMs: 1500
         });
 
-        expect(collector._setTimeoutMsForResponderId.called).true();
+        expect(collector._setTimeoutMsForResponderId.called).to.be.true;
         expect(collector._currentTimeoutMs).equals(3000);
-        expect(collector.enableTimeout.called).false();
+        expect(collector.enableTimeout.called).to.be.false;
         done();
       });
 
@@ -348,7 +336,7 @@ describe('Collector', function() {
           responsesRemaining: 1
         });
 
-        expect(collector._setResponsesRemainingForResponderId.called).true();
+        expect(collector._setResponsesRemainingForResponderId.called).to.be.true;
         expect(collector._setResponsesRemainingForResponderId.lastCall.args[0]).equals('a');
         expect(collector._setResponsesRemainingForResponderId.lastCall.args[1]).equals(1);
         expect(collector._getResponsesRemaining()).equals(1);
@@ -384,18 +372,18 @@ describe('Collector', function() {
 
         collector.listenForResponses('etc', shouldAcceptMessageFn);
 
-        expect(msb.channelManager.findOrCreateConsumer.called).true();
+        expect(msb.channelManager.findOrCreateConsumer.called).to.be.true;
         expect(msb.channelManager.findOrCreateConsumer.lastCall.args[0]).equals('etc');
 
-        expect(mockChannel.on.called).true();
+        expect(mockChannel.on.called).to.be.true;
         expect(mockChannel.on.lastCall.args[0]).equals('message');
-        expect(mockChannel.on.lastCall.args[1]).to.be.a.function();
+        expect(mockChannel.on.lastCall.args[1]).to.be.a.function;
 
         var message = {};
         var handlerFn = mockChannel.on.lastCall.args[1];
         handlerFn(message);
 
-        expect(originalOnResponseMessageFn.called).true();
+        expect(originalOnResponseMessageFn.called).to.be.true;
         expect(originalOnResponseMessageFn.lastCall.args[0]).equals(shouldAcceptMessageFn);
         expect(originalOnResponseMessageFn.lastCall.args[1]).equals(message);
 
@@ -427,7 +415,7 @@ describe('Collector', function() {
 
         collector.removeListeners();
 
-        expect(mockResponseChannel.removeListener.called).true();
+        expect(mockResponseChannel.removeListener.called).to.be.true;
         expect(mockResponseChannel.removeListener.lastCall.args[0]).equals('message');
         expect(mockResponseChannel.removeListener.lastCall.args[1]).equals(collector._onResponseMessage);
 
@@ -469,18 +457,18 @@ describe('Collector', function() {
 
         collector._onResponseMessage(shouldAcceptMessageFn, message);
 
-        expect(shouldAcceptMessageFn.called).true();
+        expect(shouldAcceptMessageFn.called).to.be.true;
         expect(collector.payloadMessages).length(1);
-        expect(collector.emit.called).true();
+        expect(collector.emit.called).to.be.true;
         expect(collector.emit.lastCall.args[0]).equals('response');
         expect(collector.emit.lastCall.args[1]).equals(message.payload);
         expect(collector.emit.lastCall.args[2]).equals(message);
-        expect(collector._incResponsesRemaining.called).true();
+        expect(collector._incResponsesRemaining.called).to.be.true;
         expect(collector._incResponsesRemaining.lastCall.args[0]).equals(-1);
-        expect(collector._processAck.called).true();
+        expect(collector._processAck.called).to.be.true;
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.isAwaitingResponses.called).true();
-        expect(collector.end.called).true();
+        expect(collector.isAwaitingResponses.called).to.be.true;
+        expect(collector.end.called).to.be.true;
 
         done();
       });
@@ -492,17 +480,17 @@ describe('Collector', function() {
         collector._onResponseMessage(null, message);
 
         expect(collector.payloadMessages).length(1);
-        expect(collector.emit.called).true();
+        expect(collector.emit.called).to.be.true;
         expect(collector.emit.calls[0].args[0]).equals('payload');
         expect(collector.emit.lastCall.args[0]).equals('response'); // Backward-compatibility
         expect(collector.emit.lastCall.args[1]).equals(message.payload);
         expect(collector.emit.lastCall.args[2]).equals(message);
-        expect(collector._incResponsesRemaining.called).true();
+        expect(collector._incResponsesRemaining.called).to.be.true;
         expect(collector._incResponsesRemaining.lastCall.args[0]).equals(-1);
-        expect(collector._processAck.called).true();
+        expect(collector._processAck.called).to.be.true;
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.isAwaitingResponses.called).true();
-        expect(collector.end.called).true();
+        expect(collector.isAwaitingResponses.called).to.be.true;
+        expect(collector.end.called).to.be.true;
 
         done();
       });
@@ -513,13 +501,13 @@ describe('Collector', function() {
         collector._onResponseMessage(null, message);
 
         expect(collector.ackMessages).length(1);
-        expect(collector.emit.called).true();
+        expect(collector.emit.called).to.be.true;
         expect(collector.emit.lastCall.args[0]).equals('ack');
         expect(collector.emit.lastCall.args[1]).equals(message.ack);
         expect(collector.emit.lastCall.args[2]).equals(message);
-        expect(collector._processAck.called).true();
+        expect(collector._processAck.called).to.be.true;
         expect(collector._processAck.lastCall.args[0]).equals(message.ack);
-        expect(collector.isAwaitingResponses.called).true();
+        expect(collector.isAwaitingResponses.called).to.be.true;
 
         done();
       });
@@ -554,7 +542,7 @@ describe('Collector', function() {
         collector._onResponseMessage(null, message);
 
         expect(collector.payloadMessages).length(1);
-        expect(collector._enableAckTimeout.called).true();
+        expect(collector._enableAckTimeout.called).to.be.true;
         expect(collector.end.calls).length(0);
 
         done();
@@ -589,8 +577,8 @@ describe('Collector', function() {
 
         collector._onAckTimeout();
 
-        expect(collector.isAwaitingResponses.called).true();
-        expect(collector.end.called).false();
+        expect(collector.isAwaitingResponses.called).to.be.true;
+        expect(collector.end.called).to.be.false;
 
         done();
       });
@@ -601,8 +589,8 @@ describe('Collector', function() {
 
         collector._onAckTimeout();
 
-        expect(collector.isAwaitingResponses.called).true();
-        expect(collector.end.called).true();
+        expect(collector.isAwaitingResponses.called).to.be.true;
+        expect(collector.end.called).to.be.true;
 
         done();
       });
@@ -624,8 +612,8 @@ describe('Collector', function() {
         collector._ackTimeout = true;
         collector._enableAckTimeout();
 
-        expect(collector._ackTimeout).true();
-        expect(setTimeout.called).false();
+        expect(collector._ackTimeout).to.be.true;
+        expect(setTimeout.called).to.be.false;
 
         done();
       });
@@ -634,13 +622,13 @@ describe('Collector', function() {
 
         collector._enableAckTimeout();
 
-        expect(collector._ackTimeout).true();
-        expect(setTimeout.called).true();
+        expect(collector._ackTimeout).to.be.true;
+        expect(setTimeout.called).to.be.true;
 
         var timeoutFn = setTimeout.lastCall.args[0];
         timeoutFn();
 
-        expect(Collector.prototype._onAckTimeout.called).true();
+        expect(Collector.prototype._onAckTimeout.called).to.be.true;
         expect(Collector.prototype._onAckTimeout.lastCall.context).equals(collector);
 
         done();

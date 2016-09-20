@@ -1,15 +1,5 @@
 /* Setup */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var helpers = require('../lib/support/helpers');
@@ -51,7 +41,7 @@ describe('validatedTopic()', function() {
       try {
         validatedTopic = helpers.validatedTopic(topic);
       } catch (e) {
-        expect(e, topic).to.not.exist();
+        expect(e, topic).to.not.exist;
       }
       expect(validatedTopic).to.equal(topic);
     });
@@ -75,7 +65,7 @@ describe('topicWithoutInstanceId()', function() {
       try {
         cleanTopic = helpers.topicWithoutInstanceId(topic);
       } catch (e) {
-        expect(e, topic).to.not.exist();
+        expect(e, topic).to.not.exist;
       }
       expect(cleanTopic).to.equal(topics[topic]);
     });

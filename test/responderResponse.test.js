@@ -1,17 +1,5 @@
-'use strict';
 /* Setup */
-/*jshint camelcase: false */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var simple = require('simple-mock');
@@ -44,7 +32,7 @@ describe('ResponderResponse', function() {
         mockResponder.send.callbackWith();
 
         response.end(function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: response.body
@@ -59,7 +47,7 @@ describe('ResponderResponse', function() {
         response.body = {};
 
         response.end(function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: response.body
@@ -77,7 +65,7 @@ describe('ResponderResponse', function() {
         response.body = 'overwriteMe';
 
         response.end(function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: 204,
             body: null,
@@ -97,7 +85,7 @@ describe('ResponderResponse', function() {
         newBody.fill();
 
         response.end(newBody, function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: null,
@@ -114,7 +102,7 @@ describe('ResponderResponse', function() {
         var newBody = 'arb';
 
         response.end(newBody, function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: 'arb'
@@ -144,7 +132,7 @@ describe('ResponderResponse', function() {
         mockResponder.send.callbackWith();
 
         response.end('arb', function() {
-          expect(mockResponder.send.called).true();
+          expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: null

@@ -1,15 +1,5 @@
 /* Setup */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var msb = require('..');
@@ -99,14 +89,14 @@ describe('channelMonitor', function() {
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.doc.infoByTopic.abc).exists();
+          expect(channelMonitor.doc.infoByTopic.abc).to.exist;
           expect(channelMonitor.doc.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
 
-          expect(channelMonitor.doc.infoByTopic.def).exists();
+          expect(channelMonitor.doc.infoByTopic.def).to.exist;
           expect(channelMonitor.doc.infoByTopic.def.consumers).deep.equal(['abc123', 'abc456']);
           expect(channelMonitor.doc.infoByTopic.def.lastConsumedAt.valueOf()).equals(laterDate.valueOf());
 
-          expect(channelMonitor.doc.infoByTopic.ghi).exists();
+          expect(channelMonitor.doc.infoByTopic.ghi).to.exist;
           expect(channelMonitor.doc.infoByTopic.ghi.producers).deep.equal(['abc456']);
           expect(channelMonitor.doc.infoByTopic.ghi.consumers).deep.equal(['abc456']);
 
@@ -186,13 +176,13 @@ describe('channelMonitor', function() {
         setTimeout(function() {
           expect(onUpdated.callCount).equals(2);
 
-          expect(channelMonitor.doc.infoByTopic.abc).exists();
+          expect(channelMonitor.doc.infoByTopic.abc).to.exist;
           expect(channelMonitor.doc.infoByTopic.abc.producers).deep.equal(['abc123', 'abc456']);
           expect(channelMonitor.doc.infoByTopic.abc.consumers).deep.equal(['abc123']);
 
-          expect(channelMonitor.doc.infoByTopic.def).to.not.exist();
+          expect(channelMonitor.doc.infoByTopic.def).to.not.exist;
 
-          expect(channelMonitor.doc.infoByTopic.ghi).exists();
+          expect(channelMonitor.doc.infoByTopic.ghi).to.exist;
           expect(channelMonitor.doc.infoByTopic.ghi.producers).deep.equal(['abc123']);
           expect(channelMonitor.doc.infoByTopic.ghi.consumers).deep.equal(['abc123', 'abc456']);
 
@@ -231,7 +221,7 @@ describe('channelMonitor', function() {
       channelMonitor.startMonitoring();
       channelMonitor.stopMonitoring();
 
-      expect(msb.Requester.prototype.removeListeners.called).true();
+      expect(msb.Requester.prototype.removeListeners.called).to.be.true;
       expect(channelMonitor.doHeartbeat.callCount).equals(1);
 
       setTimeout(function() {
@@ -257,49 +247,49 @@ describe('channelMonitor', function() {
       simple.mock(channelMonitorAgent, 'doBroadcast');
 
       channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, 'pt');
-      expect(channelMonitorAgent.doc.pt).exists();
-      expect(channelMonitorAgent.doc.pt.producers).true();
+      expect(channelMonitorAgent.doc.pt).to.exist;
+      expect(channelMonitorAgent.doc.pt.producers).to.be.true;
       expect(channelMonitorAgent.doBroadcast.callCount).equals(1);
 
       channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, '_private');
-      expect(channelMonitorAgent.doc._private).not.exists();
+      expect(channelMonitorAgent.doc._private).not.to.exist;
 
       channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, 'pm');
-      expect(channelMonitorAgent.doc.pm).exists();
-      expect(channelMonitorAgent.doc.pm.lastProducedAt).date();
+      expect(channelMonitorAgent.doc.pm).to.exist;
+      expect(channelMonitorAgent.doc.pm.lastProducedAt).to.be.an.instanceof(Date);
 
       channelManager.emit(channelManager.PRODUCER_REMOVED_TOPIC_EVENT, 'pc');
-      expect(channelMonitorAgent.doc.pc).not.exists();
+      expect(channelMonitorAgent.doc.pc).not.to.exist;
 
       channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, 'ct');
-      expect(channelMonitorAgent.doc.ct).exists();
-      expect(channelMonitorAgent.doc.ct.consumers).true();
+      expect(channelMonitorAgent.doc.ct).to.exist;
+      expect(channelMonitorAgent.doc.ct.consumers).to.be.true;
       expect(channelMonitorAgent.doBroadcast.callCount).equals(2);
 
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, '_private');
-      expect(channelMonitorAgent.doc._private).not.exists();
+      expect(channelMonitorAgent.doc._private).not.to.exist;
 
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, 'cm');
-      expect(channelMonitorAgent.doc.cm).exists();
-      expect(channelMonitorAgent.doc.cm.lastConsumedAt).date();
+      expect(channelMonitorAgent.doc.cm).to.exist;
+      expect(channelMonitorAgent.doc.cm.lastConsumedAt).to.be.an.instanceof(Date);
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, '_private');
-      expect(channelMonitorAgent.doc._private).not.exists();
+      expect(channelMonitorAgent.doc._private).not.to.exist;
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, 'cr');
-      expect(channelMonitorAgent.doc.cr).not.exists();
+      expect(channelMonitorAgent.doc.cr).not.to.exist;
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, 'pt');
-      expect(channelMonitorAgent.doc.pt).exists();
+      expect(channelMonitorAgent.doc.pt).to.exist;
 
       channelManager.emit(channelManager.PRODUCER_REMOVED_TOPIC_EVENT, 'pt');
-      expect(channelMonitorAgent.doc.pt).not.exists();
+      expect(channelMonitorAgent.doc.pt).not.to.exist;
 
       channelManager.emit(channelManager.PRODUCER_REMOVED_TOPIC_EVENT, 'ct');
-      expect(channelMonitorAgent.doc.ct).exists();
+      expect(channelMonitorAgent.doc.ct).to.exist;
 
       channelManager.emit(channelManager.CONSUMER_REMOVED_TOPIC_EVENT, 'ct');
-      expect(channelMonitorAgent.doc.ct).not.exists();
+      expect(channelMonitorAgent.doc.ct).not.to.exist;
 
       expect(channelMonitorAgent.doBroadcast.callCount).equals(2);
       done();

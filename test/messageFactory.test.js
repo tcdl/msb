@@ -1,17 +1,5 @@
-'use strict';
 /* Setup */
-/*jshint camelcase: false */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var msb = require('..');
@@ -39,7 +27,7 @@ describe('messageFactory', function() {
 
       var message = messageFactory.completeMeta({}, meta);
 
-      expect(message.meta).exists();
+      expect(message.meta).to.exist;
       expect(message.meta).deep.equals(meta);
 
       done();
@@ -48,7 +36,7 @@ describe('messageFactory', function() {
     it('should add to to the topics', function(done) {
       var message = messageFactory.createDirectedMessage(config, {});
 
-      expect(message.topics.to).exists();
+      expect(message.topics.to).to.exist;
       expect(message.topics.to).equals(config.namespace);
 
       done();
@@ -58,9 +46,9 @@ describe('messageFactory', function() {
       config.middlewareNamespace = 'custom:topic';
       var message = messageFactory.createDirectedMessage(config, {});
 
-      expect(message.topics.forward).exists();
+      expect(message.topics.forward).to.exist;
       expect(message.topics.forward).equals(config.namespace);
-      expect(message.topics.to).exists();
+      expect(message.topics.to).to.exist;
       expect(message.topics.to).equals(config.middlewareNamespace);
 
       done();
@@ -69,7 +57,7 @@ describe('messageFactory', function() {
     it('should not add forward to the topics without on middlewareNamespace', function(done) {
       var message = messageFactory.createDirectedMessage(config, {});
 
-      expect(message.topics.forward).not.exists();
+      expect(message.topics.forward).not.to.exist;
 
       done();
     });
@@ -80,8 +68,8 @@ describe('messageFactory', function() {
 
       var message = messageFactory.completeMeta({}, meta);
 
-      expect(message.meta).exists();
-      expect(message.meta.publishedAt instanceof Date).true();
+      expect(message.meta).to.exist;
+      expect(message.meta.publishedAt instanceof Date).to.be.true;
       expect(Date.now() - message.meta.publishedAt.valueOf()).below(15);
 
       done();
