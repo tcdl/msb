@@ -1,15 +1,5 @@
 /* Setup */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var _ = require('lodash');
@@ -35,8 +25,8 @@ describe('serviceDetails', function() {
     expect(serviceDetails.ip).equals('1.2.3.4');
     expect(serviceDetails.pid).equals(process.pid);
 
-    expect(serviceDetails.name).equals('lab');
-    expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).true();
+    expect(serviceDetails.name).equals('mocha');
+    expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).to.be.true;
     expect(serviceDetails.instanceId).length(24);
 
     done();
@@ -50,8 +40,8 @@ describe('serviceDetails', function() {
     expect(serviceDetails.hostname).equals('unknown');
     expect(serviceDetails.pid).equals(process.pid);
 
-    expect(serviceDetails.name).equals('lab');
-    expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).true();
+    expect(serviceDetails.name).equals('mocha');
+    expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).to.be.true;
     expect(serviceDetails.instanceId).length(24);
 
     done();

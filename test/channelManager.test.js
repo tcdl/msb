@@ -1,15 +1,5 @@
 /* Setup */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var EventEmitter = require('events').EventEmitter;
@@ -52,21 +42,21 @@ describe('channelManager', function() {
 
   describe('hasChannels', function() {
     it('should return false when no channels have been created', function(done) {
-      expect(channelManager.hasChannels()).false();
+      expect(channelManager.hasChannels()).to.be.false;
       done();
     });
 
     it('should return true when publisher channels have been created', function(done) {
       simple.mock(channelManager._producersByTopic, 'a:test:producer');
 
-      expect(channelManager.hasChannels()).true();
+      expect(channelManager.hasChannels()).to.be.true;
       done();
     });
 
     it('should return true when publisher channels have been created', function(done) {
       simple.mock(channelManager._consumersByTopic, 'a:test:consumer');
 
-      expect(channelManager.hasChannels()).true();
+      expect(channelManager.hasChannels()).to.be.true;
       done();
     });
   });
@@ -89,13 +79,13 @@ describe('channelManager', function() {
 
       var producer1a = channelManager.findOrCreateProducer('prod1:1');
 
-      expect(mockPublisher.channel.called).true();
+      expect(mockPublisher.channel.called).to.be.true;
       expect(mockPublisher.channel.lastCall.args[0]).equals('prod1:1');
 
       var producer2 = channelManager.findOrCreateProducer('prod1:2');
 
       expect(mockPublisher.channel.lastCall.args[0]).equals('prod1:2');
-      expect(mockPublisher.channel.called).true();
+      expect(mockPublisher.channel.called).to.be.true;
 
       var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
@@ -112,14 +102,14 @@ describe('channelManager', function() {
     it('will emit a new channel event', function(done) {
       simple.mock(channelManager, 'createRawProducer').returnWith({});
 
-      expect(channelManager.PRODUCER_NEW_TOPIC_EVENT).exists();
+      expect(channelManager.PRODUCER_NEW_TOPIC_EVENT).to.exist;
 
       var onEvent = simple.mock();
       channelManager.on(channelManager.PRODUCER_NEW_TOPIC_EVENT, onEvent);
 
       channelManager.findOrCreateProducer('etc');
 
-      expect(onEvent.called).true();
+      expect(onEvent.called).to.be.true;
       expect(onEvent.lastCall.args[0]).equals('etc');
       done();
     });
@@ -148,7 +138,7 @@ describe('channelManager', function() {
 
       var consumer1a = channelManager.findOrCreateConsumer('con1:1');
 
-      expect(queue.Subscribe.called).true();
+      expect(queue.Subscribe.called).to.be.true;
       expect(queue.Subscribe.lastCall.args[0]).deep.include({
         channel: 'con1:1',
         host: 'mock.host',
@@ -178,13 +168,13 @@ describe('channelManager', function() {
       simple.mock(mockSubscriber, 'on');
       simple.mock(channelManager, 'createRawConsumer').returnWith(mockSubscriber);
 
-      expect(channelManager.CONSUMER_NEW_TOPIC_EVENT).exists();
+      expect(channelManager.CONSUMER_NEW_TOPIC_EVENT).to.exist;
 
       var onEvent = simple.mock();
       channelManager.once(channelManager.CONSUMER_NEW_TOPIC_EVENT, onEvent);
       channelManager.findOrCreateConsumer('etc');
 
-      expect(onEvent.called).true();
+      expect(onEvent.called).to.be.true;
       expect(onEvent.lastCall.args[0]).equals('etc');
       done();
     });
@@ -200,7 +190,7 @@ describe('channelManager', function() {
       expect(mockSubscriber.on.calls[0].arg).equals('message');
       expect(mockSubscriber.on.calls[1].arg).equals('error');
       expect(consumer.listeners('removeListener')).length(1);
-      expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).exists();
+      expect(channelManager.CONSUMER_NEW_MESSAGE_EVENT).to.exist;
 
       var onMessageFn = mockSubscriber.on.calls[0].args[1];
       var onNewMessageEvent = simple.mock();
@@ -214,16 +204,16 @@ describe('channelManager', function() {
 
       // With expired message
       onMessageFn({ meta: { ttl: 1000, createdAt: new Date(Date.now() - 1001) } });
-      expect(onNewMessageEvent.called).false();
-      expect(onMessageEvent.called).false();
+      expect(onNewMessageEvent.called).to.be.false;
+      expect(onMessageEvent.called).to.be.false;
 
       // With normal message
       onMessageFn({});
-      expect(onNewMessageEvent.called).true();
+      expect(onNewMessageEvent.called).to.be.true;
       expect(onNewMessageEvent.lastCall.args[0]).equals('c:etc');
-      expect(onMessageEvent.called).true();
-      expect(messageFactory.startContext.called).true();
-      expect(messageFactory.endContext.called).true();
+      expect(onMessageEvent.called).to.be.true;
+      expect(messageFactory.startContext.called).to.be.true;
+      expect(messageFactory.endContext.called).to.be.true;
       expect(onMessageEvent.lastCall.k).above(messageFactory.startContext.lastCall.k);
       expect(onMessageEvent.lastCall.k).below(messageFactory.endContext.lastCall.k);
 
@@ -239,7 +229,7 @@ describe('channelManager', function() {
 
     describe('when the listeners are removed', function() {
       it('will remove the cached channel', function(done) {
-        expect(channelManager.CONSUMER_REMOVED_TOPIC_EVENT).exists();
+        expect(channelManager.CONSUMER_REMOVED_TOPIC_EVENT).to.exist;
 
         var mockSubscriber = new EventEmitter();
         simple.mock(mockSubscriber, 'close').returnWith();

@@ -1,17 +1,5 @@
-'use strict';
 /* Setup */
-/*jshint camelcase: false */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var simple = require('simple-mock');
@@ -73,7 +61,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(null);
       expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
 
       var message = responder._sendMessage.lastCall.args[0];
       expect(message.ack).deep.equals(responder.ack);
@@ -89,7 +77,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(333);
       expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
 
       var message = responder._sendMessage.lastCall.args[0];
       expect(message.ack).deep.equals(responder.ack);
@@ -105,7 +93,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(null);
       expect(responder.ack.responsesRemaining).equals(5);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
 
       var message = responder._sendMessage.lastCall.args[0];
       expect(message.ack).deep.equals(responder.ack);
@@ -123,7 +111,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(null);
       expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
       expect(responder._sendMessage.lastCall.args[1]).equals(cb);
 
       var message = responder._sendMessage.lastCall.args[0];
@@ -142,7 +130,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(444);
       expect(responder.ack.responsesRemaining).equals(5);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
       expect(responder._sendMessage.lastCall.args[1]).equals(cb);
 
       var message = responder._sendMessage.lastCall.args[0];
@@ -166,7 +154,7 @@ describe('Responder', function() {
       expect(responder.ack.timeoutMs).equals(333);
       expect(responder.ack.responsesRemaining).equals(1);
 
-      expect(responder._sendMessage.called).true();
+      expect(responder._sendMessage.called).to.be.true;
 
       var message = responder._sendMessage.lastCall.args[0];
       expect(message.ack).deep.equals(responder.ack);
@@ -211,9 +199,9 @@ describe('Responder', function() {
         }, cb);
       }).to.not.throw();
 
-      expect(channelManager.findOrCreateProducer.called).true();
+      expect(channelManager.findOrCreateProducer.called).to.be.true;
       expect(channelManager.findOrCreateProducer.lastCall.args[0]).equals('example');
-      expect(mockChannel.publish.called).true();
+      expect(mockChannel.publish.called).to.be.true;
       expect(mockChannel.publish.lastCall.args[1]).equals(cb);
 
       var message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
@@ -229,9 +217,9 @@ describe('Responder', function() {
         });
       }).to.not.throw();
 
-      expect(channelManager.findOrCreateProducer.called).true();
+      expect(channelManager.findOrCreateProducer.called).to.be.true;
       expect(channelManager.findOrCreateProducer.lastCall.args[0]).equals('example');
-      expect(mockChannel.publish.called).true();
+      expect(mockChannel.publish.called).to.be.true;
 
       var message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
       expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));

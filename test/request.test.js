@@ -1,17 +1,5 @@
-'use strict';
 /* Setup */
-/*jshint camelcase: false */
-var Lab = require('lab');
-var Code = require('code');
-var lab = exports.lab = Lab.script();
-
-var describe = lab.describe;
-var it = lab.it;
-var before = lab.before;
-var beforeEach = lab.beforeEach;
-var after = lab.after;
-var afterEach = lab.afterEach;
-var expect = Code.expect;
+var expect = require('chai').expect;
 
 /* Modules */
 var simple = require('simple-mock');
@@ -48,7 +36,7 @@ describe('request()', function() {
         done();
       });
 
-      expect(requester instanceof msb.Requester).true();
+      expect(requester instanceof msb.Requester).to.be.true;
       expect(requester.timeoutMs).equals(3000);
       expect(requester.waitForResponses).equals(1);
 
@@ -67,11 +55,11 @@ describe('request()', function() {
         my: 'payload'
       }, function(err, responsePayload, responseMessage) {
 
-        expect(err instanceof Error).true();
+        expect(err instanceof Error).to.be.true;
         done();
       });
 
-      expect(requester instanceof msb.Requester).true();
+      expect(requester instanceof msb.Requester).to.be.true;
       expect(requester.timeoutMs).equals(3000);
       expect(requester.waitForResponses).equals(1);
 
@@ -112,7 +100,7 @@ describe('request()', function() {
         done();
       });
 
-      expect(requester instanceof msb.Requester).true();
+      expect(requester instanceof msb.Requester).to.be.true;
       expect(requester.channelManager).equals(config.channelManager);
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
@@ -132,11 +120,11 @@ describe('request()', function() {
         my: 'payload'
       }, function(err, responsePayload, responseMessage) {
 
-        expect(err instanceof Error).true();
+        expect(err instanceof Error).to.be.true;
         done();
       });
 
-      expect(requester instanceof msb.Requester).true();
+      expect(requester instanceof msb.Requester).to.be.true;
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
 
