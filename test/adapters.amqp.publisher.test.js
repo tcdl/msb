@@ -18,7 +18,7 @@ describe('AMQPPublisherAdapter', function() {
 
     before(function(done) {
       connection = new AMQP(config.amqp);
-      publisher = new AMQPPublisherAdapter(null, connection);
+      publisher = new AMQPPublisherAdapter(config.amqp, connection);
       exchange = {};
       done();
     });
