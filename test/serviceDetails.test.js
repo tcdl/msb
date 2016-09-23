@@ -25,7 +25,7 @@ describe('serviceDetails', function() {
     expect(serviceDetails.ip).equals('1.2.3.4');
     expect(serviceDetails.pid).equals(process.pid);
 
-    expect(serviceDetails.name).equals('mocha');
+    expect(serviceDetails.name).to.be.a('string');
     expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).to.be.true;
     expect(serviceDetails.instanceId).length(24);
 
@@ -40,7 +40,7 @@ describe('serviceDetails', function() {
     expect(serviceDetails.hostname).equals('unknown');
     expect(serviceDetails.pid).equals(process.pid);
 
-    expect(serviceDetails.name).equals('mocha');
+    expect(serviceDetails.name).to.be.a('string');
     expect(!!serviceDetails.version.match(/\d+\.\d+\.\d+/)).to.be.true;
     expect(serviceDetails.instanceId).length(24);
 

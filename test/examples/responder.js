@@ -40,6 +40,4 @@ module.exports = Responder.createServer({
   response.end();
 });
 
-// $lab:coverage:off$
 if (!module.parent) module.exports.listen();
-// $lab:coverage:on$

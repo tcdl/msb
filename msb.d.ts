@@ -23,8 +23,8 @@ declare namespace msb {
     close: () => void;
     hasChannels: () => boolean;
     configure: (config: MSBConfig) => this;
-    findOrCreateProducer: (topic: string, unusedChannelTimeoutMs?: number) => rawProducer;
-    createRawProducer: (topic: string) => rawProducer;
+    findOrCreateProducer: (topic: string, options?: producerOptions, unusedChannelTimeoutMs?: number) => rawProducer;
+    createRawProducer: (topic: string, options?: producerOptions) => rawProducer;
     findOrCreateConsumer: (topic: string, options: consumerOptions) => rawConsumer;
     createRawConsumer: (topic: string, options: consumerOptions) => rawConsumer;
     monitor: channelMonitor;
@@ -132,6 +132,7 @@ declare namespace msb {
   interface request {
     (options: string | {
       namespace: string;
+      routingKey?: string;
       waitForResponses?: number;
       channelManager?: channelManager;
       originalMessage?: Message;
@@ -190,6 +191,7 @@ declare namespace msb {
   }
 
   type brokerAdapters = "amqp" | "local";
+  type amqpExchangeType = "fanout" | "topic";
 
   interface ConfigAMQP {
     [key: string]: any;
@@ -203,6 +205,7 @@ declare namespace msb {
     heartbeat?: number;
     prefetchCount?: number;
     autoConfirm?: boolean;
+    type?: amqpExchangeType;
   }
 
 
@@ -218,13 +221,19 @@ declare namespace msb {
   }
 
   interface consumerOptions extends ConfigAMQP {
+    bindingKeys?: string| string[];
+  }
+
+  interface producerOptions extends ConfigAMQP {
   }
 
   interface MessageConfig {
     tags?: string[];
     middlewareNamespace?: string;
     namespace: string;
+    routingKey?: string;
   }
+
   interface Message {
     id: string;
     correlationId: string;
@@ -233,6 +242,7 @@ declare namespace msb {
       forward?: string;
       to: string;
       response?: string;
+      routingKey?: string;
     };
     meta?: MessageMeta;
     ack?: MessageAck;

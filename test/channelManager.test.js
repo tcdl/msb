@@ -66,7 +66,7 @@ describe('channelManager', function() {
       done();
     });
 
-    it('can reuse publisher and channels per topic', function(done) {
+    it('can reuse channels per topic', function(done) {
       var mockPublisher = {};
 
       simple.mock(queue, 'Publish').returnWith(mockPublisher);
@@ -90,7 +90,7 @@ describe('channelManager', function() {
       var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
       expect(amqp.create.callCount).equals(1);
-      expect(queue.Publish.callCount).equals(1);
+      expect(queue.Publish.callCount).equals(2);
       expect(queue.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
       expect(mockPublisher.channel.callCount).equals(2);
       expect(producer2).to.not.equal(producer1a);
@@ -159,6 +159,39 @@ describe('channelManager', function() {
       expect(queue.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
       expect(consumer1a).equals(consumer1b);
+      done();
+    });
+
+    it('can override default options', function(done) {
+      var mockSubscriber1 = {};
+      var mockSubscriber2 = {};
+
+      simple.mock(mockSubscriber1, 'setMaxListeners');
+      simple.mock(mockSubscriber1, 'on');
+      simple.mock(mockSubscriber2, 'setMaxListeners');
+      simple.mock(mockSubscriber2, 'on');
+
+      simple
+        .mock(queue, 'Subscribe')
+        .returnWith(mockSubscriber1)
+        .returnWith(mockSubscriber2)
+        .returnWith(null);
+
+      var consumer1a = channelManager.findOrCreateConsumer('con1:1');
+
+      expect(queue.Subscribe.called).to.be.true;
+      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+        durable: false,
+        type: 'fanout'
+      });
+
+      var consumer2 = channelManager.findOrCreateConsumer('con1:2', { type: 'topic', durable: true });
+
+      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+        durable: true,
+        type: 'topic'
+      });
+
       done();
     });
 
