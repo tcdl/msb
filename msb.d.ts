@@ -109,7 +109,7 @@ declare namespace msb {
     originalMessage: Message;
     requestChannelTimeoutMs: number;
 
-    publish(payload?: MessagePayload, cb?: (err?: Error) => void): this;
+    publish(payload?: MessagePayload, cb?: (err?: Error, payload?: MessagePayload) => void): this;
   }
 
   interface Responder {
@@ -137,7 +137,7 @@ declare namespace msb {
       channelManager?: channelManager;
       originalMessage?: Message;
       responseSchema?: JsonSchema;
-    }, payload: MessagePayload, cb?: ()=>void): Requester;
+    }, payload: MessagePayload, cb?: (err?: Error, payload?: MessagePayload)=>void): Requester;
   }
 
   interface validateWithSchema {
