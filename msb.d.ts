@@ -92,6 +92,11 @@ declare namespace msb {
     payloadMessages: Message[];
     responseChannel: rawConsumer;
 
+    on(event: string, listener: Function): this;
+    on(event: 'payload', listener: (payload: MessagePayload, message?: Message) => void): this;
+    on(event: 'ack', listener: (payload: MessageAck, message?: Message) => void): this;
+    on(event: 'end', listener: () => void): this;
+
     isAwaitingAcks: () => boolean;
     isAwaitingResponses: () => boolean;
     listenForResponses: (topic: string, shouldAcceptMessageFn?: (message: Message) => boolean) => this;
@@ -104,12 +109,15 @@ declare namespace msb {
   interface Requester extends Collector {
     (config?: CollectorConfig, originalMessage?: Message): this;
 
+    on(event: string, listener: Function): this;
+    on(event: 'error', listener: (error: Error) => void): this;
+
     meta: MessageMeta;
     message: Message;
     originalMessage: Message;
     requestChannelTimeoutMs: number;
 
-    publish(payload?: MessagePayload, cb?: (err?: Error, payload?: MessagePayload) => void): this;
+    publish(payload?: MessagePayload): this;
   }
 
   interface Responder {
@@ -122,11 +130,15 @@ declare namespace msb {
     originalMessage: Message;
     responseChannelTimeoutMs: number;
 
-    sendAck: (timeoutMs?: number, responsesRemaining?: number, cb?: () => void) => void;
-    send: (payload: MessagePayload, cb?: ()=>void) => void;
+    sendAck: (timeoutMs?: number, responsesRemaining?: number, cb?: errorCallback) => void;
+    send: (payload: MessagePayload, cb?: errorCallback) => void;
     createEmitter: (config: ResponderConfig,
                     channelManager?: channelManager) => ResponderEventEmitter;
     createServer: (config: ResponderConfig) => ResponderServer;
+  }
+
+  interface errorCallback {
+    (err?: Error): void;
   }
 
   interface request {
@@ -137,7 +149,7 @@ declare namespace msb {
       channelManager?: channelManager;
       originalMessage?: Message;
       responseSchema?: JsonSchema;
-    }, payload: MessagePayload, cb?: (err?: Error, payload?: MessagePayload)=>void): Requester;
+    }, payload: MessagePayload, cb?: (err?: Error, payload?: MessagePayload, message?: Message)=>void): Requester;
   }
 
   interface validateWithSchema {
@@ -211,7 +223,7 @@ declare namespace msb {
 
   interface rawProducer {
     channel: (topic: string) => {
-      publish: (payload: MessagePayload, cb?: () => void) => void;
+      publish: (payload: MessagePayload, cb?: errorCallback) => void;
       close: () => void;
     };
   }
@@ -279,7 +291,10 @@ declare namespace msb {
     responseChannelTimeoutMs?: number;
   }
 
-  interface ResponderEventEmitter {
+  interface ResponderEventEmitter extends EventEmitter {
+    on(event: string, listener: Function): this;
+    on(event: 'responder', listener: (responder: Responder) => void): this;
+
     end: () => void;
   }
 
