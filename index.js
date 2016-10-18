@@ -8,8 +8,6 @@ var msb = exports;
 
 msb.createChannelManager = require('./lib/channelManager').create;
 msb.channelManager = require('./lib/channelManager').default;
-msb.channelMonitor = msb.channelManager.monitor;
-msb.channelMonitorAgent = msb.channelManager.monitorAgent;
 msb.configure = msb.channelManager.configure
 
 msb.messageFactory = require('./lib/messageFactory');
