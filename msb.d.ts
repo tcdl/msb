@@ -2,8 +2,6 @@ import {EventEmitter} from "events";
 
 export let createChannelManager: msb.createChannelManager;
 export let channelManager: msb.channelManager;
-export let channelMonitor: msb.channelMonitor;
-export let channelMonitorAgent: msb.channelMonitorAgent;
 export let configure: msb.configure;
 export let messageFactory: msb.messageFactory;
 export let Collector: msb.Collector;
@@ -27,36 +25,6 @@ declare namespace msb {
     createRawProducer: (topic: string, options?: producerOptions) => rawProducer;
     findOrCreateConsumer: (topic: string, options: consumerOptions) => rawConsumer;
     createRawConsumer: (topic: string, options: consumerOptions) => rawConsumer;
-    monitor: channelMonitor;
-    monitorAgent: channelMonitorAgent;
-  }
-
-  interface channelMonitor extends EventEmitter {
-    announceNamespace: string;
-    heartbeatsNamespace: string;
-    heartbeatTimeoutMs: number;
-    heartbeatIntervalMs: number;
-    doc: Object;
-    docInProgress: Object;
-    channelManager: channelManager;
-    start: () => void;
-    doHeartbeat: () => void;
-    stop: () => void;
-    announcementConsumer: rawConsumer;
-    heartbeatRequester: Requester;
-  }
-
-  interface channelMonitorAgent extends EventEmitter {
-    announceNamespace: string;
-    heartbeatsNamespace: string;
-    doc: Object;
-    docInProgress: Object;
-    channelManager: channelManager;
-    start: () => void;
-    doBroadcast: () => void;
-    stop: () => void;
-    announcementProducer: rawProducer;
-    heartbeatResponderEmitter: ResponderEventEmitter;
   }
 
   interface configure {

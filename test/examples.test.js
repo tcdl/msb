@@ -9,7 +9,6 @@ var simple = require('simple-mock');
 describe('examples', function() {
   before(function(done) {
     simple.mock(msb.logger, 'warn').returnWith();
-    simple.mock(msb.channelMonitorAgent, 'start').returnWith();
 
     msb.configure({
       brokerAdapter: 'local'
