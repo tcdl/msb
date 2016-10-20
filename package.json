@@ -5,9 +5,10 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "test": "npm run cs && npm run test-no-cs",
+    "build": "tsc",
+    "test": "npm run build && npm run cs && npm run test-no-cs",
     "test-no-cs": "NODE_ENV=test mocha",
-    "cs": "tslint src/support/**",
+    "cs": "tslint lib/support/**/*.ts test/**/*.ts",
     "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages",
     "coveralls": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
