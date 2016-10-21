@@ -1,9 +1,9 @@
 export class AMQPPublisherAdapter {
-  config: any;
-  connection: any;
-  _exchangeByTopic: any;
+  config;
+  connection;
+  _exchangeByTopic;
 
-  constructor(config: any, connection: any) {
+  constructor(config, connection) {
     this.config = config;
     this.connection = connection;
     this._exchangeByTopic = {};
@@ -15,7 +15,7 @@ export class AMQPPublisherAdapter {
 
   publish(topic, message, cb) {
     const messageStr = JSON.stringify(message);
-    const routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : '';
+    const routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : "";
 
     this._publishMessageStr(topic, messageStr, routingKey, cb);
   }
@@ -23,7 +23,7 @@ export class AMQPPublisherAdapter {
   _publishMessageStr(topic, messageStr, routingKey, cb) {
     const self = this;
 
-    this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, function(err) {
+    this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, (err) => {
       if (err && err.error && err.error.replyCode === 404) {
         return self._ensureExchange(topic, function(err) {
           if (err) return cb(err);
