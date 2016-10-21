@@ -26,7 +26,7 @@ function getMainPackage(): PackageJson {
     return {
       name: "unknown",
       version: "unknown"
-    }
+    };
   }
 }
 
