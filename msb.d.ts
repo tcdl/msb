@@ -208,7 +208,6 @@ declare namespace msb {
   }
 
   interface MessageConfig {
-    ttl?: number;
     tags?: string[];
     middlewareNamespace?: string;
     namespace: string;
@@ -221,7 +220,7 @@ declare namespace msb {
     tags: string[];
     topics: {
       forward?: string;
-      to?: string;
+      to: string;
       response?: string;
       routingKey?: string;
     };
