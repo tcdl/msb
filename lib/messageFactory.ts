@@ -7,10 +7,9 @@ import MessageAck = msb.MessageAck;
 import MessagePayload = msb.MessagePayload;
 import MessageMeta = msb.MessageMeta;
 
-const _ = require('lodash');
-const INSTANCE_ID = serviceDetails.instanceId;
+const _ = require("lodash");
 
-const messageFactory = exports;
+const INSTANCE_ID = serviceDetails.instanceId;
 
 let contextMessage: Message = null;
 
@@ -20,7 +19,7 @@ export function createBaseMessage(config?: MessageConfig, originalMessage?: Mess
   const message = {
     id: generateId(), // This identifies this message
     correlationId: generateId(), // This identifies this flow
-    tags: messageFactory._createTags(config, originalMessage),
+    tags: _createTags(config, originalMessage),
     topics: {},
     meta: null, // To be filled with createMeta() -> completeMeta() sequence
     ack: null, // To be filled on ack or response
@@ -31,7 +30,7 @@ export function createBaseMessage(config?: MessageConfig, originalMessage?: Mess
 }
 
 export function createDirectedMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const message = messageFactory.createBaseMessage(config, originalMessage);
+  const message = createBaseMessage(config, originalMessage);
 
   if (config.middlewareNamespace) {
     message.topics.forward = config.namespace;
@@ -48,8 +47,8 @@ export function createDirectedMessage(config?: MessageConfig, originalMessage?: 
 }
 
 export function createBroadcastMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const meta = messageFactory.createMeta(config, originalMessage);
-  const message = messageFactory.createDirectedMessage(config, originalMessage);
+  const meta = createMeta(config, originalMessage);
+  const message = createDirectedMessage(config, originalMessage);
 
   message.meta = meta;
 
@@ -57,7 +56,7 @@ export function createBroadcastMessage(config?: MessageConfig, originalMessage?:
 }
 
 export function createRequestMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const message = messageFactory.createDirectedMessage(config, originalMessage);
+  const message = createDirectedMessage(config, originalMessage);
 
   message.topics.response = config.namespace + ':response:' + INSTANCE_ID;
 
@@ -65,7 +64,7 @@ export function createRequestMessage(config?: MessageConfig, originalMessage?: M
 }
 
 export function createResponseMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck, payload?: MessagePayload): Message {
-  const message = messageFactory.createBaseMessage(config, originalMessage);
+  const message = createBaseMessage(config, originalMessage);
 
   message.correlationId = originalMessage && originalMessage.correlationId;
   message.topics.to = originalMessage.topics.response;
@@ -76,7 +75,7 @@ export function createResponseMessage(config: MessageConfig, originalMessage: Me
 }
 
 export function createAckMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck): Message {
-  return messageFactory.createResponseMessage(config, originalMessage, ack, null);
+  return createResponseMessage(config, originalMessage, ack, null);
 }
 
 export function createAck(config?: MessageConfig): MessageAck {
@@ -114,6 +113,6 @@ export function endContext(): void {
   contextMessage = null;
 }
 
-export function _createTags(config, originalMessage) {
+export function _createTags(config, originalMessage): string[] {
   return _.union(config && config.tags, originalMessage && originalMessage.tags);
 }
