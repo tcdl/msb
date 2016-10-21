@@ -1,7 +1,7 @@
 "use strict";
 var chai_1 = require("chai");
 var messageFactory = require("../lib/messageFactory");
-describe.only("messageFactory", function () {
+describe("messageFactory", function () {
     describe("completeMeta()", function () {
         var messageConfig;
         var originalMessage;

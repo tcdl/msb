@@ -1,18 +1,17 @@
 import {expect} from "chai";
 import * as messageFactory from "../lib/messageFactory";
-import {msb} from "../msb";
-import MessageMeta = msb.MessageMeta;
-import MessageConfig = msb.MessageConfig;
-import Message = msb.Message;
+import MessageMeta = messageFactory.MessageMeta;
+import MessageConfig = messageFactory.MessageConfig;
+import Message = messageFactory.Message;
 
-describe("messageFactory", () => {
+describe("messageFactory", function() {
 
-  describe("completeMeta()", () => {
+  describe("completeMeta()", function() {
     let messageConfig: MessageConfig;
     let originalMessage: Message;
     let meta: MessageMeta;
 
-    beforeEach((done) => {
+    beforeEach(function(done) {
       messageConfig = {namespace: "my:topic"};
       originalMessage = {
         id: "123",
@@ -24,7 +23,7 @@ describe("messageFactory", () => {
       done();
     });
 
-    it("should add meta to the message", (done) => {
+    it("should add meta to the message", function(done) {
 
       const message = messageFactory.completeMeta(originalMessage, meta);
 
@@ -34,7 +33,7 @@ describe("messageFactory", () => {
       done();
     });
 
-    it("should add to to the topics", (done) => {
+    it("should add to to the topics", function(done) {
       const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
 
       expect(message.topics.to).to.exist;
@@ -43,7 +42,7 @@ describe("messageFactory", () => {
       done();
     });
 
-    it("should add forward to the topics on middlewareNamespace", (done) => {
+    it("should add forward to the topics on middlewareNamespace", function(done) {
       messageConfig.middlewareNamespace = "custom:topic";
       const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
 
@@ -55,7 +54,7 @@ describe("messageFactory", () => {
       done();
     });
 
-    it("should not add forward to the topics without on middlewareNamespace", (done) => {
+    it("should not add forward to the topics without on middlewareNamespace", function(done) {
       const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
 
       expect(message.topics.forward).not.to.exist;
@@ -63,7 +62,7 @@ describe("messageFactory", () => {
       done();
     });
 
-    it("should add publishedAt date", (done) => {
+    it("should add publishedAt date", function(done) {
 
       expect(meta.publishedAt).equals(null);
 
