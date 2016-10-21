@@ -1,46 +1,47 @@
-function AMQPPublisherAdapter(config, connection) {
-  this.config = config;
-  this.connection = connection;
-  this._exchangeByTopic = {};
+export class AMQPPublisherAdapter {
+  config: any;
+  connection: any;
+  _exchangeByTopic: any;
+
+  constructor(config: any, connection: any) {
+    this.config = config;
+    this.connection = connection;
+    this._exchangeByTopic = {};
+  }
+
+  close() {
+    // Do nothing
+  }
+
+  publish(topic, message, cb) {
+    const messageStr = JSON.stringify(message);
+    const routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : '';
+
+    this._publishMessageStr(topic, messageStr, routingKey, cb);
+  }
+
+  _publishMessageStr(topic, messageStr, routingKey, cb) {
+    const self = this;
+
+    this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, function(err) {
+      if (err && err.error && err.error.replyCode === 404) {
+        return self._ensureExchange(topic, function(err) {
+          if (err) return cb(err);
+
+          self._publishMessageStr(topic, messageStr, routingKey, cb);
+        });
+      }
+      if (err) return cb(err);
+      cb();
+    });
+  }
+
+  _ensureExchange(topic, cb) {
+    const exchange = this.connection.exchange({
+      exchange: topic,
+      type: this.config.type
+    });
+
+    exchange.declare(cb);
+  }
 }
-
-var publisher = AMQPPublisherAdapter.prototype;
-
-publisher.close = function() {
-  // Do nothing
-};
-
-publisher.publish = function(topic, message, cb) {
-  var messageStr = JSON.stringify(message);
-  var routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : '';
-
-  this._publishMessageStr(topic, messageStr, routingKey, cb);
-};
-
-publisher._publishMessageStr = function(topic, messageStr, routingKey, cb) {
-  var self = this;
-
-  this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, function(err) {
-    if (err && err.error && err.error.replyCode === 404) {
-      return self._ensureExchange(topic, function(err) {
-        if (err) return cb(err);
-
-        self._publishMessageStr(topic, messageStr, routingKey, cb);
-      });
-    }
-    if (err) return cb(err);
-    cb();
-  });
-};
-
-publisher._ensureExchange = function(topic, cb) {
-  var self = this;
-  var exchange = self.connection.exchange({
-    exchange: topic,
-    type: self.config.type
-  });
-
-  exchange.declare(cb);
-};
-
-exports.AMQPPublisherAdapter = AMQPPublisherAdapter;
