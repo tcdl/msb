@@ -17,18 +17,18 @@ export class AMQPPublisherAdapter {
     const messageStr = JSON.stringify(message);
     const routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : "";
 
-    this._publishMessageStr(topic, messageStr, routingKey, cb);
+    this.publishMessageStr(topic, messageStr, routingKey, cb);
   }
 
-  _publishMessageStr(topic, messageStr, routingKey, cb) {
+  private publishMessageStr(topic, messageStr, routingKey, cb) {
     const self = this;
 
     this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, (err) => {
       if (err && err.error && err.error.replyCode === 404) {
-        return self._ensureExchange(topic, function(err) {
+        return self.ensureExchange(topic, function(err) {
           if (err) return cb(err);
 
-          self._publishMessageStr(topic, messageStr, routingKey, cb);
+          self.publishMessageStr(topic, messageStr, routingKey, cb);
         });
       }
       if (err) return cb(err);
@@ -36,7 +36,7 @@ export class AMQPPublisherAdapter {
     });
   }
 
-  _ensureExchange(topic, cb) {
+  private ensureExchange(topic, cb) {
     const exchange = this.connection.exchange({
       exchange: topic,
       type: this.config.type

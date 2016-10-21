@@ -38,7 +38,7 @@ describe('AMQP Integration', function() {
     beforeEach(function(done) {
 
       _onMessageMethod = simple.mock(AMQPSubscriberAdapter.prototype,
-        '_onMessage');
+        'onMessage');
 
       channelManager = msb.createChannelManager().configure({
         brokerAdapter: 'amqp',
@@ -285,7 +285,7 @@ describe('AMQP Integration', function() {
     beforeEach(function(done) {
 
       _onMessageMethod = simple.mock(AMQPSubscriberAdapter.prototype,
-        '_onMessage');
+        'onMessage');
 
       channelManager = msb.createChannelManager().configure({
         brokerAdapter: 'amqp',
