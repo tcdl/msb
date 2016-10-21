@@ -3,7 +3,7 @@ import {resolve, join} from "path";
 const serviceDetailsModulePath = resolve(__dirname, "../lib/support/serviceDetails.js");
 const simple = require("simple-mock");
 
-describe.only("serviceDetails", function() {
+describe("serviceDetails", function() {
   let serviceDetails;
 
   beforeEach(function(done) {
@@ -11,7 +11,7 @@ describe.only("serviceDetails", function() {
     done();
   });
 
-  it.only("should set serviceDetails dynamically", function(done) {
+  it("should set serviceDetails dynamically", function(done) {
     const fakeInterfaces = {en0:
       [ { address: "1.2.3.4",
           netmask: "255.255.255.0",
@@ -34,7 +34,7 @@ describe.only("serviceDetails", function() {
     done();
   });
 
-  it.only("should set host 'unknown' on configured incorrectly host", function(done) {
+  it("should set host 'unknown' on configured incorrectly host", function(done) {
     simple.mock(require("os"), "hostname").throwWith(new Error());
 
     serviceDetails = require(serviceDetailsModulePath);
@@ -49,25 +49,13 @@ describe.only("serviceDetails", function() {
     done();
   });
 
-  it.only("should safely handle a lack of mainModule", function(done) {
-    simple.mock(process, "mainModule", undefined);
-
-    serviceDetails = require(serviceDetailsModulePath);
-
-    expect(serviceDetails.name).equals(undefined);
-    expect(serviceDetails.version).equals(undefined);
-    expect(serviceDetails.instanceId).length(24);
-
-    done();
-  });
-
   it("should safely handle a missing package.json", function(done) {
     simple.mock(process, "mainModule", { paths: ["/tmp/etc.js"] });
 
     serviceDetails = require(serviceDetailsModulePath);
 
-    expect(serviceDetails.name).equals(undefined);
-    expect(serviceDetails.version).equals(undefined);
+    expect(serviceDetails.name).equals("unknown");
+    expect(serviceDetails.version).equals("unknown");
     expect(serviceDetails.instanceId).length(24);
 
     done();
@@ -77,7 +65,6 @@ describe.only("serviceDetails", function() {
     simple.mock(process, "mainModule", { paths: [require("path").join(__dirname, "fixtures", "package.json")] });
 
     serviceDetails = require(serviceDetailsModulePath);
-    console.log(serviceDetails);
 
     expect(serviceDetails.name).equals("example");
     expect(serviceDetails.version).equals("1.0.0");
