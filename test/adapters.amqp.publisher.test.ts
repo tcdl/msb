@@ -5,7 +5,7 @@ const config = require("../lib/config").create();
 const simple = require("simple-mock");
 const AMQP = require("amqp-coffee");
 
-describe.only("AMQPPublisherAdapter", function() {
+describe("AMQPPublisherAdapter", function() {
   let connection;
   let publisher;
   let exchange;
@@ -24,7 +24,7 @@ describe.only("AMQPPublisherAdapter", function() {
       simple.mock(connection, "publish");
       simple.mock(connection, "exchange");
       simple.mock(exchange, "declare");
-      simple.mock(publisher, "_publishMessageStr");
+      simple.mock(publisher, "publishMessageStr");
       done();
     });
 
@@ -62,7 +62,7 @@ describe.only("AMQPPublisherAdapter", function() {
         }, (err) => {
           if (err) return console.error(err) || done(err);
 
-          expect(publisher._publishMessageStr.callCount).equals(2);
+          expect(publisher.publishMessageStr.callCount).equals(2);
           expect(connection.publish.callCount).equals(2);
           expect(connection.exchange.callCount).equals(1);
           done();
@@ -95,7 +95,7 @@ describe.only("AMQPPublisherAdapter", function() {
 
         setTimeout(() => {
           expect(cb.callCount).equals(2);
-          expect(publisher._publishMessageStr.callCount).equals(4);
+          expect(publisher.publishMessageStr.callCount).equals(4);
           expect(connection.publish.callCount).equals(4);
           expect(connection.exchange.callCount).equals(2); // Will call for each failed message
           done();

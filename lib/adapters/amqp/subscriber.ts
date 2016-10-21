@@ -1,149 +1,152 @@
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
-var _ = require('lodash');
+import {EventEmitter} from "events";
 import serviceDetails = require("../../support/serviceDetails");
-var WeakMapFill = (typeof WeakMap === 'undefined') ? require('weak-map') : WeakMap;
 
-function AMQPSubscriberAdapter(config, connection) {
-  this.setMaxListeners(0);
-  this.config = config;
-  this.connection = connection;
-  this.isClosed = false;
+const _ = require("lodash");
+const WeakMapFill = (typeof WeakMap === "undefined") ? require("weak-map") : WeakMap;
 
-  this._ackMap = new WeakMapFill();
-  this._onMessage = this._onMessage.bind(this);
-  this._onSelfError = this._onSelfError.bind(this);
-  this._onConsumerError = this._onConsumerError.bind(this);
-  this._ensureConsuming = this._ensureConsuming.bind(this);
-  this._emitConsuming = this._emitConsuming.bind(this);
+export class AMQPSubscriberAdapter extends EventEmitter {
 
-  this.on('error', this._onSelfError);
-  this._init();
-}
-util.inherits(AMQPSubscriberAdapter, EventEmitter);
+  DURABLE_QUEUE_OPTIONS = { durable: true, autoDelete: false, passive: false };
+  TRANSIENT_QUEUE_OPTIONS = { passive: false };
 
-var subscriber = AMQPSubscriberAdapter.prototype;
+  config;
+  connection;
+  isClosed: boolean;
+  _ackMap;
+  consumer;
+  _queueOptions;
 
-subscriber.DURABLE_QUEUE_OPTIONS = { durable: true, autoDelete: false, passive: false };
-subscriber.TRANSIENT_QUEUE_OPTIONS = { passive: false };
+  constructor(config, connection) {
+    super();
+    this.setMaxListeners(0);
+    this.config = config;
+    this.connection = connection;
+    this.isClosed = false;
 
-subscriber.close = function() {
-  this.isClosed = true;
-  this.connection.removeListener('ready', this._ensureConsuming);
-  if (this.consumer) this.consumer.close();
-};
+    this._ackMap = new WeakMapFill();
 
-subscriber.onceConsuming = function(cb) {
-  if (this.consumer && this.consumer.consumerState === 'open') return cb();
-  this.once('consuming', cb);
-};
-
-subscriber.confirmProcessedMessage = function(message, _safe) {
-  var envelope = this._ackMap.get(message);
-  // Only use _safe if you can't know whether message has already been confirmed/rejected
-  if (_safe && !envelope) return;
-  envelope.ack(); // Will fail if `!config.prefetchCount`
-  this._ackMap.delete(message);
-};
-
-subscriber.rejectMessage = function(message) {
-  var envelope = this._ackMap.get(message);
-  envelope.reject(); // Will fail if `!config.prefetchCount`
-  this._ackMap.delete(message);
-};
-
-subscriber._init = function() {
-  this.connection.on('ready', this._ensureConsuming);
-  if (this.connection.state === 'open') this._ensureConsuming();
-};
-
-subscriber._onMessage = function(envelope) {
-  var self = this;
-  var message = envelope.data.toString();
-
-  process.nextTick(function() {
-    var parsedMessage;
-    try {
-      parsedMessage = JSON.parse(message);
-      if (!_.isObject(parsedMessage)) throw new Error('Invalid message format');
-    } catch (e) {
-      envelope.reject();
-      self.emit('error', e);
-      return;
-    }
-    if (self.config.prefetchCount) self._ackMap.set(parsedMessage, envelope);
-    self.emit('message', parsedMessage);
-  });
-};
-
-subscriber._onSelfError = function() {
-  // Do nothing
-};
-
-subscriber._onConsumerError = function(err) {
-  this.emit('error', err);
-};
-
-subscriber._emitConsuming = function() {
-  this.emit('consuming');
-};
-
-subscriber._ensureConsuming = function() {
-  var self = this;
-  var config = self.config;
-  var connection = self.connection;
-  var consumer = self.consumer;
-
-  var exchange = connection.exchange({ exchange: config.channel, type: config.type });
-
-  function done(err) {
-    if (err) return self.emit('error', err);
-    self._emitConsuming();
+    this.on("error", this.onSelfError.bind(this));
+    this.init();
   }
 
-  exchange.declare(function(err) {
-    if (err) return done(err);
+  close() {
+    this.isClosed = true;
+    this.connection.removeListener("ready", this.ensureConsuming.bind(this));
+    if (this.consumer) this.consumer.close();
+  }
 
-    var queueOptions = self._getQueueOptions();
-    var queue = connection.queue(queueOptions);
-    var bindingKeys = !config.bindingKeys ? [''] :
-      _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
+  onceConsuming(cb) {
+    if (this.consumer && this.consumer.consumerState === "open") return cb();
+    this.once("consuming", cb);
+  }
 
-    queue.declare(queueOptions, function(err) {
+  confirmProcessedMessage(message, _safe) {
+    const envelope = this._ackMap.get(message);
+    // Only use _safe if you can"t know whether message has already been confirmed/rejected
+    if (_safe && !envelope) return;
+    envelope.ack(); // Will fail if `!config.prefetchCount`
+    this._ackMap.delete(message);
+  }
+
+  rejectMessage(message) {
+    const envelope = this._ackMap.get(message);
+    envelope.reject(); // Will fail if `!config.prefetchCount`
+    this._ackMap.delete(message);
+  }
+
+  private init() {
+    this.connection.on("ready", this.ensureConsuming.bind(this));
+    if (this.connection.state === "open") this.ensureConsuming();
+  }
+
+  private onMessage(envelope) {
+    const self = this;
+    const message = envelope.data.toString();
+
+    process.nextTick(function() {
+      let parsedMessage;
+      try {
+        parsedMessage = JSON.parse(message);
+        if (!_.isObject(parsedMessage)) throw new Error("Invalid message format");
+      } catch (e) {
+        envelope.reject();
+        self.emit("error", e);
+        return;
+      }
+      if (self.config.prefetchCount) self._ackMap.set(parsedMessage, envelope);
+      self.emit("message", parsedMessage);
+    });
+  }
+
+  private onSelfError() {
+    // Do nothing
+  }
+
+  private onConsumerError(err) {
+    this.emit("error", err);
+  }
+
+  private emitConsuming() {
+    this.emit("consuming");
+  }
+
+  private ensureConsuming() {
+    const self = this;
+    const config = self.config;
+    const connection = self.connection;
+    let consumer = self.consumer;
+
+    const exchange = connection.exchange({ exchange: config.channel, type: config.type });
+
+    function done(err) {
+      if (err) return self.emit("error", err);
+      self.emitConsuming();
+    }
+
+    exchange.declare(function(err) {
       if (err) return done(err);
 
-      for (var index = 0; index < bindingKeys.length; ++index) {
-        queue.bind(config.channel, bindingKeys[index], function(err) {
-          if (err) return done(err);
-          if (self.isClosed) return; // Skip if already closed
+      const queueOptions = self.getQueueOptions();
+      const queue = connection.queue(queueOptions);
+      const bindingKeys = !config.bindingKeys ? [""] :
+        _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
 
-          if (consumer) {
-            self.consumer.resume(done);
-          } else {
-            self.consumer = consumer = connection.consume(queueOptions.queue, _.clone(queueOptions), self._onMessage, done);
-            consumer.on('error', self._onConsumerError);
-          }
-        });
-      }
+      queue.declare(queueOptions, function(err) {
+        if (err) return done(err);
+
+        for (let index = 0; index < bindingKeys.length; ++index) {
+          queue.bind(config.channel, bindingKeys[index], function(err) {
+            if (err) return done(err);
+            if (self.isClosed) return; // Skip if already closed
+
+            if (consumer) {
+              self.consumer.resume(done);
+            } else {
+              self.consumer = consumer = connection.consume(queueOptions.queue, _.clone(queueOptions), self.onMessage.bind(self), done);
+              consumer.on("error", self.onConsumerError.bind(self));
+            }
+          });
+        }
+      });
     });
-  });
-};
+  }
 
-subscriber._getQueueOptions = function() {
-  if (this._queueOptions) return this._queueOptions;
+  private getQueueOptions() {
+    if (this._queueOptions) return this._queueOptions;
 
-  var config = this.config;
-  var queueOptionsDefaults = (config.durable) ? this.DURABLE_QUEUE_OPTIONS : this.TRANSIENT_QUEUE_OPTIONS;
-  var queueSuffix = '.' + (config.groupId || serviceDetails.instanceId) + '.' + ((config.durable) ? 'd' : 't');
-  var queueName = config.channel + queueSuffix;
+    const config = this.config;
+    const queueOptionsDefaults = (config.durable) ? this.DURABLE_QUEUE_OPTIONS : this.TRANSIENT_QUEUE_OPTIONS;
+    const queueSuffix = "." + (config.groupId || serviceDetails.instanceId) + "." + ((config.durable) ? "d" : "t");
+    const queueName = config.channel + queueSuffix;
 
-  this._queueOptions = _.defaults({
-    queue: queueName,
-    exclusive: !config.groupId,
-    prefetchCount: config.prefetchCount
-  }, queueOptionsDefaults);
+    this._queueOptions = _.defaults({
+      queue: queueName,
+      exclusive: !config.groupId,
+      prefetchCount: config.prefetchCount
+    }, queueOptionsDefaults);
 
-  return this._queueOptions;
-};
+    return this._queueOptions;
+  }
+}
 
 exports.AMQPSubscriberAdapter = AMQPSubscriberAdapter;

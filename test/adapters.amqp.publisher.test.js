@@ -4,7 +4,7 @@ var publisher_1 = require("../lib/adapters/amqp/publisher");
 var config = require("../lib/config").create();
 var simple = require("simple-mock");
 var AMQP = require("amqp-coffee");
-describe.only("AMQPPublisherAdapter", function () {
+describe("AMQPPublisherAdapter", function () {
     var connection;
     var publisher;
     var exchange;
@@ -20,7 +20,7 @@ describe.only("AMQPPublisherAdapter", function () {
             simple.mock(connection, "publish");
             simple.mock(connection, "exchange");
             simple.mock(exchange, "declare");
-            simple.mock(publisher, "_publishMessageStr");
+            simple.mock(publisher, "publishMessageStr");
             done();
         });
         it("can publish where an exchange already exists", function (done) {
@@ -51,7 +51,7 @@ describe.only("AMQPPublisherAdapter", function () {
                 }, function (err) {
                     if (err)
                         return console.error(err) || done(err);
-                    chai_1.expect(publisher._publishMessageStr.callCount).equals(2);
+                    chai_1.expect(publisher.publishMessageStr.callCount).equals(2);
                     chai_1.expect(connection.publish.callCount).equals(2);
                     chai_1.expect(connection.exchange.callCount).equals(1);
                     done();
@@ -79,7 +79,7 @@ describe.only("AMQPPublisherAdapter", function () {
                 }, cb);
                 setTimeout(function () {
                     chai_1.expect(cb.callCount).equals(2);
-                    chai_1.expect(publisher._publishMessageStr.callCount).equals(4);
+                    chai_1.expect(publisher.publishMessageStr.callCount).equals(4);
                     chai_1.expect(connection.publish.callCount).equals(4);
                     chai_1.expect(connection.exchange.callCount).equals(2); // Will call for each failed message
                     done();
