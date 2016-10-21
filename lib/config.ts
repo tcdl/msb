@@ -1,56 +1,75 @@
-import {MSBConfig} from "./globals";
+import {JsonSchema} from "tv4";
 import serviceDetails = require("./support/serviceDetails");
-var _ = require("lodash");
+import {resolve} from "path";
+const _ = require("lodash");
 
-export function create(): MSBConfig {
-  let config = <MSBConfig> {};
-  config.schema = require("../schema");
-  config.cleanupConsumers = false;
-  config.autoMessageContext = true;
-  config.brokerAdapter = process.env.MSB_BROKER_ADAPTER || "amqp";
+type adapterName = "amqp" | "local";
+type amqpExchangeType = "fanout" | "topic"
+interface ConfigAMQP {
+  [key: string]: any;
+  host?: string;
+  port?: number;
+  login?: string;
+  password?: string;
+  vhost?: string;
+  groupId?: string;
+  durable?: boolean;
+  heartbeat?: number;
+  prefetchCount?: number;
+  autoConfirm?: boolean;
+  type?: amqpExchangeType;
+}
 
-  config.amqp = {
-    host: process.env.MSB_BROKER_HOST || "127.0.0.1",
-    port: process.env.MSB_BROKER_PORT || 5672,
-    login: process.env.MSB_BROKER_USER || "guest",
-    password: process.env.MSB_BROKER_PASS || "guest",
-    vhost: process.env.MSB_AMQP_VHOST || "/",
-    groupId: serviceDetails.name,
-    durable: false,
-    heartbeat: 10000, // In milliseconds
-    prefetchCount: 1,
-    autoConfirm: true,
-    type: "fanout"
-  };
+export class Config {
+  schema: JsonSchema;
+  cleanupConsumers: boolean;
+  autoMessageContext: boolean;
+  brokerAdapter: adapterName;
+  amqp: ConfigAMQP;
+  local: Object;
 
-  config.local = {};
+  constructor() {
+    this.schema = require("../schema");
+    this.cleanupConsumers = false;
+    this.autoMessageContext = true;
+    this.brokerAdapter = process.env.MSB_BROKER_ADAPTER || "amqp";
+
+    this.amqp = {
+      host: process.env.MSB_BROKER_HOST || "127.0.0.1",
+      port: process.env.MSB_BROKER_PORT || 5672,
+      login: process.env.MSB_BROKER_USER || "guest",
+      password: process.env.MSB_BROKER_PASS || "guest",
+      vhost: process.env.MSB_AMQP_VHOST || "/",
+      groupId: serviceDetails.name,
+      durable: false,
+      heartbeat: 10000, // In milliseconds
+      prefetchCount: 1,
+      autoConfirm: true,
+      type: "fanout"
+    };
+
+    this.local = {};
+
+    this._init();
+  }
+
+  configure(obj: Object): void {
+    _.merge(this, obj);
+  }
 
   /**
-   * Override default configuration
-   *
-   * @param  {Object} obj
+   * @todo Make private?
    */
-  config.configure = function (obj) {
-    _.merge(config, obj);
-  };
-
-  /**
-   * Initialize the configuration, values loaded dynamically on start
-   * (Private, for testing)
-   */
-  config._init = function () {
-    /* Override defaults from file */
+  _init() {
     if (process.env.MSB_CONFIG_PATH) {
-      var configPath = require("path").resolve(process.env.MSB_CONFIG_PATH);
-      var jsonObj = require(configPath);
+      const configPath = resolve(process.env.MSB_CONFIG_PATH);
+      const jsonObj = require(configPath);
       delete(require.cache[configPath]);
-      config.configure(jsonObj);
+      this.configure(jsonObj);
     }
-  };
+  }
+}
 
-  config._init();
-
-  /* Set any values that need to be set using the final config here */
-
-  return config;
-};
+export function create() {
+  return new Config();
+}
