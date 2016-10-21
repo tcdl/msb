@@ -1,19 +1,19 @@
 import serviceDetails = require("./support/serviceDetails");
 import generateId = require("./support/generateId");
-var _ = require('lodash');
-var INSTANCE_ID = serviceDetails.instanceId;
 
-var messageFactory = exports;
+const _ = require("lodash");
 
-var contextMessage = null;
+const INSTANCE_ID = serviceDetails.instanceId;
 
-messageFactory.createBaseMessage = function(config, originalMessage) {
+let contextMessage: Message = null;
+
+export function createBaseMessage(config?: MessageConfig, originalMessage?: Message): Message {
   if (originalMessage === undefined) originalMessage = contextMessage;
 
-  var message = {
+  const message = {
     id: generateId(), // This identifies this message
     correlationId: generateId(), // This identifies this flow
-    tags: messageFactory._createTags(config, originalMessage),
+    tags: _createTags(config, originalMessage),
     topics: {},
     meta: null, // To be filled with createMeta() -> completeMeta() sequence
     ack: null, // To be filled on ack or response
@@ -21,10 +21,10 @@ messageFactory.createBaseMessage = function(config, originalMessage) {
   };
 
   return message;
-};
+}
 
-messageFactory.createDirectedMessage = function(config, originalMessage) {
-  var message = messageFactory.createBaseMessage(config, originalMessage);
+export function createDirectedMessage(config?: MessageConfig, originalMessage?: Message): Message {
+  const message = createBaseMessage(config, originalMessage);
 
   if (config.middlewareNamespace) {
     message.topics.forward = config.namespace;
@@ -38,27 +38,27 @@ messageFactory.createDirectedMessage = function(config, originalMessage) {
   }
 
   return message;
-};
+}
 
-messageFactory.createBroadcastMessage = function(config, originalMessage) {
-  var meta = messageFactory.createMeta(config, originalMessage);
-  var message = messageFactory.createDirectedMessage(config, originalMessage);
+export function createBroadcastMessage(config?: MessageConfig, originalMessage?: Message): Message {
+  const meta = createMeta(config, originalMessage);
+  const message = createDirectedMessage(config, originalMessage);
 
   message.meta = meta;
 
   return message;
-};
+}
 
-messageFactory.createRequestMessage = function(config, originalMessage) {
-  var message = messageFactory.createDirectedMessage(config, originalMessage);
+export function createRequestMessage(config?: MessageConfig, originalMessage?: Message): Message {
+  const message = createDirectedMessage(config, originalMessage);
 
-  message.topics.response = config.namespace + ':response:' + INSTANCE_ID;
+  message.topics.response = config.namespace + ":response:" + INSTANCE_ID;
 
   return message;
-};
+}
 
-messageFactory.createResponseMessage = function(config, originalMessage, ack, payload) {
-  var message = messageFactory.createBaseMessage(config, originalMessage);
+export function createResponseMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck, payload?: MessagePayload): Message {
+  const message = createBaseMessage(config, originalMessage);
 
   message.correlationId = originalMessage && originalMessage.correlationId;
   message.topics.to = originalMessage.topics.response;
@@ -66,23 +66,21 @@ messageFactory.createResponseMessage = function(config, originalMessage, ack, pa
   message.payload = payload;
 
   return message;
-};
+}
 
-messageFactory.createAckMessage = function(config, originalMessage, ack) {
-  var message = messageFactory.createResponseMessage(config, originalMessage, ack, null);
+export function createAckMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck): Message {
+  return createResponseMessage(config, originalMessage, ack, null);
+}
 
-  return message;
-};
-
-messageFactory.createAck = function(config) {
+export function createAck(config?: MessageConfig): MessageAck {
   return {
     responderId: generateId(), // config.groupId || generateId(),
     responsesRemaining: null, // -n decrements, 0 resets, n increments
     timeoutMs: null // Defaults to the timeout on the collector/requester
   };
-};
+}
 
-messageFactory.createMeta = function(config, originalMessage) {
+export function createMeta(config?: MessageConfig, originalMessage?: Message): MessageMeta {
   if (originalMessage === undefined) originalMessage = contextMessage;
 
   return {
@@ -92,23 +90,75 @@ messageFactory.createMeta = function(config, originalMessage) {
     durationMs: null,
     serviceDetails: serviceDetails
   };
-};
+}
 
-messageFactory.completeMeta = function(message, meta) {
+export function completeMeta(message?: Message, meta?: MessageMeta): Message {
   meta.publishedAt = new Date();
-  meta.durationMs = meta.publishedAt - meta.createdAt.valueOf();
+  meta.durationMs = meta.publishedAt.valueOf() - meta.createdAt.valueOf();
   message.meta = meta;
   return message;
-};
+}
 
-messageFactory.startContext = function(message) {
+export function startContext(message?: Message): void {
   contextMessage = message;
-};
+}
 
-messageFactory.endContext = function() {
+export function endContext(): void {
   contextMessage = null;
-};
+}
 
-messageFactory._createTags = function(config, originalMessage) {
+export function _createTags(config, originalMessage): string[] {
   return _.union(config && config.tags, originalMessage && originalMessage.tags);
-};
+}
+
+export interface MessageConfig {
+  ttl?: number;
+  tags?: string[];
+  middlewareNamespace?: string;
+  namespace: string;
+  routingKey?: string;
+}
+
+export interface Message {
+  id: string;
+  correlationId: string;
+  tags: string[];
+  topics: {
+    forward?: string;
+    to?: string;
+    response?: string;
+    routingKey?: string;
+  };
+  meta?: MessageMeta;
+  ack?: MessageAck;
+  payload?: MessagePayload;
+}
+
+export interface MessagePayload {
+  [key: string]: any;
+  statusCode?: number;
+  method?: string;
+  headers?: any;
+  body?: any;
+}
+
+export interface MessageMeta {
+  serviceDetails: {
+    hostname: string;
+    ip?: string;
+    pid: number;
+    name: string;
+    version: string;
+    instanceId: string;
+  };
+  ttl?: number;
+  publishedAt?: Date;
+  createdAt: Date;
+  durationMs?: number;
+}
+
+export interface MessageAck {
+  responderId: string;
+  responsesRemaining?: number;
+  timeoutMs?: number;
+}
