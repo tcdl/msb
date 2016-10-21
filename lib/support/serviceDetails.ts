@@ -1,6 +1,34 @@
 import generateId = require("./generateId");
 import {hostname, networkInterfaces} from "os";
-const pkg: {name: string, version: string} = require("pkginfo")(module, "name", "version");
+import {resolve} from "path";
+import {accessSync} from "fs";
+
+interface PackageJson {
+  [key: string]: any;
+  name: string;
+  version: string;
+}
+
+function getMainPackage(): PackageJson {
+  const mainModuleName = require.main.paths.find((modulesPath) => {
+    const pathToPackage = resolve(modulesPath, "..", "package.json");
+    try {
+      accessSync(pathToPackage);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  });
+
+  if (mainModuleName) {
+    return require(resolve(mainModuleName, "..", "package.json"));
+  } else {
+    return {
+      name: "unknown",
+      version: "unknown"
+    }
+  }
+}
 
 function getIpAddress(): string {
   const interfaces = networkInterfaces();
@@ -10,7 +38,7 @@ function getIpAddress(): string {
     .map((iface) => iface.address);
   return ips[0] ? ips[0] : "unknown";
 }
-
+let mainPackage = getMainPackage();
 let serviceHostname: string;
 
 try {
@@ -23,7 +51,7 @@ export = {
   hostname: serviceHostname,
   ip: getIpAddress(),
   pid: process.pid,
-  name: process.env.MSB_SERVICE_NAME || pkg.name,
-  version: process.env.MSB_SERVICE_VERSION || pkg.version,
+  name: process.env.MSB_SERVICE_NAME || mainPackage.name,
+  version: process.env.MSB_SERVICE_VERSION || mainPackage.version,
   instanceId: process.env.MSB_SERVICE_INSTANCE_ID || generateId()
 };
