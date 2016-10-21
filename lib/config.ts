@@ -1,5 +1,5 @@
 import {MSBConfig} from "./globals";
-import {serviceDetails} from "./support/serviceDetails";
+import serviceDetails = require("./support/serviceDetails");
 var _ = require("lodash");
 
 export function create(): MSBConfig {

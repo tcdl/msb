@@ -12,7 +12,7 @@ describe.only('serviceDetails', function () {
         done();
     });
     it('should set serviceDetails dynamically', function (done) {
-        // simple.mock(require('os'), 'hostname').returnWith('abchost');
+        simple.mock(require('os'), 'hostname').returnWith('abchost');
         simple.mock(require('ip'), 'address').returnWith('1.2.3.4');
         serviceDetails = require(serviceDetailsModulePath);
         expect(serviceDetails.hostname).equals('abchost');
