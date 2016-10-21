@@ -1,7 +1,7 @@
 "use strict";
 var chai_1 = require("chai");
 var simple = require("simple-mock");
-describe.only("config", function () {
+describe("config", function () {
     afterEach(function (done) {
         simple.restore();
         done();

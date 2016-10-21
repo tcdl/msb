@@ -1,11 +1,5 @@
 import serviceDetails = require("./support/serviceDetails");
 import generateId = require("./support/generateId");
-import {msb} from "../msb";
-import Message = msb.Message;
-import MessageConfig = msb.MessageConfig;
-import MessageAck = msb.MessageAck;
-import MessagePayload = msb.MessagePayload;
-import MessageMeta = msb.MessageMeta;
 
 const _ = require("lodash");
 
@@ -58,7 +52,7 @@ export function createBroadcastMessage(config?: MessageConfig, originalMessage?:
 export function createRequestMessage(config?: MessageConfig, originalMessage?: Message): Message {
   const message = createDirectedMessage(config, originalMessage);
 
-  message.topics.response = config.namespace + ':response:' + INSTANCE_ID;
+  message.topics.response = config.namespace + ":response:" + INSTANCE_ID;
 
   return message;
 }
@@ -115,4 +109,56 @@ export function endContext(): void {
 
 export function _createTags(config, originalMessage): string[] {
   return _.union(config && config.tags, originalMessage && originalMessage.tags);
+}
+
+export interface MessageConfig {
+  ttl?: number;
+  tags?: string[];
+  middlewareNamespace?: string;
+  namespace: string;
+  routingKey?: string;
+}
+
+export interface Message {
+  id: string;
+  correlationId: string;
+  tags: string[];
+  topics: {
+    forward?: string;
+    to?: string;
+    response?: string;
+    routingKey?: string;
+  };
+  meta?: MessageMeta;
+  ack?: MessageAck;
+  payload?: MessagePayload;
+}
+
+export interface MessagePayload {
+  [key: string]: any;
+  statusCode?: number;
+  method?: string;
+  headers?: any;
+  body?: any;
+}
+
+export interface MessageMeta {
+  serviceDetails: {
+    hostname: string;
+    ip?: string;
+    pid: number;
+    name: string;
+    version: string;
+    instanceId: string;
+  };
+  ttl?: number;
+  publishedAt?: Date;
+  createdAt: Date;
+  durationMs?: number;
+}
+
+export interface MessageAck {
+  responderId: string;
+  responsesRemaining?: number;
+  timeoutMs?: number;
 }
