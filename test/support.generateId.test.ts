@@ -5,7 +5,7 @@ const simple = require("simple-mock");
 const MAX_PER_SECOND: number = 65536;
 
 // NOTE: Requires lodash@2.n as version 3 will time out on performing `_.uniq()` operation.
-describe.only("generateId", function() {
+describe("generateId", function() {
   afterEach(function(done) {
     simple.restore();
     done();
