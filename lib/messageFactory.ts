@@ -1,5 +1,5 @@
-import {generateId} from "./support/generateId";
-import {serviceDetails} from "./support/serviceDetails";
+import serviceDetails = require("./support/serviceDetails");
+import generateId = require("./support/generateId");
 var _ = require('lodash');
 var INSTANCE_ID = serviceDetails.instanceId;
 
