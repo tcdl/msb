@@ -8,7 +8,7 @@ buf[5] = INSTANCE_ID[1];
 
 buf.writeUInt16BE(process.pid, 6, true);
 
-export function generateId(): string {
+function generateId(): string {
   buf.writeUInt32BE(Math.floor(Date.now() / 1000) - BASE_UNIX_DATE, 0, true);
   buf.writeUInt16BE(inc(), 8);
   buf.writeUInt8(Math.floor(Math.random() * 256), 10);
@@ -22,3 +22,5 @@ function inc(): number {
   i = (i - 1) || maxI;
   return maxI - i;
 }
+
+export = generateId;

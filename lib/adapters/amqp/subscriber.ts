@@ -1,7 +1,7 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
-import {serviceDetails} from "../../support/serviceDetails";
+import serviceDetails = require("../../support/serviceDetails");
 var WeakMapFill = (typeof WeakMap === 'undefined') ? require('weak-map') : WeakMap;
 
 function AMQPSubscriberAdapter(config, connection) {

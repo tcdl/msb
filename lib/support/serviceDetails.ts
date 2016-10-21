@@ -1,4 +1,4 @@
-import {generateId} from "./generateId";
+import generateId = require("./generateId");
 import {hostname, networkInterfaces} from "os";
 const pkg: {name: string, version: string} = require("pkginfo")(module, "name", "version");
 
@@ -19,7 +19,7 @@ try {
   serviceHostname = "unknown";
 }
 
-export let serviceDetails = {
+export = {
   hostname: serviceHostname,
   ip: getIpAddress(),
   pid: process.pid,
