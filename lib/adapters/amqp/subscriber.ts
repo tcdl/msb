@@ -1,22 +1,24 @@
 import {EventEmitter} from "events";
 import serviceDetails = require("../../support/serviceDetails");
+import {ConfigAMQP} from "../../config";
+import {Message} from "../../messageFactory";
 
-const _ = require("lodash");
 const WeakMapFill = (typeof WeakMap === "undefined") ? require("weak-map") : WeakMap;
+const _ = require("lodash");
 
 export class AMQPSubscriberAdapter extends EventEmitter {
 
   DURABLE_QUEUE_OPTIONS = { durable: true, autoDelete: false, passive: false };
   TRANSIENT_QUEUE_OPTIONS = { passive: false };
 
-  config;
+  config: ConfigAMQP;
   connection;
   isClosed: boolean;
   _ackMap;
   consumer;
   _queueOptions;
 
-  constructor(config, connection) {
+  constructor(config: ConfigAMQP, connection) {
     super();
     this.setMaxListeners(0);
     this.config = config;
@@ -40,7 +42,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     this.once("consuming", cb);
   }
 
-  confirmProcessedMessage(message, _safe) {
+  confirmProcessedMessage(message: Message, _safe: boolean) {
     const envelope = this._ackMap.get(message);
     // Only use _safe if you can"t know whether message has already been confirmed/rejected
     if (_safe && !envelope) return;
@@ -48,7 +50,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     this._ackMap.delete(message);
   }
 
-  rejectMessage(message) {
+  rejectMessage(message: Message) {
     const envelope = this._ackMap.get(message);
     envelope.reject(); // Will fail if `!config.prefetchCount`
     this._ackMap.delete(message);
@@ -148,5 +150,3 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     return this._queueOptions;
   }
 }
-
-exports.AMQPSubscriberAdapter = AMQPSubscriberAdapter;
