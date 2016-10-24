@@ -1,5 +1,5 @@
-import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "./adapter";
 import {EventEmitter} from "events";
+import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "./adapter";
 import {BrokerConfig, LocalConfig} from "../config";
 
 class LocalBrokerAdapter implements BrokerAdapter {
