@@ -23,11 +23,12 @@ export interface ConfigAMQP extends BrokerConfig {
   prefetchCount?: number;
   autoConfirm?: boolean;
   type?: amqpExchangeType;
-  channel?: string;
+  channel?: string; //todo: this property should not be passed via broker config
   bindingKeys?: string[];
 }
 
 export interface LocalConfig extends BrokerConfig {
+  channel?: string; //todo: this property should not be passed via broker config
 }
 
 export class Config {
