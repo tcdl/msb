@@ -1,9 +1,6 @@
-/* Setup */
-var expect = require('chai').expect;
-
-/* Modules */
-var simple = require('simple-mock');
-var msb = require('..');
+import {expect} from "chai";
+const msb = require("..");
+const simple = require("simple-mock");
 
 /* Tests */
 describe('request()', function() {

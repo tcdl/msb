@@ -1,11 +1,10 @@
-'use strict';
-var _ = require('lodash');
-var EventEmitter = require('events').EventEmitter;
-var debug = require('debug')('msb:channelManager');
-var validateWithSchema = require('./validateWithSchema');
-var messageFactory = require('./messageFactory');
-var helpers = require('./support/helpers');
-var logger = require('./support/logger');
+const _ = require('lodash');
+import {EventEmitter} from "events";
+const debug = require('debug')('msb:channelManager');
+import validateWithSchema = require("./validateWithSchema");
+import * as messageFactory from "./messageFactory";
+import * as helpers from "./support/helpers";
+import * as logger from "./support/logger";
 
 var channelManager = exports;
 
