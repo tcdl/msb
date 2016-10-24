@@ -11,8 +11,8 @@ msb.channelManager = require('./lib/channelManager').default;
 msb.configure = msb.channelManager.configure
 
 msb.messageFactory = require('./lib/messageFactory');
-msb.Collector = require('./lib/collector');
-msb.Requester = require('./lib/requester');
+msb.Collector = (require('./lib/collector')).Collector;
+msb.Requester = (require('./lib/requester')).Requester;
 msb.Responder = require('./lib/responder');
 msb.request = require('./lib/request');
 msb.validateWithSchema = require('./lib/validateWithSchema');

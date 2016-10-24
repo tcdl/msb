@@ -23,7 +23,7 @@ declare namespace msb {
     configure: (config: MSBConfig) => this;
     findOrCreateProducer: (topic: string, options?: producerOptions, unusedChannelTimeoutMs?: number) => rawProducer;
     createRawProducer: (topic: string, options?: producerOptions) => rawProducer;
-    findOrCreateConsumer: (topic: string, options: consumerOptions) => rawConsumer;
+    findOrCreateConsumer: (topic: string, options?: consumerOptions) => rawConsumer;
     createRawConsumer: (topic: string, options: consumerOptions) => rawConsumer;
   }
 
@@ -190,8 +190,8 @@ declare namespace msb {
 
 
   interface rawProducer {
+    publish: (payload: MessagePayload, cb?: errorCallback) => void;
     channel: (topic: string) => {
-      publish: (payload: MessagePayload, cb?: errorCallback) => void;
       close: () => void;
     };
   }
