@@ -69,4 +69,4 @@ function _errorHandler(request, response, err, ultimateErr?) {
   response.end();
 }
 
-module.exports = ResponderServer;
+exports = ResponderServer;

@@ -1,10 +1,7 @@
-/* Setup */
-var expect = require('chai').expect;
-
-/* Modules */
-var msb = require('..');
-var simple = require('simple-mock');
-var mockResponderFactory = require('msb-test-utils/mockResponderFactory');
+import {expect} from "chai";
+const msb = require("..");
+const simple = require("simple-mock");
+const mockResponderFactory = require('msb-test-utils/mockResponderFactory');
 
 describe('Requester/Collector', function() {
   var mockNamespace;

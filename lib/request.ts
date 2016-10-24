@@ -1,8 +1,8 @@
-var _ = require('lodash');
-var validateWithSchema = require('./validateWithSchema');
-var Requester_ = require('./requester');
+const _ = require("lodash");
+import validateWithSchema = require("./validateWithSchema");
+import {Requester} from "./requester";
 
-module.exports = function(options, payload, cb) {
+exports = function (options, payload, cb) {
   if (_.isString(options)) {
     options = {
       namespace: options,
@@ -14,20 +14,20 @@ module.exports = function(options, payload, cb) {
 
   options = _.clone(options);
 
-  var channelManager = options.channelManager;
+  const channelManager = options.channelManager;
   delete(options.channelManager);
 
-  var originalMessage = options.originalMessage;
+  const originalMessage = options.originalMessage;
   delete(options.originalMessage);
 
-  var responseSchema = options.responseSchema;
+  const responseSchema = options.responseSchema;
   delete(options.responseSchema);
 
-  var requester = new Requester_(options, originalMessage);
-  var responsePayload;
-  var responseMessage;
+  const requester = new Requester(options, originalMessage);
+  let responsePayload;
+  let responseMessage;
 
-  var onResponseFn = function(payload, message) {
+  let onResponseFn = function (payload, message) {
     responsePayload = payload;
     responseMessage = message;
   };
@@ -41,11 +41,11 @@ module.exports = function(options, payload, cb) {
   }
 
   requester
-  .on('response', onResponseFn)
-  .once('error', cb)
-  .once('end', function() {
-    cb(null, responsePayload, responseMessage);
-  });
+    .on('response', onResponseFn)
+    .once('error', cb)
+    .once('end', function () {
+      cb(null, responsePayload, responseMessage);
+    });
 
   return requester.publish(payload);
 };

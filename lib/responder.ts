@@ -1,8 +1,7 @@
-'use strict';
-var EventEmitter = require('events').EventEmitter;
-var _ = require('lodash');
-var messageFactory = require('./messageFactory');
-var ResponderServer_ = require('./responderServer');
+import {EventEmitter} from "events";
+const _ = require('lodash');
+import * as messageFactory from "./messageFactory";
+import ResponderServer = require("./responderServer");
 
 function Responder(config, originalMessage): void {
   if (!(this instanceof Responder)) return new Responder(config, originalMessage);
@@ -91,7 +90,7 @@ function createEmitter(config, channelManager) {
 };
 
 function createServer(config) {
-  return new ResponderServer_(config);
+  return new ResponderServer(config);
 };
 
 module.exports = Responder;

@@ -1,25 +1,24 @@
-'use strict';
-var msb = require('../..');
-var Responder = msb.Responder;
-var validateWithSchema = msb.validateWithSchema;
-var i = 1001;
-var payloadSchema = {
- type: 'object',
+const msb = require("../..");
+const Responder_ = msb.Responder;
+const validateWithSchema = msb.validateWithSchema;
+const i = 1001;
+const payloadSchema = {
+ type: "object",
  properties: {
-   body: { type: 'object' }
+   body: { type: "object" }
  }
 };
 
-module.exports = Responder.createServer({
- namespace: 'test:general',
- tags: ['b']
+module.exports = Responder_.createServer({
+ namespace: "test:general",
+ tags: ["b"]
 })
 // Validation middleware
 .use(validateWithSchema.middleware(payloadSchema))
 // Arrays of middleware
 .use([
  function(request, response, next) {
-   if (request.body && request.body.instruction === 'error') return next(new Error());
+   if (request.body && request.body.instruction === "error") return next(new Error());
    next();
  },
  function(request, response, next) {
@@ -33,10 +32,10 @@ module.exports = Responder.createServer({
 })
 // Custom error handler
 .use(function(err, request, response, next) {
- if (err.name === 'SchemaValidationError') return next();
+ if (err.name === "SchemaValidationError") return next();
 
  response.writeHead(500);
- response.body = 'Special Message';
+ response.body = "Special Message";
  response.end();
 });
 
