@@ -1,6 +1,6 @@
 {
   "name": "msb",
-  "version": "0.11.5",
+  "version": "0.11.6",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
@@ -19,7 +19,7 @@
   },
   "bin": {
     "msb": "./bin/msb",
-    "msb-monitor": "./bin/msb-monitor"
+    "msb-save": "./bin/msb-save"
   },
   "devDependencies": {
     "chai": "^3.5.0",
