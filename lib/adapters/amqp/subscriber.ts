@@ -1,39 +1,34 @@
 import {EventEmitter} from "events";
-import serviceDetails = require("../../support/serviceDetails");
 import {ConfigAMQP} from "../../config";
 import {Message} from "../../messageFactory";
+import serviceDetails = require("../../support/serviceDetails");
 
-const WeakMapFill = (typeof WeakMap === "undefined") ? require("weak-map") : WeakMap;
 const _ = require("lodash");
 
 export class AMQPSubscriberAdapter extends EventEmitter {
+  private config: ConfigAMQP;
+  private connection: any;
+  private consumer: any;
+  private ackMap: WeakMap<Message, any>;
+  private queueOptions: QueueOptions;
+  private isClosed: boolean;
 
-  DURABLE_QUEUE_OPTIONS = { durable: true, autoDelete: false, passive: false };
-  TRANSIENT_QUEUE_OPTIONS = { passive: false };
-
-  config: ConfigAMQP;
-  connection;
-  isClosed: boolean;
-  _ackMap;
-  consumer;
-  _queueOptions;
-
-  constructor(config: ConfigAMQP, connection) {
+  constructor(config: ConfigAMQP, connection: any) {
     super();
     this.setMaxListeners(0);
     this.config = config;
     this.connection = connection;
     this.isClosed = false;
 
-    this._ackMap = new WeakMapFill();
+    this.ackMap = new WeakMap();
 
-    this.on("error", this.onSelfError.bind(this));
+    this.on("error", () => this.onSelfError());
     this.init();
   }
 
   close() {
     this.isClosed = true;
-    this.connection.removeListener("ready", this.ensureConsuming.bind(this));
+    this.connection.removeListener("ready", () => this.ensureConsuming());
     if (this.consumer) this.consumer.close();
   }
 
@@ -43,40 +38,39 @@ export class AMQPSubscriberAdapter extends EventEmitter {
   }
 
   confirmProcessedMessage(message: Message, _safe: boolean) {
-    const envelope = this._ackMap.get(message);
+    const envelope = this.ackMap.get(message);
     // Only use _safe if you can"t know whether message has already been confirmed/rejected
     if (_safe && !envelope) return;
     envelope.ack(); // Will fail if `!config.prefetchCount`
-    this._ackMap.delete(message);
+    this.ackMap.delete(message);
   }
 
   rejectMessage(message: Message) {
-    const envelope = this._ackMap.get(message);
+    const envelope = this.ackMap.get(message);
     envelope.reject(); // Will fail if `!config.prefetchCount`
-    this._ackMap.delete(message);
+    this.ackMap.delete(message);
   }
 
   private init() {
-    this.connection.on("ready", this.ensureConsuming.bind(this));
+    this.connection.on("ready", () => this.ensureConsuming());
     if (this.connection.state === "open") this.ensureConsuming();
   }
 
-  private onMessage(envelope) {
-    const self = this;
+  private onMessage(envelope: any) {
     const message = envelope.data.toString();
 
-    process.nextTick(function() {
+    process.nextTick(() => {
       let parsedMessage;
       try {
         parsedMessage = JSON.parse(message);
         if (!_.isObject(parsedMessage)) throw new Error("Invalid message format");
       } catch (e) {
         envelope.reject();
-        self.emit("error", e);
+        this.emit("error", e);
         return;
       }
-      if (self.config.prefetchCount) self._ackMap.set(parsedMessage, envelope);
-      self.emit("message", parsedMessage);
+      if (this.config.prefetchCount) this.ackMap.set(parsedMessage, envelope);
+      this.emit("message", parsedMessage);
     });
   }
 
@@ -93,39 +87,38 @@ export class AMQPSubscriberAdapter extends EventEmitter {
   }
 
   private ensureConsuming() {
-    const self = this;
-    const config = self.config;
-    const connection = self.connection;
-    let consumer = self.consumer;
+    const config = this.config;
+    const connection = this.connection;
+    let consumer = this.consumer;
 
     const exchange = connection.exchange({ exchange: config.channel, type: config.type });
 
-    function done(err) {
-      if (err) return self.emit("error", err);
-      self.emitConsuming();
-    }
+    const done = (err) => {
+      if (err) return this.emit("error", err);
+      this.emitConsuming();
+    };
 
-    exchange.declare(function(err) {
+    exchange.declare((err) => {
       if (err) return done(err);
 
-      const queueOptions = self.getQueueOptions();
+      const queueOptions = this.getQueueOptions();
       const queue = connection.queue(queueOptions);
       const bindingKeys = !config.bindingKeys ? [""] :
         _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
 
-      queue.declare(queueOptions, function(err) {
+      queue.declare(queueOptions, (err) => {
         if (err) return done(err);
 
         for (let index = 0; index < bindingKeys.length; ++index) {
-          queue.bind(config.channel, bindingKeys[index], function(err) {
+          queue.bind(config.channel, bindingKeys[index], (err) => {
             if (err) return done(err);
-            if (self.isClosed) return; // Skip if already closed
+            if (this.isClosed) return; // Skip if already closed
 
             if (consumer) {
-              self.consumer.resume(done);
+              this.consumer.resume(done);
             } else {
-              self.consumer = consumer = connection.consume(queueOptions.queue, _.clone(queueOptions), self.onMessage.bind(self), done);
-              consumer.on("error", self.onConsumerError.bind(self));
+              this.consumer = consumer = connection.consume(queueOptions.queue, _.clone(queueOptions), (envelope) => this.onMessage(envelope), done);
+              consumer.on("error", (err) => this.onConsumerError(err));
             }
           });
         }
@@ -134,19 +127,33 @@ export class AMQPSubscriberAdapter extends EventEmitter {
   }
 
   private getQueueOptions() {
-    if (this._queueOptions) return this._queueOptions;
+    if (this.queueOptions) return this.queueOptions;
 
     const config = this.config;
-    const queueOptionsDefaults = (config.durable) ? this.DURABLE_QUEUE_OPTIONS : this.TRANSIENT_QUEUE_OPTIONS;
     const queueSuffix = "." + (config.groupId || serviceDetails.instanceId) + "." + ((config.durable) ? "d" : "t");
     const queueName = config.channel + queueSuffix;
 
-    this._queueOptions = _.defaults({
+    const queueOptions: QueueOptions = {
       queue: queueName,
       exclusive: !config.groupId,
-      prefetchCount: config.prefetchCount
-    }, queueOptionsDefaults);
+      prefetchCount: config.prefetchCount,
+      passive: false
+    };
 
-    return this._queueOptions;
+    if (config.durable) {
+      queueOptions.durable = true;
+      queueOptions.autoDelete = false;
+    }
+
+    return this.queueOptions = queueOptions;
   }
+}
+
+interface QueueOptions {
+  queue: string;
+  exclusive: boolean;
+  prefetchCount: number;
+  passive: boolean;
+  durable?: boolean;
+  autoDelete?: boolean;
 }

@@ -1,5 +1,5 @@
-import {Message} from "../messageFactory";
 import {EventEmitter} from "events";
+import {Message} from "../messageFactory";
 import {BrokerConfig} from "../config";
 
 interface BrokerAdapter {
