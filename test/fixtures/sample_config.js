@@ -1,1 +1,0 @@
-exports.configurationTestValue = new Date();
