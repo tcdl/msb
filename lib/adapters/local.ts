@@ -1,20 +1,20 @@
-'use strict';
-var EventEmitter = require('events').EventEmitter;
-var queue = exports;
+import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "./adapter";
+import {EventEmitter} from "events";
+import {BrokerConfig, LocalConfig} from "../config";
 
-queue.create = function() {
-  var queue:any = {};
-  var localBus = new EventEmitter();
+class LocalBrokerAdapter implements BrokerAdapter {
+  localBus = new EventEmitter();
 
-  queue.Publish = function(config) {
+  Publish(config: BrokerConfig): BrokerAdapterPublisherFactory {
+    const adapter = this;
     return {
       channel: function(topic) {
         return {
           publish: function(message, cb) {
-            var clonedMessage = JSON.parse(JSON.stringify(message));
+            const clonedMessage = JSON.parse(JSON.stringify(message));
 
             process.nextTick(function() {
-              localBus.emit(topic, clonedMessage);
+              adapter.localBus.emit(topic, clonedMessage);
               (cb || _noop)();
             });
           },
@@ -22,29 +22,35 @@ queue.create = function() {
         };
       }
     };
-  };
+  }
 
-  queue.Subscribe = function(config) {
-    var channel: any = new EventEmitter();
+  Subscribe(config: BrokerConfig): BrokerAdapterSubscriber {
+    const channel = new EventEmitter();
 
     function onMessage(message) {
       try {
-        channel.emit('message', message);
+        channel.emit("message", message);
       } catch (err) {
-        channel.emit('error', err);
+        channel.emit("error", err);
       }
     }
 
-    localBus.on(config.channel, onMessage);
+    this.localBus.on((<LocalConfig>config).channel, onMessage);
 
-    channel.close = function() {
-      localBus.removeListener('message', onMessage);
-    };
+    return Object.create(channel, {
+      close: () => this.localBus.removeListener("message", onMessage),
+      onceConsuming: _noop,
+      confirmProcessedMessage: _noop,
+      rejectMessage: _noop
+    });
+  }
 
-    return channel;
-  };
+  close(): void {
+  }
+}
 
-  return queue;
-};
+export function create(): BrokerAdapter {
+  return new LocalBrokerAdapter();
+}
 
 function _noop() {}
