@@ -92,9 +92,10 @@ class ValidateWithSchema {
   }
 
   onEvent(schema, successHandlerFn, errorHandlerFn) {
+    const self = this;
     return function(message) {
       try {
-        this.validateWithSchema(schema, message);
+        self.validateWithSchema(schema, message);
       } catch (e) {
         if (errorHandlerFn) {
           errorHandlerFn(e, message);
