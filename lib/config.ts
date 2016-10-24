@@ -5,7 +5,12 @@ const _ = require("lodash");
 
 type adapterName = "amqp" | "local";
 type amqpExchangeType = "fanout" | "topic"
-interface ConfigAMQP {
+
+export interface BrokerConfig {
+  [key: string]: any;
+}
+
+export interface ConfigAMQP extends BrokerConfig {
   [key: string]: any;
   host?: string;
   port?: number;
@@ -18,6 +23,11 @@ interface ConfigAMQP {
   prefetchCount?: number;
   autoConfirm?: boolean;
   type?: amqpExchangeType;
+  channel?: string;
+  bindingKeys?: string[];
+}
+
+export interface LocalConfig extends BrokerConfig {
 }
 
 export class Config {
@@ -26,7 +36,7 @@ export class Config {
   autoMessageContext: boolean;
   brokerAdapter: adapterName;
   amqp: ConfigAMQP;
-  local: Object;
+  local: LocalConfig;
 
   constructor() {
     this.schema = require("../schema");

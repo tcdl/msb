@@ -1,16 +1,16 @@
-var _ = require('lodash');
-var AMQPPublisherAdapter_ = require('./publisher').AMQPPublisherAdapter;
-var AMQPSubscriberAdapter_ = require('./subscriber').AMQPSubscriberAdapter;
-var AMQP = require('amqp-coffee');
+import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "../adapter";
+import {BrokerConfig, ConfigAMQP} from "../../config";
+import {AMQPPublisherAdapter} from "./publisher";
+import {AMQPSubscriberAdapter} from "./subscriber";
 
-var amqp = exports;
+const AMQP = require("amqp-coffee");
+const _ = require("lodash");
 
-amqp.create = function() {
-  var amqp:any = {};
-  var connection;
+class AMQPBrokerAdapter implements BrokerAdapter {
+  connection;
 
-  amqp.Publish = function(config) {
-    var publisher = new AMQPPublisherAdapter_(config, sharedConnection(config));
+  Publish(config: BrokerConfig): BrokerAdapterPublisherFactory {
+    const publisher = new AMQPPublisherAdapter(<ConfigAMQP>config, this.sharedConnection(config));
 
     return {
       channel: function(topic) {
@@ -20,24 +20,26 @@ amqp.create = function() {
         };
       }
     };
-  };
-
-  amqp.Subscribe = function(config) {
-    return new AMQPSubscriberAdapter_(config, sharedConnection(config));
-  };
-
-  amqp.close = function() {
-    if (!connection) return;
-    connection.close();
-  };
-
-  function sharedConnection(config) {
-    if (connection) return connection;
-
-    connection = new AMQP(_.clone(config));
-    connection.setMaxListeners(0);
-    return connection;
   }
 
-  return amqp;
-};
+  Subscribe(config: BrokerConfig): BrokerAdapterSubscriber {
+    return new AMQPSubscriberAdapter(<ConfigAMQP>config, this.sharedConnection(config));
+  }
+
+  close(): void {
+    if (!this.connection) return;
+    this.connection.close();
+  }
+
+  private sharedConnection(config) {
+    if (this.connection) return this.connection;
+
+    this.connection = new AMQP(_.clone(config));
+    this.connection.setMaxListeners(0);
+    return this.connection;
+  }
+}
+
+export function create(): BrokerAdapter {
+  return new AMQPBrokerAdapter();
+}
