@@ -8,7 +8,7 @@
     "build": "tsc",
     "test": "npm run build && npm run cs && npm run test-no-cs",
     "test-no-cs": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha",
-    "cs": "tslint lib/**/*.ts test/**/*.ts"
+    "cs": "tslint --project tsconfig.json"
   },
   "repository": {
     "type": "git",

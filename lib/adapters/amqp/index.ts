@@ -17,7 +17,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
       channel: function(topic) {
         return {
           publish: (message: Message, cb: (err?: Error) => void) => {
-            publisher.publish(topic, message, cb)
+            publisher.publish(topic, message, cb);
           },
           close: () => publisher.close()
         };

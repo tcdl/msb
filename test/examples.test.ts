@@ -3,12 +3,12 @@ const msb = require("..");
 const simple = require("simple-mock");
 
 /* Tests */
-describe('examples', function() {
+describe("examples", function() {
   before(function(done) {
-    simple.mock(msb.logger, 'warn').returnWith();
+    simple.mock(msb.logger, "warn").returnWith();
 
     msb.configure({
-      brokerAdapter: 'local'
+      brokerAdapter: "local"
     });
 
     done();
@@ -19,12 +19,12 @@ describe('examples', function() {
     done();
   });
 
-  describe('responder', function() {
-    var responder;
-    var requester;
+  describe("responder", function() {
+    let responder;
+    let requester;
 
     before(function(done) {
-      responder = require('./examples/responder');
+      responder = require("./examples/responder");
       responder.listen();
       done();
     });
@@ -35,18 +35,18 @@ describe('examples', function() {
     });
 
     beforeEach(function(done) {
-      requester = new msb.Requester({ namespace: 'test:general', ackTimeout: 100, responseTimeout: 1000 });
+      requester = new msb.Requester({ namespace: "test:general", ackTimeout: 100, responseTimeout: 1000 });
       done();
     });
 
-    it('will validate the request payload', function(done) {
+    it("will validate the request payload", function(done) {
       requester
       .publish({
         headers: {},
-        body: 'not_object'
+        body: "not_object"
       })
-      .once('error', done)
-      .once('end', function() {
+      .once("error", done)
+      .once("end", function() {
         expect(requester.ackMessages).length(0);
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
@@ -57,52 +57,52 @@ describe('examples', function() {
       });
     });
 
-    it('can use custom error handler', function(done) {
+    it("can use custom error handler", function(done) {
       requester
       .publish({
         headers: {},
-        body: { instruction: 'error' }
+        body: { instruction: "error" }
       })
-      .once('error', done)
-      .once('end', function() {
+      .once("error", done)
+      .once("end", function() {
         expect(requester.ackMessages).length(0);
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 500,
-          body: 'Special Message'
+          body: "Special Message"
         });
         done();
       });
     });
 
-    it('can return normally', function(done) {
+    it("can return normally", function(done) {
       requester
       .publish({
         headers: {},
         body: {}
       })
-      .once('error', done);
+      .once("error", done);
 
       requester = new msb.Requester({
-        namespace: 'test:general',
+        namespace: "test:general",
         ackTimeout: 100,
         responseTimeout: 1000,
-        tags: ['a']
+        tags: ["a"]
       });
       requester
       .publish({
         headers: {},
         body: {}
       })
-      .once('error', done)
-      .once('end', function() {
+      .once("error", done)
+      .once("end", function() {
         expect(requester.ackMessages).length(1);
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 200,
           body: 1002
         });
-        expect(requester.payloadMessages[0].tags.sort()).deep.equals(['a', 'b']);
+        expect(requester.payloadMessages[0].tags.sort()).deep.equals(["a", "b"]);
         done();
       });
     });

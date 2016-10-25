@@ -1,22 +1,22 @@
 import {expect} from "chai";
 const msb = require("..");
 const simple = require("simple-mock");
-const mockResponderFactory = require('msb-test-utils/mockResponderFactory');
+const mockResponderFactory = require("msb-test-utils/mockResponderFactory");
 
-describe('Requester/Collector', function() {
-  var mockNamespace;
-  var channelManager;
-  var onResponseMock;
-  var onErrorMock;
-  var onEndMock;
-  var mockResponder;
-  var altMockResponder;
+describe("Requester/Collector", function() {
+  let mockNamespace;
+  let channelManager;
+  let onResponseMock;
+  let onErrorMock;
+  let onEndMock;
+  let mockResponder;
+  let altMockResponder;
 
   before(function(done) {
-    mockNamespace = 'test:functional';
+    mockNamespace = "test:functional";
 
     channelManager = msb.createChannelManager().configure({
-      brokerAdapter: 'local'
+      brokerAdapter: "local"
     });
 
     done();
@@ -45,8 +45,8 @@ describe('Requester/Collector', function() {
     done();
   });
 
-  describe('with waitForResponses:-1 (default) and waitForResponsesMs:500', function() {
-    var requester;
+  describe("with waitForResponses:-1 (default) and waitForResponsesMs:500", function() {
+    let requester;
 
     beforeEach(function(done) {
       requester = msb.Requester({
@@ -57,14 +57,14 @@ describe('Requester/Collector', function() {
       requester.channelManager = channelManager;
 
       requester
-      .on('response', onResponseMock)
-      .on('error', onErrorMock)
-      .on('end', onEndMock);
+      .on("response", onResponseMock)
+      .on("error", onErrorMock)
+      .on("end", onEndMock);
 
       done();
     });
 
-    it('will end after the specified timeout', function(done) {
+    it("will end after the specified timeout", function(done) {
       requester.publish({});
 
       setImmediate(function() {
@@ -77,9 +77,9 @@ describe('Requester/Collector', function() {
       });
     });
 
-    it('will end after an ack-extended timeout', function(done) {
+    it("will end after an ack-extended timeout", function(done) {
       mockResponder.respondWith([
-        { type: 'ack', timeoutMs: 1000, responsesRemaining: 1 }
+        { type: "ack", timeoutMs: 1000, responsesRemaining: 1 }
       ]);
 
       requester.publish({});
@@ -98,11 +98,11 @@ describe('Requester/Collector', function() {
       });
     });
 
-    it('will end after ack-configured response in ack-extended timeout', function(done) {
+    it("will end after ack-configured response in ack-extended timeout", function(done) {
       mockResponder.respondWith([
-        { type: 'ack', timeoutMs: 1000, responsesRemaining: 1 },
-        { waitMs: 600, payload: { body: 'within' } },
-        { waitMs: 50, payload: { body: 'after' } }
+        { type: "ack", timeoutMs: 1000, responsesRemaining: 1 },
+        { waitMs: 600, payload: { body: "within" } },
+        { waitMs: 50, payload: { body: "after" } }
       ]);
 
       requester.publish({});
@@ -123,8 +123,8 @@ describe('Requester/Collector', function() {
     });
   });
 
-  describe('with waitForResponses:2 and waitForResponsesMs:500', function() {
-    var requester;
+  describe("with waitForResponses:2 and waitForResponsesMs:500", function() {
+    let requester;
 
     beforeEach(function(done) {
       requester = msb.Requester({
@@ -136,17 +136,17 @@ describe('Requester/Collector', function() {
       requester.channelManager = channelManager;
 
       requester
-      .on('response', onResponseMock)
-      .on('error', onErrorMock)
-      .on('end', onEndMock);
+      .on("response", onResponseMock)
+      .on("error", onErrorMock)
+      .on("end", onEndMock);
 
       done();
     });
 
-    it('will end after the specified timeout without sufficient ressponses', function(done) {
+    it("will end after the specified timeout without sufficient ressponses", function(done) {
       mockResponder.respondWith([
-        { payload: { body: 'within' } },
-        { waitMs: 500, payload: { body: 'after' } }
+        { payload: { body: "within" } },
+        { waitMs: 500, payload: { body: "after" } }
       ]);
 
       requester.publish({});
@@ -167,11 +167,11 @@ describe('Requester/Collector', function() {
       });
     });
 
-    it('will end after configured expected number of responses', function(done) {
+    it("will end after configured expected number of responses", function(done) {
       mockResponder.respondWith([
-        { type: 'ack', responsesRemaining: 1 },
-        { payload: { body: 'within' } },
-        { waitMs: 200, payload: { body: 'within' } }
+        { type: "ack", responsesRemaining: 1 },
+        { payload: { body: "within" } },
+        { waitMs: 200, payload: { body: "within" } }
       ]);
 
       requester.publish({});
@@ -192,17 +192,17 @@ describe('Requester/Collector', function() {
       });
     });
 
-    it('will end after expected ack-configured responses in ack-extended timeout', function(done) {
+    it("will end after expected ack-configured responses in ack-extended timeout", function(done) {
       mockResponder.respondWith([
-        { type: 'ack', timeoutMs: 1000, responsesRemaining: 3 },
-        { waitMs: 500, payload: { body: 'within' } },
-        { waitMs: 50, payload: { body: 'within' } },
-        { waitMs: 50, payload: { body: 'within' } },
-        { waitMs: 50, payload: { body: 'after' } }
+        { type: "ack", timeoutMs: 1000, responsesRemaining: 3 },
+        { waitMs: 500, payload: { body: "within" } },
+        { waitMs: 50, payload: { body: "within" } },
+        { waitMs: 50, payload: { body: "within" } },
+        { waitMs: 50, payload: { body: "after" } }
       ]);
 
       altMockResponder.respondWith([
-        { waitMs: 50, payload: { body: 'non-acked' } }
+        { waitMs: 50, payload: { body: "non-acked" } }
       ]);
 
       requester.publish({});
@@ -223,10 +223,10 @@ describe('Requester/Collector', function() {
       });
     });
 
-    it('will end after ack-configured responses within same responder\'s ack-extended timeout', function(done) {
+    it("will end after ack-configured responses within same responder\"s ack-extended timeout", function(done) {
       mockResponder.respondWith([
-        { type: 'ack', timeoutMs: 1000, responsesRemaining: 1 },
-        { waitMs: 600, payload: { body: 'within' } }
+        { type: "ack", timeoutMs: 1000, responsesRemaining: 1 },
+        { waitMs: 600, payload: { body: "within" } }
       ]);
 
       requester.publish({});
