@@ -1,14 +1,16 @@
-const _ = require("lodash");
-import validateWithSchema = require("./validateWithSchema");
+import {Message, MessagePayload} from "./messageFactory";
 import {Requester} from "./requester";
+import validateWithSchema = require("./validateWithSchema");
 
-exports = function (options, payload, cb) {
+const _ = require("lodash");
+
+export = function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void) {
   if (_.isString(options)) {
     options = {
       namespace: options,
       waitForResponses: 1
     };
-  } else if (!('waitForResponses' in options)) {
+  } else if (!("waitForResponses" in options)) {
     options.waitForResponses = 1;
   }
 
@@ -24,10 +26,10 @@ exports = function (options, payload, cb) {
   delete(options.responseSchema);
 
   const requester = new Requester(options, originalMessage);
-  let responsePayload;
-  let responseMessage;
+  let responsePayload: MessagePayload;
+  let responseMessage: Message;
 
-  let onResponseFn = function (payload, message) {
+  let onResponseFn = function (payload: MessagePayload, message: Message) {
     responsePayload = payload;
     responseMessage = message;
   };
@@ -41,9 +43,9 @@ exports = function (options, payload, cb) {
   }
 
   requester
-    .on('response', onResponseFn)
-    .once('error', cb)
-    .once('end', function () {
+    .on("payload", onResponseFn)
+    .once("error", cb)
+    .once("end", function () {
       cb(null, responsePayload, responseMessage);
     });
 
