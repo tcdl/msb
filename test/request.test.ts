@@ -1,11 +1,12 @@
 import {expect} from "chai";
-const msb = require("..");
+import {Requester} from "../lib/requester";
+import request from "../lib/request";
+
 const simple = require("simple-mock");
 
-/* Tests */
-describe('request()', function() {
+describe("request()", function() {
   beforeEach(function(done) {
-    simple.mock(msb.Requester.prototype, 'publish');
+    simple.mock(Requester.prototype, "publish");
     done();
   });
 
@@ -14,118 +15,103 @@ describe('request()', function() {
     done();
   });
 
-  describe('with only a topic', function() {
-
-    it('calls back on end with a response', function(done) {
-      var returnValue = 'rv';
-
-      msb.Requester.prototype.publish.callFn(function() {
+  describe("with only a topic", function() {
+    beforeEach(function(done) {
+      (<any>Requester.prototype.publish).callFn(function() {
         return this;
       });
+      done();
+    });
 
-      var requester = msb.request('my:topic', {
-        my: 'payload'
-      }, function(err, responsePayload, responseMessage) {
+    it("calls back on end with a response", function(done) {
+      const requester = request("my:topic", {
+        my: "payload"
+      }, (err, responsePayload, responseMessage) => {
         if (err) return done(err);
 
-        expect(responsePayload).equals('payload');
-        expect(responseMessage).equals('message');
+        expect(responsePayload).equals("payload");
+        expect(responseMessage).equals("message");
         done();
       });
 
-      expect(requester instanceof msb.Requester).to.be.true;
+      expect(requester instanceof Requester).to.be.true;
       expect(requester.timeoutMs).equals(3000);
       expect(requester.waitForResponses).equals(1);
 
-      requester.emit('response', 'payload', 'message');
+      requester.emit("payload", "payload", "message");
       requester.end();
     });
 
-    it('calls back on error', function(done) {
-      var returnValue = 'rv';
-
-      msb.Requester.prototype.publish.callFn(function() {
-        return this;
-      });
-
-      var requester = msb.request('my:topic', {
-        my: 'payload'
-      }, function(err, responsePayload, responseMessage) {
+    it("calls back on error", function(done) {
+      const requester = request("my:topic", {
+        my: "payload"
+      }, (err, responsePayload, responseMessage) => {
 
         expect(err instanceof Error).to.be.true;
         done();
       });
 
-      expect(requester instanceof msb.Requester).to.be.true;
+      expect(requester instanceof Requester).to.be.true;
       expect(requester.timeoutMs).equals(3000);
       expect(requester.waitForResponses).equals(1);
 
-      requester.emit('error', new Error());
+      requester.emit("error", new Error());
     });
   });
 
-  describe('with config', function() {
-    var config;
+  describe("with config", function() {
+    let config: any;
 
     beforeEach(function(done) {
       config = {
-        namespace: 'my:topic',
-        responseSchema: { type: 'object' },
+        namespace: "my:topic",
+        responseSchema: { type: "object" },
         channelManager: {},
         waitForResponses: 5,
-        responseTimeout: 5000
+        waitForResponsesMs: 5000
       };
+      (<any>Requester.prototype.publish).callFn(function() {
+        return this;
+      });
       done();
     });
 
-    it('calls back on end with a response', function(done) {
-      var returnValue = 'rv';
+    it("calls back on end with a response", function(done) {
+      const mockPayload = {};
 
-      msb.Requester.prototype.publish.callFn(function() {
-        return this;
-      });
-
-      var mockPayload = {};
-
-      var requester = msb.request(config, {
-        my: 'payload'
-      }, function(err, responsePayload, responseMessage) {
+      const requester = request(config, {
+        my: "payload"
+      }, (err, responsePayload, responseMessage) => {
         if (err) return done(err);
 
         expect(responsePayload).equals(mockPayload);
-        expect(responseMessage).equals('message');
+        expect(responseMessage).equals("message");
         done();
       });
 
-      expect(requester instanceof msb.Requester).to.be.true;
+      expect(requester instanceof Requester).to.be.true;
       expect(requester.channelManager).equals(config.channelManager);
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
 
-      requester.emit('response', mockPayload, 'message');
+      requester.emit("payload", mockPayload, "message");
       requester.end();
     });
 
-    it('calls back on validation error', function(done) {
-      var returnValue = 'rv';
-
-      msb.Requester.prototype.publish.callFn(function() {
-        return this;
-      });
-
-      var requester = msb.request(config , {
-        my: 'payload'
-      }, function(err, responsePayload, responseMessage) {
+    it("calls back on validation error", function(done) {
+      const requester = request(config , {
+        my: "payload"
+      }, (err, responsePayload, responseMessage) => {
 
         expect(err instanceof Error).to.be.true;
         done();
       });
 
-      expect(requester instanceof msb.Requester).to.be.true;
+      expect(requester instanceof Requester).to.be.true;
       expect(requester.timeoutMs).equals(5000);
       expect(requester.waitForResponses).equals(5);
 
-      requester.emit('response', 'willfail', 'message');
+      requester.emit("payload", "willfail", "message");
     });
   });
 });
