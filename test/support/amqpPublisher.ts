@@ -1,18 +1,19 @@
+import {eachSeries} from "async";
+import {create as config} from "../../lib/config";
+import {BrokerAdapterPublisher} from "../../lib/adapters/adapter";
 const _ = require("lodash");
-const async = require("async");
-const EventEmitter = require("events").EventEmitter;
 const AMQP = require("amqp-coffee");
-const config = require("../../lib/config").create();
-exports.create = function(topic, cb) {
-  const connection = new AMQP(config.amqp);
 
-  connection.once("ready", function() {
-    const publisher = {
+exports.create = function(topic: string, cb: (error?: Error, pub?: BrokerAdapterPublisher) => void): void {
+  const connection = new AMQP(config().amqp);
+
+  connection.once("ready", () => {
+    const publisher: BrokerAdapterPublisher = {
       publish: function() {
         cb = _.last(arguments);
         const messages = (_.isArray(arguments[0])) ? arguments[0] : Array.prototype.slice.call(arguments, 0, -1);
 
-        async.eachSeries(messages, function(message, next) {
+        eachSeries(messages, function(message, next) {
           const str = (_.isObject(message)) ? JSON.stringify(message) : message;
           connection.publish(topic, "", str, {
             deliveryMode: 2,

@@ -11,7 +11,7 @@ const fixtures = {
   consumer_schema: require("./fixtures/integration_consumer_schema")
 };
 
-describe("AMQP Integration", function () {
+describe.only("AMQP Integration", function () {
 
   afterEach(function (done) {
     simple.restore();
