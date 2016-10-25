@@ -1,5 +1,5 @@
 import {expect} from "chai";
-const msb = require("..");
+const msb = require("../../index");
 const simple = require("simple-mock");
 
 /* Modules */
