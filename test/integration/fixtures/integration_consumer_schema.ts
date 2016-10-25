@@ -1,4 +1,4 @@
-exports = {
+export = {
   type: "object",
   properties: {
     payload: {
