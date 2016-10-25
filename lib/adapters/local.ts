@@ -1,11 +1,11 @@
 import {EventEmitter} from "events";
-import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "./adapter";
+import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "./adapter";
 import {BrokerConfig, LocalConfig} from "../config";
 
 class LocalBrokerAdapter implements BrokerAdapter {
   localBus = new EventEmitter();
 
-  Publish(config: BrokerConfig): BrokerAdapterPublisherFactory {
+  Publish(config: BrokerConfig): BrokerPublisherAdapterFactory {
     const adapter = this;
     return {
       channel: function(topic) {
@@ -24,7 +24,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
     };
   }
 
-  Subscribe(config: BrokerConfig): BrokerAdapterSubscriber {
+  Subscribe(config: BrokerConfig): BrokerSubscriberAdapter {
     const channel = new EventEmitter();
 
     function onMessage(message) {
