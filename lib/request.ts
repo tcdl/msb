@@ -4,7 +4,7 @@ import validateWithSchema = require("./validateWithSchema");
 
 const _ = require("lodash");
 
-export = function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void) {
+export default function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void) {
   if (_.isString(options)) {
     options = {
       namespace: options,
