@@ -1,72 +1,69 @@
-var util = require('util');
-var _ = require('lodash');
-var async = require('async');
-var msb = require('..');
-var ResponderResponse_ = require('./responderResponse');
+import {isArray} from "util";
+const _ = require("lodash");
+const async = require("async");
+const msb = require("..");
+import {ResponderResponse} from "./responderResponse";
 
-/**
- * For every request received on the configured channel, create a response and process using middleware-like chain
- *
- * @param {Object} config
- * @param {String} config.namespace
- */
-function ResponderServer(config) {
-  this.config = config;
-  this._stack = [];
-  this._errStack = [];
-}
+export class ResponderServer {
+  config: Object;
+  _stack: Function[];
+  _errStack: Function[];
+  emitter: any;
 
-var responderServer = ResponderServer.prototype;
-
-responderServer.use = function(middleware) {
-  this._stack.push(middleware);
-  if (util.isArray(middleware)) {
-    this._stack = _.flatten(this._stack);
+  constructor(config: Object) {
+    this.config = config;
+    this._stack = [];
+    this._errStack = [];
   }
 
-  var errStack = this._errStack;
-  var prevLength = errStack.length;
-  this._stack.forEach(function(fn) {
-    if (fn.length > 3) errStack.push(fn);
-  });
+  use(middleware) {
+    this._stack.push(middleware);
+    if (isArray(middleware)) {
+      this._stack = _.flatten(this._stack);
+    }
 
-  if (errStack.length > prevLength) {
-    this._stack = _.without.apply(_, [this._stack].concat(errStack));
+    let errStack = this._errStack;
+    const prevLength = errStack.length;
+    this._stack.forEach(function (fn) {
+      if (fn.length > 3) errStack.push(fn);
+    });
+
+    if (errStack.length > prevLength) {
+      this._stack = _.without.apply(_, [this._stack].concat(errStack));
+    }
+    return this;
+  };
+
+  onResponder(responder) {
+    const self = this;
+    const request = responder.originalMessage.payload;
+    const response = new ResponderResponse(responder);
+
+    async.applyEachSeries(this._stack, request, response, function (err) {
+      if (!err) return;
+      if (!self._errStack.length) return self._errorHandler(request, response, err);
+      async.applyEachSeries(self._errStack, err, request, response, self._errorHandler.bind(null, request, response, err));
+    });
+  };
+
+  listen(channelManager) {
+    if (this.emitter) throw new Error("Already listening");
+
+    this.emitter = msb.Responder.createEmitter(this.config, channelManager);
+    this.emitter.on("responder", this.onResponder.bind(this));
+    return this;
+  };
+
+  close() {
+    if (!this.emitter) throw new Error("Not listening");
+
+    this.emitter.end();
+    delete(this.emitter);
+  };
+
+  _errorHandler(request, response, err, ultimateErr?) {
+    err = ultimateErr || err;
+    response.writeHead(err.statusCode || 500);
+    response.end();
   }
-  return this;
-};
-
-responderServer.onResponder = function(responder) {
-  var self = this;
-  var request = responder.originalMessage.payload;
-  var response = new ResponderResponse_(responder);
-
-  async.applyEachSeries(this._stack, request, response, function(err) {
-    if (!err) return;
-    if (!self._errStack.length) return _errorHandler(request, response, err);
-    async.applyEachSeries(self._errStack, err, request, response, _errorHandler.bind(null, request, response, err));
-  });
-};
-
-responderServer.listen = function(channelManager) {
-  if (this.emitter) throw new Error('Already listening');
-
-  var emitter = this.emitter = msb.Responder.createEmitter(this.config, channelManager);
-  emitter.on('responder', this.onResponder.bind(this));
-  return this;
-};
-
-responderServer.close = function() {
-  if (!this.emitter) throw new Error('Not listening');
-
-  this.emitter.end();
-  delete(this.emitter);
-};
-
-function _errorHandler(request, response, err, ultimateErr?) {
-  err = ultimateErr || err;
-  response.writeHead(err.statusCode || 500);
-  response.end();
 }
-
-exports = ResponderServer;
