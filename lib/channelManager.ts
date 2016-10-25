@@ -1,35 +1,35 @@
-const _ = require('lodash');
+const _ = require("lodash");
 import {EventEmitter} from "events";
-const debug = require('debug')('msb:channelManager');
+const debug = require("debug")("msb:channelManager");
 import validateWithSchema = require("./validateWithSchema");
 import * as messageFactory from "./messageFactory";
 import * as helpers from "./support/helpers";
 import * as logger from "./support/logger";
 
-var channelManager = exports;
+let channelManager = exports;
 
-var ADAPTER_PATHS = {
-  amqp: './adapters/amqp',
-  local: './adapters/local'
+const ADAPTER_PATHS = {
+  amqp: "./adapters/amqp",
+  local: "./adapters/local"
 };
 
 channelManager.create = function() {
-  var channelManager: any = new EventEmitter();
-  var config = require('./config').create();
+  let channelManager: any = new EventEmitter();
+  let config = require("./config").create();
 
-  var producersByTopic = {};
-  var consumersByTopic = {};
-  var consumerTopicsToCheck = [];
-  var toCheckConsumers = false;
-  var adapter;
-  var adapterConfig;
+  let producersByTopic = {};
+  let consumersByTopic = {};
+  let consumerTopicsToCheck = [];
+  let toCheckConsumers = false;
+  let adapter;
+  let adapterConfig;
 
-  channelManager.PRODUCER_NEW_TOPIC_EVENT = 'newProducerOnTopic';
-  channelManager.PRODUCER_REMOVED_TOPIC_EVENT = 'removedProducerOnTopic';
-  channelManager.PRODUCER_NEW_MESSAGE_EVENT = 'newProducedMessage';
-  channelManager.CONSUMER_NEW_TOPIC_EVENT = 'newConsumerOnTopic';
-  channelManager.CONSUMER_REMOVED_TOPIC_EVENT = 'removedConsumerOnTopic';
-  channelManager.CONSUMER_NEW_MESSAGE_EVENT = 'newConsumedMessage';
+  channelManager.PRODUCER_NEW_TOPIC_EVENT = "newProducerOnTopic";
+  channelManager.PRODUCER_REMOVED_TOPIC_EVENT = "removedProducerOnTopic";
+  channelManager.PRODUCER_NEW_MESSAGE_EVENT = "newProducedMessage";
+  channelManager.CONSUMER_NEW_TOPIC_EVENT = "newConsumerOnTopic";
+  channelManager.CONSUMER_REMOVED_TOPIC_EVENT = "removedConsumerOnTopic";
+  channelManager.CONSUMER_NEW_MESSAGE_EVENT = "newConsumedMessage";
 
   channelManager.close = function() {
     if (!adapter || !adapter.close) return;
@@ -42,20 +42,20 @@ channelManager.create = function() {
 
   channelManager.configure = function(newConfig) {
     if (channelManager.hasChannels()) {
-      logger.warn('`configure()` must be called before channels are created.');
+      logger.warn("`configure()` must be called before channels are created.");
     }
     config.configure(newConfig);
     return channelManager;
   };
 
   channelManager.findOrCreateProducer = function(topic, options, unusedChannelTimeoutMs) {
-    var channel = producersByTopic[topic];
+    let channel = producersByTopic[topic];
     if (channel) return channel;
     options = options ? options : {};
 
     channel = producersByTopic[topic] = channelManager.createRawProducer(topic, options);
 
-    var unusedChannelTimeout;
+    let unusedChannelTimeout;
 
     channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, topic);
 
@@ -82,22 +82,22 @@ channelManager.create = function() {
   };
 
   channelManager.createRawProducer = function(topic, options) {
-    var producerConfig = _.merge(adapterConfig, options);
+    let producerConfig = _.merge(adapterConfig, options);
 
     return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
 
   channelManager.findOrCreateConsumer = function(topic, options) {
-    var channel = consumersByTopic[topic];
+    let channel = consumersByTopic[topic];
     if (channel) return channel;
 
-    var isServiceChannel = (topic[0] === '_');
+    let isServiceChannel = (topic[0] === "_");
     channel = consumersByTopic[topic] = new EventEmitter();
     channel.raw = channelManager.createRawConsumer(topic, options);
     channel.setMaxListeners(0);
 
-    var autoConfirm;
-    if (options && 'autoConfirm' in options) {
+    let autoConfirm;
+    if (options && "autoConfirm" in options) {
       autoConfirm = options.autoConfirm;
     } else {
       autoConfirm = adapterConfig && adapterConfig.autoConfirm;
@@ -113,7 +113,7 @@ channelManager.create = function() {
     } : noop__;
 
     channel.confirmProcessedMessage = (channel.raw.confirmProcessedMessage) ? function(message, _safe) {
-      // Only use _safe if you can't know whether message has already been confirmed/rejected
+      // Only use _safe if you can"t know whether message has already been confirmed/rejected
       channel.raw.confirmProcessedMessage(message, _safe);
     } : noop__;
 
@@ -125,7 +125,7 @@ channelManager.create = function() {
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, topic);
 
       if (config.autoMessageContext) messageFactory.startContext(message);
-      channel.emit('message', message);
+      channel.emit("message", message);
       if (config.autoMessageContext) messageFactory.endContext();
 
       if (autoConfirm) channel.confirmProcessedMessage(message, true);
@@ -137,26 +137,26 @@ channelManager.create = function() {
 
     // Validate with envelope schema
     if (!isServiceChannel && config.schema) {
-      channel.raw.on('message', validateWithSchema.onEvent(config.schema, onMessage, onValidationError));
+      channel.raw.on("message", validateWithSchema.onEvent(config.schema, onMessage, onValidationError));
     } else {
-      channel.raw.on('message', onMessage);
+      channel.raw.on("message", onMessage);
     }
 
-    channel.on('error', function(err, message) {
+    channel.on("error", function(err, message) {
       if (autoConfirm && message) {
         // Reject when a message has generated an error, e.g. not validated
         channel.rejectMessage(message);
       }
     });
 
-    channel.raw.on('error', channel.emit.bind(channel, 'error'));
+    channel.raw.on("error", channel.emit.bind(channel, "error"));
 
     channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, topic);
 
     if (isServiceChannel || !config.cleanupConsumers) return channel;
 
-    channel.on('removeListener', function(eventName) {
-      if (eventName !== 'message') return;
+    channel.on("removeListener", function(eventName) {
+      if (eventName !== "message") return;
       if (~consumerTopicsToCheck.indexOf(topic) || channel.listeners(eventName).length) return;
       consumerTopicsToCheck.push(topic);
 
@@ -168,9 +168,9 @@ channelManager.create = function() {
   };
 
   channelManager.createRawConsumer = function(topic, options) {
-    var a = getAdapter();
+    let a = getAdapter();
 
-    var subscriberConfig = _.merge({
+    let subscriberConfig = _.merge({
       channel: helpers.validatedTopic(topic)
     }, adapterConfig, options);
 
@@ -185,7 +185,7 @@ channelManager.create = function() {
     if (adapter) return adapter;
 
     adapterConfig = config[config.brokerAdapter];
-    if (!adapterConfig) throw new Error('Invalid broker adapter \'' + config.brokerAdapter + '\'');
+    if (!adapterConfig) throw new Error("Invalid broker adapter \"" + config.brokerAdapter + "\"");
 
     adapter = require(ADAPTER_PATHS[config.brokerAdapter]).create();
     return adapter;
@@ -193,8 +193,8 @@ channelManager.create = function() {
 
   function checkConsumers() {
     consumerTopicsToCheck.forEach(function(topic) {
-      var channel = consumersByTopic[topic];
-      if (channel.listeners('message').length) return; // Still has listeners
+      let channel = consumersByTopic[topic];
+      if (channel.listeners("message").length) return; // Still has listeners
 
       removeConsumer(channel, topic);
     });
@@ -213,7 +213,7 @@ channelManager.create = function() {
     channelManager.emit(channelManager.PRODUCER_REMOVED_TOPIC_EVENT, topic);
   }
 
-  if (process.env.NODE_ENV === 'test') {
+  if (process.env.NODE_ENV === "test") {
     channelManager._producersByTopic = producersByTopic;
     channelManager._consumersByTopic = consumersByTopic;
     channelManager._config = config;

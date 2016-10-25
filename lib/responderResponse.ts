@@ -44,7 +44,7 @@ export class ResponderResponse {
       this.writeHead(this.statusCode);
     }
 
-    var payload: any = {
+    const payload: any = {
       statusCode: this.statusCode,
       body: null
     };

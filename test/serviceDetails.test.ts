@@ -19,11 +19,11 @@ describe("serviceDetails", function() {
           mac: "60:03:08:92:27:88",
           internal: false } ]};
     simple.mock(require("os"), "networkInterfaces").returnWith(fakeInterfaces);
-    simple.mock(require("pkginfo"), "name").returnWith("");
+    simple.mock(require("os"), "hostname").returnWith("abchost");
 
     serviceDetails = require(serviceDetailsModulePath);
 
-    // expect(serviceDetails.hostname).equals("abchost");
+    expect(serviceDetails.hostname).equals("abchost");
     expect(serviceDetails.ip).equals("1.2.3.4");
     expect(serviceDetails.pid).equals(process.pid);
 
