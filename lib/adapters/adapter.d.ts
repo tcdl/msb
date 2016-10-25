@@ -3,21 +3,21 @@ import {Message} from "../messageFactory";
 import {BrokerConfig} from "../config";
 
 interface BrokerAdapter {
-  Publish(config: BrokerConfig): BrokerAdapterPublisherFactory;
-  Subscribe(config: BrokerConfig): BrokerAdapterSubscriber;
+  Publish(config: BrokerConfig): BrokerPublisherAdapterFactory;
+  Subscribe(config: BrokerConfig): BrokerSubscriberAdapter;
   close(): void;
 }
 
-interface BrokerAdapterPublisherFactory {
-  channel(topic: string): BrokerAdapterPublisher;
+interface BrokerPublisherAdapterFactory {
+  channel(topic: string): BrokerPublisherAdapter;
 }
 
-interface BrokerAdapterPublisher {
+interface BrokerPublisherAdapter {
   publish(message: Message, cb: (err?: Error) => void): void;
   close(): void;
 }
 
-interface BrokerAdapterSubscriber extends EventEmitter {
+interface BrokerSubscriberAdapter extends EventEmitter {
   onceConsuming(cb: Function): void;
   confirmProcessedMessage(message: Message, _safe: boolean): void;
   rejectMessage(message: Message): void;

@@ -1,4 +1,4 @@
-import {BrokerAdapter, BrokerAdapterPublisherFactory, BrokerAdapterSubscriber} from "../adapter";
+import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../adapter";
 import {BrokerConfig, ConfigAMQP} from "../../config";
 import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
@@ -10,7 +10,7 @@ const _ = require("lodash");
 class AMQPBrokerAdapter implements BrokerAdapter {
   private connection: any;
 
-  Publish(config: BrokerConfig): BrokerAdapterPublisherFactory {
+  Publish(config: BrokerConfig): BrokerPublisherAdapterFactory {
     const publisher = new AMQPPublisherAdapter(<ConfigAMQP>config, this.sharedConnection(config));
 
     return {
@@ -25,7 +25,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
     };
   }
 
-  Subscribe(config: BrokerConfig): BrokerAdapterSubscriber {
+  Subscribe(config: BrokerConfig): BrokerSubscriberAdapter {
     return new AMQPSubscriberAdapter(<ConfigAMQP>config, this.sharedConnection(config));
   }
 
