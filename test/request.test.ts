@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {Requester} from "../lib/requester";
-import request = require("../lib/request");
+import request from "../lib/request";
 
 const simple = require("simple-mock");
 
-describe.only("request()", function() {
+describe("request()", function() {
   beforeEach(function(done) {
     simple.mock(Requester.prototype, "publish");
     done();
