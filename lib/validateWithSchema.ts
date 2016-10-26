@@ -16,7 +16,7 @@ class SchemaValidationError extends Error {
     super();
     this.name = "SchemaValidationError";
     this.message = "SchemaValidationError";
-    this.statusCode = 442;
+    this.statusCode = 422;
     this.details = {
       errors: result.errors,
       missing: result.missing
@@ -80,7 +80,7 @@ class SchemaValidationError extends Error {
 class ValidateWithSchema {
 
   middleware(schema) {
-    return function(request, response, next) {
+    return function (request, response, next) {
       try {
         this.validateWithSchema(schema, request);
       } catch (e) {
@@ -93,7 +93,7 @@ class ValidateWithSchema {
 
   onEvent(schema, successHandlerFn, errorHandlerFn?) {
     const self = this;
-    return function(message) {
+    return function (message) {
       try {
         self.validateWithSchema(schema, message);
       } catch (e) {

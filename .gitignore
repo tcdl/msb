@@ -31,3 +31,4 @@ node_modules
 *.iml
 
 *.js
+!/example/**/*.js
