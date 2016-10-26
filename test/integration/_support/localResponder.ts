@@ -1,6 +1,4 @@
-const msb = require("../../..");
-import {Responder} from "../../../lib/responder";
-const validateWithSchema = msb.validateWithSchema;
+import {Responder, validateWithSchema} from "../../..";
 let i = 1001;
 const payloadSchema = {
  type: "object",
@@ -29,14 +27,14 @@ module.exports = Responder.createServer({
 .use(function(request, response, next) {
  response.body = i++;
  response.end();
-});
+})
 // Custom error handler
-// .use(function(err, request, response, next) {
-//  if (err.name === "SchemaValidationError") return next();
-//
-//  response.writeHead(500);
-//  response.body = "Special Message";
-//  response.end();
-// });
+.use(function(err, request, response, next) {
+ if (err.name === "SchemaValidationError") return next();
+
+ response.writeHead(500);
+ response.body = "Special Message";
+ response.end();
+});
 
 if (!module.parent) module.exports.listen();

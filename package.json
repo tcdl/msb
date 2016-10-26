@@ -6,8 +6,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "npm run cs && npm run build && npm run test:unit && npm run test:integration",
+    "test": "npm run cs && npm run build && npm run test:unit && npm run test:functional && npm run test:integration",
     "test:unit": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/unit/",
+    "test:functional": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/functional/",
     "test:integration": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/integration/",
     "cs": "tslint --project tsconfig.json"
   },
@@ -26,9 +27,8 @@
     "@types/node": "^6.0.45",
     "@types/tv4": "^1.2.28",
     "chai": "^3.5.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.1.1",
-    "msb-test-utils": "^2.0.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^3.1.2",
     "simple-mock": "^0",
     "tslint": "^3.15.1",
     "typescript": "^2.0.3"
@@ -36,14 +36,12 @@
   "dependencies": {
     "amqp-coffee": "^0.1.25",
     "async": "^2.0.0",
-    "cli-table": "^0.3.1",
     "debug": "^2.1.1",
     "lodash": "^4.6.1",
     "lodash.get": "^4.1.2",
     "minimist": "^1.1.1",
     "split": "^1.0.0",
-    "tv4": "^1.1.9",
-    "weak-map": "^1.0.5"
+    "tv4": "^1.1.9"
   },
   "engines": {
     "node": ">=4"

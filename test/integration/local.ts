@@ -5,7 +5,7 @@ const msb = require("../..");
 const simple = require("simple-mock");
 
 /* Tests */
-describe("examples", function() {
+describe("Local", function() {
   before(function(done) {
     simple.mock(msb.logger, "warn").returnWith();
 
@@ -26,7 +26,7 @@ describe("examples", function() {
     let requester;
 
     before(function(done) {
-      responder = require("./_support/responder");
+      responder = require("./_support/localResponder");
       responder.listen();
       done();
     });

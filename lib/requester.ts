@@ -22,18 +22,20 @@ export class Requester extends Collector {
     }
 
     if (this.waitForAcksMs || this.waitForResponses) {
-      this.shouldAcceptMessageFn = this.shouldAcceptMessageFn.bind(this);
-      this.listenForResponses(this.message.topics.response, this.shouldAcceptMessageFn);
+      this.listenForResponses(this.message.topics.response, this.shouldAcceptMessageFn.bind(this));
     }
 
     messageFactory.completeMeta(this.message, this.meta);
 
-    if (!this.responseChannel) return this.publishMessage();
-    (this.responseChannel as any).onceConsuming(this.publishMessage);
+    if (!this.responseChannel) {
+      return this.publishMessage();
+    }
+
+    (this.responseChannel as any).onceConsuming(this.publishMessage.bind(this));
     return this;
   }
 
-  private publishMessage(): Requester {
+  publishMessage(): Requester {
     this
       .channelManager
       .findOrCreateProducer(this.message.topics.to, {}, this.requestChannelTimeoutMs)
