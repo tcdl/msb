@@ -1,5 +1,7 @@
 import {expect} from "chai";
-const msb = require("..");
+
+let test;
+const msb = require("../..");
 const simple = require("simple-mock");
 
 /* Tests */
@@ -24,7 +26,7 @@ describe("examples", function() {
     let requester;
 
     before(function(done) {
-      responder = require("./examples/responder");
+      responder = require("./_support/responder");
       responder.listen();
       done();
     });
