@@ -32,8 +32,6 @@ class SchemaValidationError extends Error {
     }
 
     Error.call(this);
-    Error.captureStackTrace(this, arguments.callee);
-    this.stack = this.stack.replace("\n", `\n ${this.traceErrors(result.errors)}`);
   }
 
   toJSON(): Object {
@@ -80,7 +78,7 @@ class SchemaValidationError extends Error {
 class ValidateWithSchema {
 
   middleware(schema) {
-    return function (request, response, next) {
+    return (request, response, next) => {
       try {
         this.validateWithSchema(schema, request);
       } catch (e) {

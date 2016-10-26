@@ -1,8 +1,8 @@
 import {isArray} from "util";
 const _ = require("lodash");
 const async = require("async");
-const msb = require("..");
 import {ResponderResponse} from "./responderResponse";
+import {Responder} from "./responder";
 
 export class ResponderServer {
   config: Object;
@@ -46,10 +46,10 @@ export class ResponderServer {
     });
   };
 
-  listen(channelManager) {
+  listen(channelManager?) {
     if (this.emitter) throw new Error("Already listening");
 
-    this.emitter = msb.Responder.createEmitter(this.config, channelManager);
+    this.emitter = Responder.createEmitter(this.config, channelManager);
     this.emitter.on("responder", this.onResponder.bind(this));
     return this;
   };
