@@ -4,7 +4,6 @@ export class ResponderResponse {
   _hasBody: boolean;
   _header: any;
   statusCode: number;
-  statusMessage: string;
 
   private headers: {
     [key: string]: string;
@@ -13,7 +12,8 @@ export class ResponderResponse {
   constructor(responder) {
     this.responder = responder;
     this.body = null;
-    this.headers = null;
+    this.headers = {};
+    this._hasBody = (responder.originalMessage.payload.method === "HEAD") ? false : true;
   }
 
   setHeader(name: string, value: string): void {
@@ -28,8 +28,25 @@ export class ResponderResponse {
     delete this.headers[name];
   }
 
-  writeHead(statusCode: number, headers?: any): void {
-    //tbd
+  writeHead(statusCode: number, headers?: {[key: string]: string; }): void {
+    this.statusCode = statusCode;
+    if (statusCode === 204) {
+      this._hasBody = false;
+    }
+    const mainHeaders = Object.keys(this.headers);
+    if (mainHeaders.length) {
+      this._header = {};
+      Object.keys(this.headers).forEach((key) => {
+        this._header[key] = this.headers[key];
+      });
+    }
+
+    if (headers) {
+      this._header = this._header || {};
+      Object.keys(headers).forEach((key) => {
+        this._header[key] = headers[key];
+      });
+    }
   }
 
   end(body, cb) {
