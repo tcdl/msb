@@ -1,5 +1,5 @@
 import {Message} from "../../messageFactory";
-import {AMQPProducerOptions, AMQPConfig} from "./amqp";
+import {AMQPConfig, AMQPProducerOptions} from "./index";
 
 export class AMQPPublisherAdapter {
   private config: AMQPConfig;

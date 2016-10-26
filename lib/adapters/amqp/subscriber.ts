@@ -1,7 +1,7 @@
 import {EventEmitter} from "events";
 import {Message} from "../../messageFactory";
 import serviceDetails = require("../../support/serviceDetails");
-import {AMQPConsumerOptions, AMQPConfig} from "./amqp";
+import {AMQPConfig, AMQPConsumerOptions} from "./index";
 
 const _ = require("lodash");
 

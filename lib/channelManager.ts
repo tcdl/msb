@@ -182,10 +182,12 @@ channelManager.create = function () {
   function getAdapter(): BrokerAdapter {
     if (adapter) return adapter;
 
-    adapterConfig = config[config.brokerAdapter];
+    const adapterFactory = require(ADAPTER_PATHS[config.brokerAdapter]);
+
+    adapterConfig = adapterFactory.loadConfig();
     if (!adapterConfig) throw new Error("Invalid broker adapter \"" + config.brokerAdapter + "\"");
 
-    adapter = require(ADAPTER_PATHS[config.brokerAdapter]).create();
+    adapter = adapterFactory.create();
     return adapter;
   }
 

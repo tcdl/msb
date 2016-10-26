@@ -1,12 +1,12 @@
 import {
-  BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter,
+  BrokerAdapter, BrokerPublisherAdapterFactory,
   BrokerSubscriberAdapterFactory
 } from "../adapter";
-import {BrokerConfig, ConfigAMQP, ConsumerOptions, ProducerOptions} from "../../config";
+import {BrokerConfig, ConsumerOptions, ProducerOptions} from "../../config";
 import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
 import {Message} from "../../messageFactory";
-import {AMQPConfig, AMQPConsumerOptions, AMQPProducerOptions} from "./amqp";
+import serviceDetails = require("../../support/serviceDetails");
 
 const AMQP = require("amqp-coffee");
 const _ = require("lodash");
@@ -53,4 +53,38 @@ class AMQPBrokerAdapter implements BrokerAdapter {
 
 export function create(): BrokerAdapter {
   return new AMQPBrokerAdapter();
+}
+
+export function loadConfig(): BrokerConfig {
+  return new AMQPConfig();
+}
+
+type amqpExchangeType = "fanout" | "topic"
+
+export class AMQPConfig extends BrokerConfig {
+  vhost?: string;
+  groupId?: string;
+  durable?: boolean;
+  heartbeat?: number;
+  prefetchCount?: number;
+  type?: amqpExchangeType;
+
+  constructor() {
+    super();
+    this.vhost = process.env.MSB_AMQP_VHOST || "/";
+    this.groupId = serviceDetails.name;
+    this.durable = false;
+    this.heartbeat = 10000;
+    this.prefetchCount = 1;
+    this.type = "fanout";
+  }
+}
+
+export interface AMQPConsumerOptions extends ConsumerOptions {
+  bindingKeys?: string[];
+  type?: amqpExchangeType;
+}
+
+export interface AMQPProducerOptions extends ProducerOptions {
+  type?: amqpExchangeType;
 }
