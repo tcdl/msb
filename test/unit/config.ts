@@ -1,5 +1,7 @@
 import {expect} from "chai";
+import {join} from "path";
 const simple = require("simple-mock");
+import {create} from "../../lib/config";
 
 describe("config", function () {
   afterEach(function (done) {
@@ -11,7 +13,7 @@ describe("config", function () {
     let config;
 
     beforeEach(function (done) {
-      config = require("../lib/config").create();
+      config = create();
       done();
     });
 
@@ -28,7 +30,7 @@ describe("config", function () {
 
     describe("_init()", function () {
       it("should load JSON config file", function (done) {
-        simple.mock(process.env, "MSB_CONFIG_PATH", require("path").join(__dirname, "fixtures", "sample_config.json"));
+        simple.mock(process.env, "MSB_CONFIG_PATH", join(__dirname, "_fixtures", "sample_config.json"));
 
         config._init();
 
@@ -38,7 +40,7 @@ describe("config", function () {
       });
 
       it("should load JS config file", function (done) {
-        simple.mock(process.env, "MSB_CONFIG_PATH", require("path").join(__dirname, "fixtures", "sample_config.js"));
+        simple.mock(process.env, "MSB_CONFIG_PATH", join(__dirname, "_fixtures", "sample_config.js"));
 
         config._init();
 
@@ -60,7 +62,7 @@ describe("config", function () {
       simple.mock(process.env, "MSB_BROKER_USER", "i");
       simple.mock(process.env, "MSB_AMQP_VHOST", "j");
 
-      const config = require("../lib/config").create();
+      const config = create();
 
       expect(config.brokerAdapter).equals("a");
       expect(config.amqp.host).equals("c");

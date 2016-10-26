@@ -1,17 +1,16 @@
 import {expect} from "chai";
-import generateId = require("../lib/support/generateId");
+import generateId = require("../../../lib/support/generateId");
 const _ = require("lodash");
 const simple = require("simple-mock");
 const MAX_PER_SECOND: number = 65536;
 
-// NOTE: Requires lodash@2.n as version 3 will time out on performing `_.uniq()` operation.
-describe("generateId", function() {
-  afterEach(function(done) {
+describe("generateId", function () {
+  afterEach(function (done) {
     simple.restore();
     done();
   });
 
-  it("generates ordered ids", function(done) {
+  it("generates ordered ids", function (done) {
     let ids: string[] = [];
 
     while (ids.length < 10000) {
@@ -23,11 +22,11 @@ describe("generateId", function() {
     done();
   });
 
-  it("works with constant date", function(done) {
+  it("works with constant date", function (done) {
     let constantDate: number = Date.now() + 1000;
     let ids: string[] = [];
 
-    simple.mock(Date, "now", function() {
+    simple.mock(Date, "now", function () {
       return constantDate;
     });
 
@@ -40,14 +39,14 @@ describe("generateId", function() {
     done();
   });
 
-  it("works with failure of randomness", function(done) {
+  it("works with failure of randomness", function (done) {
     let constantDate: number = Date.now() + 1000;
 
-    simple.mock(Date, "now", function() {
+    simple.mock(Date, "now", function () {
       return constantDate;
     });
 
-    simple.mock(Math, "random", function() {
+    simple.mock(Math, "random", function () {
       return 0;
     });
 

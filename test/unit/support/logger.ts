@@ -1,16 +1,16 @@
 import {expect} from "chai";
-import {warn} from "../lib/support/logger";
+import {warn} from "../../../lib/support/logger";
 const simple = require("simple-mock");
 
-describe("logger", function() {
+describe("logger", function () {
 
-  afterEach(function(done) {
+  afterEach(function (done) {
     simple.restore();
     done();
   });
 
-  describe("warn()", function() {
-    it("should log error to console", function(done) {
+  describe("warn()", function () {
+    it("should log error to console", function (done) {
       simple.mock(console, "error").returnWith();
 
       warn("abc");
