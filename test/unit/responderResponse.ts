@@ -86,7 +86,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: null,
-            bodyBuffer: "AAAAAAAAAAAAAAAAAAAAAAAAAAA="
+            bodyBuffer: newBody.toString("base64")
           });
           done();
         });
