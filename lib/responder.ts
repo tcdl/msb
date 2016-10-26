@@ -63,7 +63,7 @@ export class Responder {
       .publish(message, cb);
   };
 
-  createEmitter(config, channelManager) {
+  static createEmitter(config, channelManager) {
     if (!channelManager) channelManager = require("./channelManager").default;
 
     const emitter: any = new EventEmitter();
@@ -86,7 +86,7 @@ export class Responder {
     return emitter;
   };
 
-  createServer(config: Object) {
+  static createServer(config: Object) {
     return new ResponderServer(config);
   };
 }

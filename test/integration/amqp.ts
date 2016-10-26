@@ -5,11 +5,11 @@ import validateWithSchema = require("../../lib/validateWithSchema");
 const createChannelManager = require("../../lib/channelManager").create;
 const simple = require("simple-mock");
 const _ = require("lodash");
-const amqpPublisher = require("../support/amqpPublisher");
+import * as amqpPublisher from "./_support/amqpPublisher";
 
 const fixtures = {
-  consumer_basic: require("./fixtures/integration_consumer_basic.json"),
-  consumer_schema: require("./fixtures/integration_consumer_schema")
+  consumer_basic: require("./_fixtures/integration_consumer_basic.json"),
+  consumer_schema: require("./_fixtures/integration_consumer_schema")
 };
 
 describe("AMQP Integration", function() {
