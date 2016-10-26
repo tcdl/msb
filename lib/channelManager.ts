@@ -5,6 +5,7 @@ import validateWithSchema = require("./validateWithSchema");
 import * as messageFactory from "./messageFactory";
 import * as helpers from "./support/helpers";
 import * as logger from "./support/logger";
+import {create} from "./config";
 
 let channelManager = exports;
 
@@ -13,10 +14,9 @@ const ADAPTER_PATHS = {
   local: "./adapters/local"
 };
 
-channelManager.create = function() {
+channelManager.create = function () {
   let channelManager: any = new EventEmitter();
-  let config = require("./config").create();
-
+  let config = create();
   let producersByTopic = {};
   let consumersByTopic = {};
   let consumerTopicsToCheck = [];
@@ -31,16 +31,16 @@ channelManager.create = function() {
   channelManager.CONSUMER_REMOVED_TOPIC_EVENT = "removedConsumerOnTopic";
   channelManager.CONSUMER_NEW_MESSAGE_EVENT = "newConsumedMessage";
 
-  channelManager.close = function() {
+  channelManager.close = function () {
     if (!adapter || !adapter.close) return;
     adapter.close();
   };
 
-  channelManager.hasChannels = function() {
+  channelManager.hasChannels = function () {
     return (Object.keys(producersByTopic).length || Object.keys(consumersByTopic).length) > 0;
   };
 
-  channelManager.configure = function(newConfig) {
+  channelManager.configure = function (newConfig) {
     if (channelManager.hasChannels()) {
       logger.warn("`configure()` must be called before channels are created.");
     }
@@ -48,7 +48,7 @@ channelManager.create = function() {
     return channelManager;
   };
 
-  channelManager.findOrCreateProducer = function(topic, options, unusedChannelTimeoutMs) {
+  channelManager.findOrCreateProducer = function (topic, options, unusedChannelTimeoutMs) {
     let channel = producersByTopic[topic];
     if (channel) return channel;
     options = options ? options : {};
@@ -60,14 +60,14 @@ channelManager.create = function() {
     channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, topic);
 
     channel.publish_ = channel.publish;
-    channel.publish = function(message, cb) {
+    channel.publish = function (message, cb) {
       clearTimeout(unusedChannelTimeout);
 
       if (unusedChannelTimeoutMs) {
         unusedChannelTimeout = setTimeout(onUnusedChannelTimeout, unusedChannelTimeoutMs);
       }
 
-      channel.publish_(message, function(err) {
+      channel.publish_(message, function (err) {
         if (err) return cb(err);
         channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, topic);
         cb();
@@ -81,13 +81,13 @@ channelManager.create = function() {
     return channel;
   };
 
-  channelManager.createRawProducer = function(topic, options) {
+  channelManager.createRawProducer = function (topic, options) {
     let producerConfig = _.merge(adapterConfig, options);
 
     return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
 
-  channelManager.findOrCreateConsumer = function(topic, options) {
+  channelManager.findOrCreateConsumer = function (topic, options) {
     let channel = consumersByTopic[topic];
     if (channel) return channel;
 
@@ -103,16 +103,16 @@ channelManager.create = function() {
       autoConfirm = adapterConfig && adapterConfig.autoConfirm;
     }
 
-    channel.onceConsuming = (channel.raw.onceConsuming) ? function(cb) {
+    channel.onceConsuming = (channel.raw.onceConsuming) ? function (cb) {
       channel.raw.onceConsuming(cb);
       return channel;
     } : noopCb;
 
-    channel.rejectMessage = (channel.raw.rejectMessage) ? function(message) {
+    channel.rejectMessage = (channel.raw.rejectMessage) ? function (message) {
       channel.raw.rejectMessage(message);
     } : noop__;
 
-    channel.confirmProcessedMessage = (channel.raw.confirmProcessedMessage) ? function(message, _safe) {
+    channel.confirmProcessedMessage = (channel.raw.confirmProcessedMessage) ? function (message, _safe) {
       // Only use _safe if you can"t know whether message has already been confirmed/rejected
       channel.raw.confirmProcessedMessage(message, _safe);
     } : noop__;
@@ -142,7 +142,7 @@ channelManager.create = function() {
       channel.raw.on("message", onMessage);
     }
 
-    channel.on("error", function(err, message) {
+    channel.on("error", function (err, message) {
       if (autoConfirm && message) {
         // Reject when a message has generated an error, e.g. not validated
         channel.rejectMessage(message);
@@ -155,7 +155,7 @@ channelManager.create = function() {
 
     if (isServiceChannel || !config.cleanupConsumers) return channel;
 
-    channel.on("removeListener", function(eventName) {
+    channel.on("removeListener", function (eventName) {
       if (eventName !== "message") return;
       if (~consumerTopicsToCheck.indexOf(topic) || channel.listeners(eventName).length) return;
       consumerTopicsToCheck.push(topic);
@@ -167,7 +167,7 @@ channelManager.create = function() {
     return channel;
   };
 
-  channelManager.createRawConsumer = function(topic, options) {
+  channelManager.createRawConsumer = function (topic, options) {
     let a = getAdapter();
 
     let subscriberConfig = _.merge({
@@ -192,7 +192,7 @@ channelManager.create = function() {
   }
 
   function checkConsumers() {
-    consumerTopicsToCheck.forEach(function(topic) {
+    consumerTopicsToCheck.forEach(function (topic) {
       let channel = consumersByTopic[topic];
       if (channel.listeners("message").length) return; // Still has listeners
 

@@ -58,7 +58,7 @@ export class ResponderResponse {
     }
 
     if (!this._header) {
-      this.writeHead(this.statusCode);
+      this.writeHead(this.statusCode || 200);
     }
 
     const payload: any = {

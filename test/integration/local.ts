@@ -1,18 +1,15 @@
 import {expect} from "chai";
-
-let test;
-const msb = require("../..");
 const simple = require("simple-mock");
+import {configure, Requester, logger} from "../..";
+import {createLocalResponder} from "./_support/localResponder";
 
-/* Tests */
 describe("Local", function() {
   before(function(done) {
-    simple.mock(msb.logger, "warn").returnWith();
+    simple.mock(logger, "warn").returnWith();
 
-    msb.configure({
+    configure({
       brokerAdapter: "local"
     });
-
     done();
   });
 
@@ -22,11 +19,11 @@ describe("Local", function() {
   });
 
   describe("responder", function() {
-    let responder;
     let requester;
+    let responder;
 
     before(function(done) {
-      responder = require("./_support/localResponder");
+      responder = createLocalResponder();
       responder.listen();
       done();
     });
@@ -37,7 +34,7 @@ describe("Local", function() {
     });
 
     beforeEach(function(done) {
-      requester = new msb.Requester({ namespace: "test:general", ackTimeout: 100, responseTimeout: 1000 });
+      requester = new Requester({ namespace: "test:general", ackTimeout: 100, waitForResponsesMs: 500 });
       done();
     });
 
@@ -85,10 +82,10 @@ describe("Local", function() {
       })
       .once("error", done);
 
-      requester = new msb.Requester({
+      requester = new Requester({
         namespace: "test:general",
         ackTimeout: 100,
-        responseTimeout: 1000,
+        waitForResponsesMs: 500,
         tags: ["a"]
       });
       requester

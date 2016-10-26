@@ -1,11 +1,10 @@
 import {expect} from "chai";
-import {AMQPSubscriberAdapter} from "../../lib/adapters/amqp/subscriber";
-import validateWithSchema = require("../../lib/validateWithSchema");
-
-const createChannelManager = require("../../lib/channelManager").create;
 const simple = require("simple-mock");
 const _ = require("lodash");
+
+import {AMQPSubscriberAdapter} from "../../lib/adapters/amqp/subscriber";
 import * as amqpPublisher from "./_support/amqpPublisher";
+import {createChannelManager, validateWithSchema} from "../..";
 
 const fixtures = {
   consumer_basic: require("./_fixtures/integration_consumer_basic.json"),
