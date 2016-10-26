@@ -1,12 +1,12 @@
 import {expect} from "chai";
 import {EventEmitter} from "events";
 const simple = require("simple-mock");
-import * as amqp from "../lib/adapters/amqp";
-import * as config from "../lib/config";
+import * as amqp from "../../lib/adapters/amqp";
+import * as config from "../../lib/config";
 // import {create as createChannelManager} from "../lib/channelManager";
-const createChannelManager = (require("../lib/channelManager")).create;
-import * as messageFactory from "../lib/messageFactory";
-import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../lib/adapters/adapter";
+const createChannelManager = (require("../../lib/channelManager")).create;
+import * as messageFactory from "../../lib/messageFactory";
+import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../../lib/adapters/adapter";
 describe("channelManager", function () {
   let queue: BrokerAdapter;
   let channelManager;

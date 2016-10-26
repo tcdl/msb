@@ -1,29 +1,29 @@
 import {expect} from "chai";
-import {Requester} from "../lib/requester";
-import request from "../lib/request";
+import {Requester} from "../../lib/requester";
+import request from "../../lib/request";
 
 const simple = require("simple-mock");
 
-describe("request()", function() {
-  beforeEach(function(done) {
+describe("request()", function () {
+  beforeEach(function (done) {
     simple.mock(Requester.prototype, "publish");
     done();
   });
 
-  afterEach(function(done) {
+  afterEach(function (done) {
     simple.restore();
     done();
   });
 
-  describe("with only a topic", function() {
-    beforeEach(function(done) {
-      (<any>Requester.prototype.publish).callFn(function() {
+  describe("with only a topic", function () {
+    beforeEach(function (done) {
+      (<any>Requester.prototype.publish).callFn(function () {
         return this;
       });
       done();
     });
 
-    it("calls back on end with a response", function(done) {
+    it("calls back on end with a response", function (done) {
       const requester = request("my:topic", {
         my: "payload"
       }, (err, responsePayload, responseMessage) => {
@@ -42,7 +42,7 @@ describe("request()", function() {
       requester.end();
     });
 
-    it("calls back on error", function(done) {
+    it("calls back on error", function (done) {
       const requester = request("my:topic", {
         my: "payload"
       }, (err, responsePayload, responseMessage) => {
@@ -59,24 +59,24 @@ describe("request()", function() {
     });
   });
 
-  describe("with config", function() {
+  describe("with config", function () {
     let config: any;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
       config = {
         namespace: "my:topic",
-        responseSchema: { type: "object" },
+        responseSchema: {type: "object"},
         channelManager: {},
         waitForResponses: 5,
         waitForResponsesMs: 5000
       };
-      (<any>Requester.prototype.publish).callFn(function() {
+      (<any>Requester.prototype.publish).callFn(function () {
         return this;
       });
       done();
     });
 
-    it("calls back on end with a response", function(done) {
+    it("calls back on end with a response", function (done) {
       const mockPayload = {};
 
       const requester = request(config, {
@@ -98,8 +98,8 @@ describe("request()", function() {
       requester.end();
     });
 
-    it("calls back on validation error", function(done) {
-      const requester = request(config , {
+    it("calls back on validation error", function (done) {
+      const requester = request(config, {
         my: "payload"
       }, (err, responsePayload, responseMessage) => {
 

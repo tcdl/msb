@@ -1,6 +1,7 @@
 import {expect} from "chai";
-const msb = require("..");
-import {Requester} from "../lib/requester";
+import * as messageFactory from "../../lib/messageFactory";
+const channelManager = require("../../lib/channelManager").default;
+import {Requester} from "../../lib/requester";
 const simple = require("simple-mock");
 
 describe("Requester", function() {
@@ -11,11 +12,11 @@ describe("Requester", function() {
   });
 
   it("can be initialized", function(done) {
-    simple.mock(msb.messageFactory, "createRequestMessage");
+    simple.mock(messageFactory, "createRequestMessage");
 
     const obj = new Requester({});
 
-    expect(msb.messageFactory.createRequestMessage.called).to.equal(true);
+    expect((messageFactory.createRequestMessage as any).called).to.equal(true);
     done();
   });
 
@@ -26,7 +27,7 @@ describe("Requester", function() {
       producer = {};
 
       simple.mock(producer, "publish");
-      simple.mock(msb.channelManager, "findOrCreateProducer", function(topic) {
+      simple.mock(channelManager, "findOrCreateProducer", function(topic) {
         return producer;
       });
 

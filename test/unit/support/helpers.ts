@@ -1,8 +1,8 @@
 import {expect} from "chai";
-import * as helpers from "../lib/support/helpers";
+import * as helpers from "../../../lib/support/helpers";
 
-describe("validatedTopic()", function() {
-  it("should throw for invalid topics", function(done) {
+describe("validatedTopic()", function () {
+  it("should throw for invalid topics", function (done) {
     const invalidTopics: string[] = [
       "oneword",
       "etc.dotted",
@@ -13,8 +13,8 @@ describe("validatedTopic()", function() {
       "etc::double"
     ];
 
-    invalidTopics.forEach(function(topic) {
-      expect(function() {
+    invalidTopics.forEach(function (topic) {
+      expect(function () {
         helpers.validatedTopic(topic);
       }, topic).to.throw(Error, `'${topic}' must be an alpha-numeric, colon-delimited string`);
     });
@@ -22,7 +22,7 @@ describe("validatedTopic()", function() {
     done();
   });
 
-  it("should return valid topics", function(done) {
+  it("should return valid topics", function (done) {
     const validTopics: string[] = [
       "two:words",
       "three:word:s",
@@ -33,7 +33,7 @@ describe("validatedTopic()", function() {
       "etc-etc:a"
     ];
 
-    validTopics.forEach(function(topic) {
+    validTopics.forEach(function (topic) {
       let validatedTopic;
       try {
         validatedTopic = helpers.validatedTopic(topic);
@@ -47,8 +47,8 @@ describe("validatedTopic()", function() {
   });
 });
 
-describe("topicWithoutInstanceId()", function() {
-  it("should return topics stripped of instance id", function(done) {
+describe("topicWithoutInstanceId()", function () {
+  it("should return topics stripped of instance id", function (done) {
     const topics = {
       "without:words": "without:words",
       "with:abc123": "with",
@@ -57,7 +57,7 @@ describe("topicWithoutInstanceId()", function() {
       "simple:multi:aaa:levels:abc": "simple:multi:aaa:levels"
     };
 
-    Object.keys(topics).forEach(function(topic) {
+    Object.keys(topics).forEach(function (topic) {
       let cleanTopic;
       try {
         cleanTopic = helpers.topicWithoutInstanceId(topic);

@@ -1,17 +1,18 @@
 import {expect} from "chai";
-const msb = require("..");
-import {Collector} from "../lib/collector";
+import {Collector} from "../../lib/collector";
+import * as logger from "../../lib/support/logger";
+const channelManager = require("../../lib/channelManager").default;
 const simple = require("simple-mock");
 
-describe("Collector", function() {
-  afterEach(function(done) {
+describe("Collector", function () {
+  afterEach(function (done) {
     simple.restore();
     done();
   });
 
-  describe("()", function() {
+  describe("()", function () {
 
-    it("can be initialized without a config", function(done) {
+    it("can be initialized without a config", function (done) {
       const collector = new Collector();
 
       expect(collector.startedAt).to.exist;
@@ -20,7 +21,7 @@ describe("Collector", function() {
       done();
     });
 
-    it("can be initialized with a config", function(done) {
+    it("can be initialized with a config", function (done) {
       const config = {
         waitForResponsesMs: 555,
         waitForAcksMs: 50,
@@ -37,44 +38,44 @@ describe("Collector", function() {
     });
   });
 
-  describe("for an instance with default config", function() {
+  describe("for an instance with default config", function () {
     let collector;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
       collector = new Collector();
 
       done();
     });
 
-    describe("isAwaitingAcks", function() {
-      it("will be null by default", function(done) {
+    describe("isAwaitingAcks", function () {
+      it("will be null by default", function (done) {
         expect(collector.isAwaitingAcks()).equals(null);
         done();
       });
 
-      it("will be true if waiting for acks", function(done) {
+      it("will be true if waiting for acks", function (done) {
         collector.waitForAcksUntil = new Date(Date.now() + 1000);
         expect(collector.isAwaitingAcks()).to.be.true;
         done();
       });
 
-      it("will be false if not waiting for acks", function(done) {
+      it("will be false if not waiting for acks", function (done) {
         collector.waitForAcksUntil = new Date();
         expect(collector.isAwaitingAcks()).to.be.false;
         done();
       });
     });
 
-    describe("getMaxTimeoutMs()", function() {
+    describe("getMaxTimeoutMs()", function () {
 
-      it("can return the base timeout", function(done) {
+      it("can return the base timeout", function (done) {
 
         const result = collector.getMaxTimeoutMs();
         expect(result).equals(collector.timeoutMs);
         done();
       });
 
-      it("can return the max of responder timeouts", function(done) {
+      it("can return the max of responder timeouts", function (done) {
 
         collector.timeoutMs = 0;
         collector.timeoutMsById = {
@@ -94,7 +95,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("can return the max of base and responder timeouts", function(done) {
+      it("can return the max of base and responder timeouts", function (done) {
 
         collector.timeoutMs = 2000;
         collector.timeoutMsById = {
@@ -107,9 +108,9 @@ describe("Collector", function() {
       });
     });
 
-    describe("getResponsesRemaining()", function() {
+    describe("getResponsesRemaining()", function () {
 
-      it("can return the base responsesRemaining", function(done) {
+      it("can return the base responsesRemaining", function (done) {
 
         const result = collector.getResponsesRemaining();
 
@@ -117,7 +118,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("can return the sum of all responses remaining", function(done) {
+      it("can return the sum of all responses remaining", function (done) {
 
         collector.responsesRemaining = 0;
         collector.responsesRemainingById = {
@@ -131,7 +132,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("can return the base responses remaining as a minimum", function(done) {
+      it("can return the base responses remaining as a minimum", function (done) {
 
         collector.responsesRemaining = 1;
         collector.responsesRemainingById = {
@@ -144,9 +145,9 @@ describe("Collector", function() {
       });
     });
 
-    describe("setTimeoutMsForResponderId()", function() {
+    describe("setTimeoutMsForResponderId()", function () {
 
-      it("will set the timeout for an id", function(done) {
+      it("will set the timeout for an id", function (done) {
 
         const result = collector.setTimeoutMsForResponderId("a", 10000);
 
@@ -155,7 +156,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will return null when value was not changed", function(done) {
+      it("will return null when value was not changed", function (done) {
 
         collector.setTimeoutMsForResponderId("a", 10000);
         const result = collector.setTimeoutMsForResponderId("a", 10000);
@@ -165,7 +166,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will set the timeout for another id", function(done) {
+      it("will set the timeout for another id", function (done) {
 
         collector.setTimeoutMsForResponderId("a", 10000);
         const result = collector.setTimeoutMsForResponderId("b", 20000);
@@ -176,13 +177,13 @@ describe("Collector", function() {
       });
     });
 
-    describe("setResponsesRemainingForResponderId()", function() {
-      beforeEach(function(done) {
+    describe("setResponsesRemainingForResponderId()", function () {
+      beforeEach(function (done) {
         collector.responsesRemaining = 0;
         done();
       });
 
-      it("will set the remaining for an id", function(done) {
+      it("will set the remaining for an id", function (done) {
         const result = collector.setResponsesRemainingForResponderId("a", 5);
 
         expect(result).equals(5);
@@ -190,7 +191,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will add to the remaining for an id, same as before", function(done) {
+      it("will add to the remaining for an id, same as before", function (done) {
         collector.setResponsesRemainingForResponderId("a", 1);
         const result = collector.setResponsesRemainingForResponderId("a", 1);
 
@@ -199,7 +200,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will add to the remaining for an id", function(done) {
+      it("will add to the remaining for an id", function (done) {
         collector.setResponsesRemainingForResponderId("a", 1);
         const result = collector.setResponsesRemainingForResponderId("a", 5);
 
@@ -208,7 +209,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will set to the remaining for an id to zero", function(done) {
+      it("will set to the remaining for an id to zero", function (done) {
         collector.setResponsesRemainingForResponderId("a", 1);
         const result = collector.setResponsesRemainingForResponderId("a", 0);
 
@@ -217,7 +218,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will return null when subtracting from a non-existent value", function(done) {
+      it("will return null when subtracting from a non-existent value", function (done) {
         const result = collector.setResponsesRemainingForResponderId("a", -1);
 
         expect(result).equals(null);
@@ -225,7 +226,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will return null when subtracting from a zero value", function(done) {
+      it("will return null when subtracting from a zero value", function (done) {
         collector.setResponsesRemainingForResponderId("a", 0);
         const result = collector.setResponsesRemainingForResponderId("a", -1);
 
@@ -234,7 +235,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will subtract where the value is negative", function(done) {
+      it("will subtract where the value is negative", function (done) {
 
         collector.setResponsesRemainingForResponderId("a", 5);
         const result = collector.setResponsesRemainingForResponderId("a", -1);
@@ -244,7 +245,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will subtract only down to 0", function(done) {
+      it("will subtract only down to 0", function (done) {
 
         collector.setResponsesRemainingForResponderId("a", 5);
         const result = collector.setResponsesRemainingForResponderId("a", -10);
@@ -254,7 +255,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("can set the remaining for another id", function(done) {
+      it("can set the remaining for another id", function (done) {
 
         collector.setResponsesRemainingForResponderId("a", 5);
         const result = collector.setResponsesRemainingForResponderId("b", 7);
@@ -265,13 +266,13 @@ describe("Collector", function() {
       });
     });
 
-    describe("incResponsesRemaining()", function() {
-      beforeEach(function(done) {
+    describe("incResponsesRemaining()", function () {
+      beforeEach(function (done) {
         collector.responsesRemaining = 0;
         done();
       });
 
-      it("can add/subtract from base responses remaining, only down to 0", function(done) {
+      it("can add/subtract from base responses remaining, only down to 0", function (done) {
 
         expect(collector.incResponsesRemaining(2)).equals(2);
         expect(collector.incResponsesRemaining(1)).equals(3);
@@ -281,8 +282,8 @@ describe("Collector", function() {
       });
     });
 
-    describe("processAck()", function() {
-      beforeEach(function(done) {
+    describe("processAck()", function () {
+      beforeEach(function (done) {
         collector.responsesRemaining = 0;
 
         simple.mock(collector, "setTimeoutMsForResponderId");
@@ -291,15 +292,15 @@ describe("Collector", function() {
         done();
       });
 
-      it("does nothing when ack is empty", function(done) {
+      it("does nothing when ack is empty", function (done) {
 
-        expect(function() {
+        expect(function () {
           collector.processAck(null);
         }).to.not.throw();
         done();
       });
 
-      it("will enable a timeout per responder", function(done) {
+      it("will enable a timeout per responder", function (done) {
 
         collector.processAck({
           responderId: "a",
@@ -314,7 +315,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will take the max timeout", function(done) {
+      it("will take the max timeout", function (done) {
         collector.processAck({
           responderId: "a",
           timeoutMs: 1500
@@ -326,7 +327,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("will set the responses remaining per responder", function(done) {
+      it("will set the responses remaining per responder", function (done) {
         collector.processAck({
           responderId: "a",
           responsesRemaining: 1
@@ -340,36 +341,36 @@ describe("Collector", function() {
       });
     });
 
-    describe("listenFor...()", function() {
+    describe("listenFor...()", function () {
       let mockChannel: any;
 
-      beforeEach(function(done) {
+      beforeEach(function (done) {
         mockChannel = {};
-        simple.mock(msb.logger, "warn").returnWith();
+        simple.mock(logger, "warn").returnWith();
         simple.mock(mockChannel, "on").returnWith(mockChannel);
-        simple.mock(msb.channelManager, "findOrCreateConsumer").returnWith(mockChannel);
+        simple.mock(channelManager, "findOrCreateConsumer").returnWith(mockChannel);
         simple.mock(collector, "onResponseMessage").returnWith();
 
         done();
       });
 
-      it("should warn if there is no error listener", function(done) {
+      it("should warn if there is no error listener", function (done) {
         const shouldAcceptMessageFn = simple.mock();
 
         collector.listenForResponses("etc", shouldAcceptMessageFn);
 
-        expect(msb.logger.warn.calls).length(1);
+        expect((logger.warn as any).calls).length(1);
         done();
       });
 
-      it("should listen with onResponseMessage", function(done) {
+      it("should listen with onResponseMessage", function (done) {
         const shouldAcceptMessageFn = simple.mock();
         const originalOnResponseMessageFn = collector.onResponseMessage;
 
         collector.listenForResponses("etc", shouldAcceptMessageFn);
 
-        expect(msb.channelManager.findOrCreateConsumer.called).to.be.true;
-        expect(msb.channelManager.findOrCreateConsumer.lastCall.args[0]).equals("etc");
+        expect(channelManager.findOrCreateConsumer.called).to.be.true;
+        expect(channelManager.findOrCreateConsumer.lastCall.args[0]).equals("etc");
 
         expect(mockChannel.on.called).to.be.true;
         expect(mockChannel.on.lastCall.args[0]).equals("message");
@@ -388,7 +389,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should initialize the ackTimeout where appropriate", function(done) {
+      it("should initialize the ackTimeout where appropriate", function (done) {
         const shouldAcceptMessageFn = simple.mock();
 
         collector.waitForAcksMs = 100;
@@ -402,9 +403,9 @@ describe("Collector", function() {
       });
     });
 
-    describe("removeListeners()", function() {
+    describe("removeListeners()", function () {
 
-      it("removes the responseChannel if it exists", function(done) {
+      it("removes the responseChannel if it exists", function (done) {
         const mockResponseChannel: any = {};
         simple.mock(mockResponseChannel, "removeListener").returnWith();
         collector.responseChannel = mockResponseChannel;
@@ -415,7 +416,7 @@ describe("Collector", function() {
         expect(mockResponseChannel.removeListener.lastCall.args[0]).equals("message");
         expect(mockResponseChannel.removeListener.lastCall.args[1]).equals(collector.onResponseMessage);
 
-        expect(function() {
+        expect(function () {
           collector.removeListeners();
         }).to.not.throw();
 
@@ -423,11 +424,11 @@ describe("Collector", function() {
       });
     });
 
-    describe("onResponseMessage", function() {
+    describe("onResponseMessage", function () {
       let shouldAcceptMessageFn;
       let message;
 
-      beforeEach(function(done) {
+      beforeEach(function (done) {
         shouldAcceptMessageFn = simple.mock();
 
         simple.mock(collector, "emit").returnWith();
@@ -446,7 +447,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should accept message when passed function returns true", function(done) {
+      it("should accept message when passed function returns true", function (done) {
 
         shouldAcceptMessageFn.returnWith(true);
         collector.isAwaitingResponses.returnWith(0);
@@ -469,7 +470,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should accept message when no function is passed", function(done) {
+      it("should accept message when no function is passed", function (done) {
 
         collector.isAwaitingResponses.returnWith(0);
 
@@ -491,7 +492,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should handle ack when no payload is passed", function(done) {
+      it("should handle ack when no payload is passed", function (done) {
         message.payload = null;
 
         collector.onResponseMessage(null, message);
@@ -508,7 +509,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should not accept message when passed function returns false", function(done) {
+      it("should not accept message when passed function returns false", function (done) {
 
         shouldAcceptMessageFn.returnWith(false);
 
@@ -519,7 +520,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should not end when still awaiting responses", function(done) {
+      it("should not end when still awaiting responses", function (done) {
 
         collector.isAwaitingResponses.returnWith(1);
 
@@ -530,7 +531,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should enable ack timeout when still awaiting acks", function(done) {
+      it("should enable ack timeout when still awaiting acks", function (done) {
 
         collector.isAwaitingResponses.returnWith(0);
         collector.isAwaitingAcks.returnWith(true);
@@ -544,7 +545,7 @@ describe("Collector", function() {
         done();
       });
 
-      it("should not proceed if already canceled (e.g. error happened during event)", function(done) {
+      it("should not proceed if already canceled (e.g. error happened during event)", function (done) {
 
         collector.cancel();
 

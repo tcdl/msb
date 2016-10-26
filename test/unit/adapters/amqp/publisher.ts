@@ -1,25 +1,25 @@
 import {expect} from "chai";
-import {AMQPPublisherAdapter} from "../lib/adapters/amqp/publisher";
-
-const config = require("../lib/config").create();
+import {AMQPPublisherAdapter} from "../../../../lib/adapters/amqp/publisher";
+import {create} from "../../../../lib/config";
+const config = create();
 const simple = require("simple-mock");
 const AMQP = require("amqp-coffee");
 
-describe("AMQPPublisherAdapter", function() {
+describe("AMQPPublisherAdapter", function () {
   let connection;
   let publisher;
   let exchange;
 
-  describe("publish()", function() {
+  describe("publish()", function () {
 
-    before(function(done) {
+    before(function (done) {
       connection = new AMQP(config.amqp);
       publisher = new AMQPPublisherAdapter(config.amqp, connection);
       exchange = {};
       done();
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
       simple.restore();
       simple.mock(connection, "publish");
       simple.mock(connection, "exchange");
@@ -28,7 +28,7 @@ describe("AMQPPublisherAdapter", function() {
       done();
     });
 
-    it("can publish where an exchange already exists", function(done) {
+    it("can publish where an exchange already exists", function (done) {
 
       connection.publish.callbackWith();
 
@@ -40,8 +40,8 @@ describe("AMQPPublisherAdapter", function() {
       });
     });
 
-    describe("where an exchange does not initially exist", function() {
-      beforeEach(function(done) {
+    describe("where an exchange does not initially exist", function () {
+      beforeEach(function (done) {
 
         connection.exchange.returnWith(exchange);
         exchange.declare.callbackWith();
@@ -49,7 +49,7 @@ describe("AMQPPublisherAdapter", function() {
         done();
       });
 
-      it("can publish a single message", function(done) {
+      it("can publish a single message", function (done) {
         connection.publish.callbackWith({
           error: {
             replyCode: 404
@@ -69,7 +69,7 @@ describe("AMQPPublisherAdapter", function() {
         });
       });
 
-      it("can publish multiple messages in queue", function(done) {
+      it("can publish multiple messages in queue", function (done) {
         connection.publish.callbackWith({
           error: {
             replyCode: 404

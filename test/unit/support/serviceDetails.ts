@@ -1,23 +1,26 @@
 import {expect} from "chai";
 import {resolve, join} from "path";
-const serviceDetailsModulePath = resolve(__dirname, "../lib/support/serviceDetails.js");
+const serviceDetailsModulePath = resolve(__dirname, "../../../lib/support/serviceDetails.js");
 const simple = require("simple-mock");
 
-describe("serviceDetails", function() {
+describe("serviceDetails", function () {
   let serviceDetails;
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     delete(require.cache[serviceDetailsModulePath]);
     done();
   });
 
-  it("should set serviceDetails dynamically", function(done) {
-    const fakeInterfaces = {en0:
-      [ { address: "1.2.3.4",
-          netmask: "255.255.255.0",
-          family: "IPv4",
-          mac: "60:03:08:92:27:88",
-          internal: false } ]};
+  it("should set serviceDetails dynamically", function (done) {
+    const fakeInterfaces = {
+      en0: [{
+        address: "1.2.3.4",
+        netmask: "255.255.255.0",
+        family: "IPv4",
+        mac: "60:03:08:92:27:88",
+        internal: false
+      }]
+    };
     simple.mock(require("os"), "networkInterfaces").returnWith(fakeInterfaces);
     simple.mock(require("os"), "hostname").returnWith("abchost");
 
@@ -34,7 +37,7 @@ describe("serviceDetails", function() {
     done();
   });
 
-  it("should set host 'unknown' on configured incorrectly host", function(done) {
+  it("should set host 'unknown' on configured incorrectly host", function (done) {
     simple.mock(require("os"), "hostname").throwWith(new Error());
 
     serviceDetails = require(serviceDetailsModulePath);
@@ -49,8 +52,8 @@ describe("serviceDetails", function() {
     done();
   });
 
-  it("should safely handle a missing package.json", function(done) {
-    simple.mock(process, "mainModule", { paths: ["/tmp/etc.js"] });
+  it("should safely handle a missing package.json", function (done) {
+    simple.mock(process, "mainModule", {paths: ["/tmp/etc.js"]});
 
     serviceDetails = require(serviceDetailsModulePath);
 
@@ -61,8 +64,8 @@ describe("serviceDetails", function() {
     done();
   });
 
-  it("should handle a valid package.json", function(done) {
-    simple.mock(process, "mainModule", { paths: [require("path").join(__dirname, "fixtures", "package.json")] });
+  it("should handle a valid package.json", function (done) {
+    simple.mock(process, "mainModule", {paths: [join(__dirname, "..", "_fixtures", "package.json")]});
 
     serviceDetails = require(serviceDetailsModulePath);
 
@@ -73,14 +76,14 @@ describe("serviceDetails", function() {
     done();
   });
 
-  it("should handle a valid package.json without version and name fields", function(done) {
-    let path = require("path").join(__dirname, "fixtures", "package.json");
+  it("should handle a valid package.json without version and name fields", function (done) {
+    let path = join(__dirname, "..", "_fixtures", "package.json");
     let pkg = require(path);
 
     simple.mock(pkg, "name", undefined);
     simple.mock(pkg, "version", undefined);
 
-    simple.mock(process, "mainModule", { paths: [path] });
+    simple.mock(process, "mainModule", {paths: [path]});
 
     serviceDetails = require(serviceDetailsModulePath);
 
@@ -91,8 +94,8 @@ describe("serviceDetails", function() {
     done();
   });
 
-  it("should set some of serviceDetails by environment variables", function(done) {
-    simple.mock(process, "mainModule", { paths: [require("path").join(__dirname, "fixtures", "package.json")] });
+  it("should set some of serviceDetails by environment variables", function (done) {
+    simple.mock(process, "mainModule", {paths: [join(__dirname, "_fixtures", "package.json")]});
 
     simple.mock(process.env, "MSB_SERVICE_NAME", "special-name");
     simple.mock(process.env, "MSB_SERVICE_VERSION", "999");

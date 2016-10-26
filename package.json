@@ -6,8 +6,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && npm run cs && npm run test-no-cs",
-    "test-no-cs": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha",
+    "test": "npm run cs && npm run build && npm run test:unit && npm run test:integration",
+    "test:unit": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/unit/",
+    "test:integration": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/integration/",
     "cs": "tslint --project tsconfig.json"
   },
   "repository": {
