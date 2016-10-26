@@ -44,7 +44,8 @@ describe("config", function () {
 
         config._init();
 
-        expect(Date.now() - config.configurationTestValue).lessThan(2000);
+        expect(config.configurationTestValue).to.be.a("number");
+        expect(Date.now() - config.configurationTestValue).lessThan(this.test.timer._idleStart);
 
         done();
       });
