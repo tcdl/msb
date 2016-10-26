@@ -1,4 +1,4 @@
-import {BrokerConfig, ConsumerOptions} from "../../config";
+import {BrokerConfig, ConsumerOptions, ProducerOptions} from "../../config";
 
 export interface AMQPConfig extends BrokerConfig {
   vhost?: string;
@@ -11,5 +11,9 @@ export interface AMQPConfig extends BrokerConfig {
 
 export interface AMQPConsumerOptions extends ConsumerOptions {
   bindingKeys?: string[];
+  type?: "fanout" | "topic"
+}
+
+export interface AMQPProducerOptions extends ProducerOptions {
   type?: "fanout" | "topic"
 }

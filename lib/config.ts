@@ -34,6 +34,9 @@ export interface ConsumerOptions {
   autoConfirm?: boolean;
 }
 
+export interface ProducerOptions {
+}
+
 export class Config {
   schema: JsonSchema;
   cleanupConsumers: boolean;

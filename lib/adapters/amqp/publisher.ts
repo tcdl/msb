@@ -1,12 +1,14 @@
 import {Message} from "../../messageFactory";
-import {ConfigAMQP} from "../../config";
+import {AMQPProducerOptions, AMQPConfig} from "./amqp";
 
 export class AMQPPublisherAdapter {
-  private config: ConfigAMQP;
+  private config: AMQPConfig;
+  private options: AMQPProducerOptions;
   private connection: any;
 
-  constructor(config: ConfigAMQP, connection: any) {
+  constructor(config: AMQPConfig, options: AMQPProducerOptions, connection: any) {
     this.config = config;
+    this.options = options;
     this.connection = connection;
   }
 
@@ -14,11 +16,11 @@ export class AMQPPublisherAdapter {
     // Do nothing
   }
 
-  publish(topic: string, message: Message, cb: (err?: Error) => void): void {
+  publish(namespace: string, message: Message, cb: (err?: Error) => void): void {
     const messageStr = JSON.stringify(message);
     const routingKey = message.topics && message.topics.routingKey ? message.topics.routingKey : "";
 
-    this.publishMessageStr(topic, messageStr, routingKey, cb);
+    this.publishMessageStr(namespace, messageStr, routingKey, cb);
   }
 
   private publishMessageStr(topic: string, messageStr: string, routingKey: string, cb: (err?: Error) => void): void {
@@ -40,7 +42,7 @@ export class AMQPPublisherAdapter {
   private ensureExchange(topic: string, cb: Function) {
     const exchange = this.connection.exchange({
       exchange: topic,
-      type: this.config.type
+      type: this.options.type || this.config.type
     });
 
     exchange.declare(cb);

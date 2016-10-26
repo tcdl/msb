@@ -1,4 +1,4 @@
-import {ConsumerOptions} from "./config";
+import {ConsumerOptions, ProducerOptions} from "./config";
 const _ = require("lodash");
 import {EventEmitter} from "events";
 const debug = require("debug")("msb:channelManager");
@@ -50,16 +50,16 @@ channelManager.create = function () {
     return channelManager;
   };
 
-  channelManager.findOrCreateProducer = function (topic, options, unusedChannelTimeoutMs) {
-    let channel = producersByTopic[topic];
+  channelManager.findOrCreateProducer = function (namespace: string, options: ProducerOptions, unusedChannelTimeoutMs) {
+    let channel = producersByTopic[namespace];
     if (channel) return channel;
     options = options ? options : {};
 
-    channel = producersByTopic[topic] = channelManager.createRawProducer(topic, options);
+    channel = producersByTopic[namespace] = channelManager.createRawProducer(namespace, options);
 
     let unusedChannelTimeout;
 
-    channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, topic);
+    channelManager.emit(channelManager.PRODUCER_NEW_TOPIC_EVENT, namespace);
 
     channel.publish_ = channel.publish;
     channel.publish = function (message, cb) {
@@ -71,22 +71,22 @@ channelManager.create = function () {
 
       channel.publish_(message, function (err) {
         if (err) return cb(err);
-        channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, topic);
+        channelManager.emit(channelManager.PRODUCER_NEW_MESSAGE_EVENT, namespace);
         cb();
       });
     };
 
     function onUnusedChannelTimeout() {
-      removeProducer(channel, topic);
+      removeProducer(channel, namespace);
     }
 
     return channel;
   };
 
-  channelManager.createRawProducer = function (topic, options) {
+  channelManager.createRawProducer = function (namespace: string, options: ProducerOptions) {
     let producerConfig = _.merge(adapterConfig, options);
 
-    return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(topic));
+    return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(namespace), options);
   };
 
   channelManager.findOrCreateConsumer = function (namespace, options) {
@@ -172,9 +172,7 @@ channelManager.create = function () {
   channelManager.createRawConsumer = function (namespace: string, options: ConsumerOptions) {
     let a: BrokerAdapter = getAdapter();
 
-    helpers.validatedTopic(namespace);
-
-    return a.Subscribe(adapterConfig).channel(namespace, options);
+    return a.Subscribe(adapterConfig).channel(helpers.validatedTopic(namespace), options);
   };
 
   // Backward-compatibility

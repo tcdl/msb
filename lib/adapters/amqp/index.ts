@@ -2,11 +2,11 @@ import {
   BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter,
   BrokerSubscriberAdapterFactory
 } from "../adapter";
-import {BrokerConfig, ConfigAMQP, ConsumerOptions} from "../../config";
+import {BrokerConfig, ConfigAMQP, ConsumerOptions, ProducerOptions} from "../../config";
 import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
 import {Message} from "../../messageFactory";
-import {AMQPConfig, AMQPConsumerOptions} from "./amqp";
+import {AMQPConfig, AMQPConsumerOptions, AMQPProducerOptions} from "./amqp";
 
 const AMQP = require("amqp-coffee");
 const _ = require("lodash");
@@ -15,13 +15,13 @@ class AMQPBrokerAdapter implements BrokerAdapter {
   private connection: any;
 
   Publish(config: BrokerConfig): BrokerPublisherAdapterFactory {
-    const publisher = new AMQPPublisherAdapter(<ConfigAMQP>config, this.sharedConnection(config));
 
     return {
-      channel: function(topic) {
+      channel: function(namespace: string, options: ProducerOptions) {
+        const publisher = new AMQPPublisherAdapter(<AMQPConfig>config, <AMQPProducerOptions>options, this.sharedConnection(config));
         return {
           publish: (message: Message, cb: (err?: Error) => void) => {
-            publisher.publish(topic, message, cb);
+            publisher.publish(namespace, message, cb);
           },
           close: () => publisher.close()
         };

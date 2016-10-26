@@ -1,6 +1,6 @@
 import {EventEmitter} from "events";
 import {Message} from "../messageFactory";
-import {BrokerConfig, ConsumerOptions} from "../config";
+import {BrokerConfig, ConsumerOptions, ProducerOptions} from "../config";
 
 interface BrokerAdapter {
   Publish(config: BrokerConfig): BrokerPublisherAdapterFactory;
@@ -9,7 +9,7 @@ interface BrokerAdapter {
 }
 
 interface BrokerPublisherAdapterFactory {
-  channel(topic: string): BrokerPublisherAdapter;
+  channel(namespace: string, options: ProducerOptions): BrokerPublisherAdapter;
 }
 
 interface BrokerSubscriberAdapterFactory {
