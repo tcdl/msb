@@ -8,14 +8,13 @@ type amqpExchangeType = "fanout" | "topic"
 
 export interface BrokerConfig {
   [key: string]: any;
-}
-
-export interface ConfigAMQP extends BrokerConfig {
-  [key: string]: any;
   host?: string;
   port?: number;
   login?: string;
   password?: string;
+}
+
+export interface ConfigAMQP extends BrokerConfig {
   vhost?: string;
   groupId?: string;
   durable?: boolean;
@@ -29,6 +28,10 @@ export interface ConfigAMQP extends BrokerConfig {
 
 export interface LocalConfig extends BrokerConfig {
   channel?: string; //todo: this property should not be passed via broker config
+}
+
+export interface ConsumerOptions {
+  autoConfirm?: boolean;
 }
 
 export class Config {

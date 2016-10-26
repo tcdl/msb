@@ -1,3 +1,4 @@
+import {ConsumerOptions} from "./config";
 const _ = require("lodash");
 import {EventEmitter} from "events";
 const debug = require("debug")("msb:channelManager");
@@ -6,6 +7,7 @@ import * as messageFactory from "./messageFactory";
 import * as helpers from "./support/helpers";
 import * as logger from "./support/logger";
 import {create} from "./config";
+import {BrokerAdapter} from "./adapters/adapter";
 
 let channelManager = exports;
 
@@ -87,13 +89,13 @@ channelManager.create = function () {
     return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
 
-  channelManager.findOrCreateConsumer = function (topic, options) {
-    let channel = consumersByTopic[topic];
+  channelManager.findOrCreateConsumer = function (namespace, options) {
+    let channel = consumersByTopic[namespace];
     if (channel) return channel;
 
-    let isServiceChannel = (topic[0] === "_");
-    channel = consumersByTopic[topic] = new EventEmitter();
-    channel.raw = channelManager.createRawConsumer(topic, options);
+    let isServiceChannel = (namespace[0] === "_");
+    channel = consumersByTopic[namespace] = new EventEmitter();
+    channel.raw = channelManager.createRawConsumer(namespace, options);
     channel.setMaxListeners(0);
 
     let autoConfirm;
@@ -122,7 +124,7 @@ channelManager.create = function () {
         channel.rejectMessage(message);
         return;
       }
-      channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, topic);
+      channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, namespace);
 
       if (config.autoMessageContext) messageFactory.startContext(message);
       channel.emit("message", message);
@@ -151,14 +153,14 @@ channelManager.create = function () {
 
     channel.raw.on("error", channel.emit.bind(channel, "error"));
 
-    channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, topic);
+    channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, namespace);
 
     if (isServiceChannel || !config.cleanupConsumers) return channel;
 
     channel.on("removeListener", function (eventName) {
       if (eventName !== "message") return;
-      if (~consumerTopicsToCheck.indexOf(topic) || channel.listeners(eventName).length) return;
-      consumerTopicsToCheck.push(topic);
+      if (~consumerTopicsToCheck.indexOf(namespace) || channel.listeners(eventName).length) return;
+      consumerTopicsToCheck.push(namespace);
 
       if (consumerTopicsToCheck.length > 1) return;
       setImmediate(checkConsumers);
@@ -167,21 +169,19 @@ channelManager.create = function () {
     return channel;
   };
 
-  channelManager.createRawConsumer = function (topic, options) {
-    let a = getAdapter();
+  channelManager.createRawConsumer = function (namespace: string, options: ConsumerOptions) {
+    let a: BrokerAdapter = getAdapter();
 
-    let subscriberConfig = _.merge({
-      channel: helpers.validatedTopic(topic)
-    }, adapterConfig, options);
+    helpers.validatedTopic(namespace);
 
-    return a.Subscribe(subscriberConfig);
+    return a.Subscribe(adapterConfig).channel(namespace, options);
   };
 
   // Backward-compatibility
   channelManager.createProducer = channelManager.createRawProducer;
   channelManager.createConsumer = channelManager.createRawConsumer;
 
-  function getAdapter() {
+  function getAdapter(): BrokerAdapter {
     if (adapter) return adapter;
 
     adapterConfig = config[config.brokerAdapter];

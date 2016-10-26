@@ -1,22 +1,26 @@
 import {EventEmitter} from "events";
-import {ConfigAMQP} from "../../config";
 import {Message} from "../../messageFactory";
 import serviceDetails = require("../../support/serviceDetails");
+import {AMQPConsumerOptions, AMQPConfig} from "./amqp";
 
 const _ = require("lodash");
 
 export class AMQPSubscriberAdapter extends EventEmitter {
-  private config: ConfigAMQP;
+  private config: AMQPConfig;
+  private namespace: string;
+  private options: AMQPConsumerOptions;
   private connection: any;
   private consumer: any;
   private ackMap: WeakMap<Message, any>;
   private queueOptions: QueueOptions;
   private isClosed: boolean;
 
-  constructor(config: ConfigAMQP, connection: any) {
+  constructor(config: AMQPConfig, namespace: string, options: AMQPConsumerOptions, connection: any) {
     super();
     this.setMaxListeners(0);
     this.config = config;
+    this.namespace = namespace;
+    this.options = options;
     this.connection = connection;
     this.isClosed = false;
 
@@ -88,10 +92,11 @@ export class AMQPSubscriberAdapter extends EventEmitter {
 
   private ensureConsuming() {
     const config = this.config;
+    const options = this.options;
     const connection = this.connection;
     let consumer = this.consumer;
 
-    const exchange = connection.exchange({ exchange: config.channel, type: config.type });
+    const exchange = connection.exchange({ exchange: this.namespace, type: options.type || config.type });
 
     const done = (err) => {
       if (err) return this.emit("error", err);
@@ -103,14 +108,14 @@ export class AMQPSubscriberAdapter extends EventEmitter {
 
       const queueOptions = this.getQueueOptions();
       const queue = connection.queue(queueOptions);
-      const bindingKeys = !config.bindingKeys ? [""] :
-        _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
+      const bindingKeys = !options.bindingKeys ? [""] :
+        _.isString(options.bindingKeys) ? [options.bindingKeys] : options.bindingKeys;
 
       queue.declare(queueOptions, (err) => {
         if (err) return done(err);
 
         for (let index = 0; index < bindingKeys.length; ++index) {
-          queue.bind(config.channel, bindingKeys[index], (err) => {
+          queue.bind(this.namespace, bindingKeys[index], (err) => {
             if (err) return done(err);
             if (this.isClosed) return; // Skip if already closed
 
@@ -131,7 +136,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
 
     const config = this.config;
     const queueSuffix = "." + (config.groupId || serviceDetails.instanceId) + "." + ((config.durable) ? "d" : "t");
-    const queueName = config.channel + queueSuffix;
+    const queueName = this.namespace + queueSuffix;
 
     const queueOptions: QueueOptions = {
       queue: queueName,
