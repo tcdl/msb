@@ -1,1 +1,1 @@
-export let configurationTestValue = new Date();
+export let configurationTestValue = Date.now();
