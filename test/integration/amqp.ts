@@ -18,14 +18,14 @@ describe("AMQP Integration", function() {
     done();
   });
 
-  describe("a consumer with default configuration", function() {
+  describe("a consumer with default configuration", function () {
     let _onMessageMethod;
     let channelManager;
     let consumer;
     let publisher;
 
-    before(function(done) {
-      amqpPublisher.create("integration:test:consumer", function(err, p) {
+    before(function (done) {
+      amqpPublisher.create("integration:test:consumer", function (err, p) {
         if (err) return done(err);
 
         publisher = p;
@@ -34,7 +34,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
 
       _onMessageMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "onMessage");
@@ -53,17 +53,17 @@ describe("AMQP Integration", function() {
         .onceConsuming(done);
     });
 
-    afterEach(function(done) {
+    afterEach(function (done) {
       channelManager.close();
       done();
     });
 
-    after(function(done) {
+    after(function (done) {
       publisher.close();
       done();
     });
 
-    it("will automatically confirm incoming messages", function(done) {
+    it("will automatically confirm incoming messages", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -76,10 +76,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         fixtures.consumer_basic,
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(3);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -90,7 +90,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that cannot be parsed as JSON", function(done) {
+    it("will reject incoming messages that cannot be parsed as JSON", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -106,10 +106,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         "breaking",
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -123,7 +123,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that are not objects", function(done) {
+    it("will reject incoming messages that are not objects", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -139,10 +139,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         "breaking",
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -156,7 +156,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that do not conform to envelope schema", function(done) {
+    it("will reject incoming messages that do not conform to envelope schema", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -172,10 +172,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         {breaking: "meh"},
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -188,7 +188,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject expired incoming messages", function(done) {
+    it("will reject expired incoming messages", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -208,10 +208,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         expiredMessage,
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -224,7 +224,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that fail onEvent validation", function(done) {
+    it("will reject incoming messages that fail onEvent validation", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -248,10 +248,10 @@ describe("AMQP Integration", function() {
         validMessage,
         fixtures.consumer_basic,
         validMessage
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(validMessage);
           expect(onMessageMethod.calls[1].arg).deep.equals(validMessage);
@@ -265,14 +265,14 @@ describe("AMQP Integration", function() {
     });
   });
 
-  describe("a consumer with autoConfirm off", function() {
+  describe("a consumer with autoConfirm off", function () {
     let _onMessageMethod;
     let channelManager;
     let consumer;
     let publisher;
 
-    before(function(done) {
-      amqpPublisher.create("integration:test:consumer", function(err, p) {
+    before(function (done) {
+      amqpPublisher.create("integration:test:consumer", function (err, p) {
         if (err) return done(err);
 
         publisher = p;
@@ -281,7 +281,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
 
       _onMessageMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "onMessage");
@@ -301,17 +301,17 @@ describe("AMQP Integration", function() {
         .onceConsuming(done);
     });
 
-    afterEach(function(done) {
+    afterEach(function (done) {
       channelManager.close();
       done();
     });
 
-    after(function(done) {
+    after(function (done) {
       publisher.close();
       done();
     });
 
-    it("will not automatically confirm incoming messages", function(done) {
+    it("will not automatically confirm incoming messages", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -323,10 +323,10 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(1);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(confirmMethod.callCount).equals(0);
@@ -335,7 +335,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("allows for manual confirmation and rejection", function(done) {
+    it("allows for manual confirmation and rejection", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -345,13 +345,13 @@ describe("AMQP Integration", function() {
 
       const onMessageMethod = simple.mock();
 
-      onMessageMethod.callFn(function(message) {
+      onMessageMethod.callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
-      onMessageMethod.callFn(function(message) {
+      onMessageMethod.callFn(function (message) {
         consumer.rejectMessage(message);
       });
-      onMessageMethod.callFn(function(message) {
+      onMessageMethod.callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -361,10 +361,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         fixtures.consumer_basic,
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(3);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -376,7 +376,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that cannot be parsed as JSON", function(done) {
+    it("will reject incoming messages that cannot be parsed as JSON", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -384,7 +384,7 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -394,10 +394,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         "breaking",
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.lastCall.arg).deep.equals(fixtures.consumer_basic);
           expect(_onMessageMethod.callCount).equals(3);
@@ -410,7 +410,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that are not objects", function(done) {
+    it("will reject incoming messages that are not objects", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -418,7 +418,7 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -428,10 +428,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         "breaking",
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -445,7 +445,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject incoming messages that do not conform to envelope schema", function(done) {
+    it("will reject incoming messages that do not conform to envelope schema", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -453,7 +453,7 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -463,10 +463,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         {breaking: "meh"},
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -479,7 +479,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will reject expired incoming messages", function(done) {
+    it("will reject expired incoming messages", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -487,7 +487,7 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -501,10 +501,10 @@ describe("AMQP Integration", function() {
         fixtures.consumer_basic,
         expiredMessage,
         fixtures.consumer_basic
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
@@ -517,7 +517,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("will not reject incoming messages that fail onEvent validation", function(done) {
+    it("will not reject incoming messages that fail onEvent validation", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -525,7 +525,7 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
@@ -543,10 +543,10 @@ describe("AMQP Integration", function() {
         validMessage,
         fixtures.consumer_basic,
         validMessage
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(1);
           expect(onMessageMethod.calls[0].arg).deep.equals(validMessage);
           expect(rejectMethod.callCount).equals(0);
@@ -556,7 +556,7 @@ describe("AMQP Integration", function() {
       });
     });
 
-    it("can manually reject incoming messages that fail onEvent validation", function(done) {
+    it("can manually reject incoming messages that fail onEvent validation", function (done) {
 
       const confirmMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "confirmProcessedMessage");
@@ -564,11 +564,11 @@ describe("AMQP Integration", function() {
       const rejectMethod = simple.mock(AMQPSubscriberAdapter.prototype,
         "rejectMessage");
 
-      const onMessageMethod = simple.mock().callFn(function(message) {
+      const onMessageMethod = simple.mock().callFn(function (message) {
         consumer.confirmProcessedMessage(message);
       });
 
-      const onErrorMethod = simple.mock().callFn(function(err, message) {
+      const onErrorMethod = simple.mock().callFn(function (err, message) {
         consumer.rejectMessage(message);
       });
 
@@ -587,10 +587,10 @@ describe("AMQP Integration", function() {
         validMessage,
         fixtures.consumer_basic,
         validMessage
-      ], function(err) {
+      ], function (err) {
         if (err) return done(err);
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(validMessage);
           expect(onMessageMethod.calls[1].arg).deep.equals(validMessage);

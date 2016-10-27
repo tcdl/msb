@@ -10,23 +10,30 @@ interface PackageJson {
 }
 
 function getMainPackage(): PackageJson {
-  const mainModuleName = require.main.paths.find((modulesPath) => {
-    const pathToPackage = resolve(modulesPath, "..", "package.json");
-    try {
-      accessSync(pathToPackage);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  });
+  let mainModuleName;
+  const mainModuleNameOnError = {
+    name: "unknown",
+    version: "unknown"
+  };
+
+  try {
+    mainModuleName = require.main.paths.find((modulesPath) => {
+      const pathToPackage = resolve(modulesPath, "..", "package.json");
+      try {
+        accessSync(pathToPackage);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    });
+  } catch (e) {
+    return mainModuleNameOnError;
+  }
 
   if (mainModuleName) {
     return require(resolve(mainModuleName, "..", "package.json"));
   } else {
-    return {
-      name: "unknown",
-      version: "unknown"
-    };
+    return mainModuleNameOnError;
   }
 }
 

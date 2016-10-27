@@ -52,6 +52,18 @@ describe("serviceDetails", function () {
     done();
   });
 
+  it("should safely handle a lack of require.main.paths", function(done) {
+    simple.mock(require.main, "paths", undefined);
+
+    serviceDetails = require(serviceDetailsModulePath);
+
+    expect(serviceDetails.name).equals("unknown");
+    expect(serviceDetails.version).equals("unknown");
+    expect(serviceDetails.instanceId).length(24);
+
+    done();
+  });
+
   it("should safely handle a missing package.json", function (done) {
     simple.mock(process, "mainModule", {paths: ["/tmp/etc.js"]});
 

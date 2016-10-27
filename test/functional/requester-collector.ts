@@ -223,7 +223,7 @@ describe("Requester/Collector", function () {
       });
     });
 
-    it("will end after ack-configured responses within same responder\"s ack-extended timeout", function (done) {
+    it("will end after ack-configured responses within same responder's ack-extended timeout", function (done) {
       mockResponder.respondWith([
         {type: "ack", timeoutMs: 1000, responsesRemaining: 1},
         {waitMs: 600, payload: {body: "within"}}
