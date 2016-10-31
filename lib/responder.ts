@@ -24,6 +24,33 @@ export class Responder {
       config.responseChannelTimeoutMs : 15 * 60000; // Default: 15 minutes
   }
 
+  static createEmitter(config, channelManager) {
+    if (!channelManager) channelManager = require("./channelManager").default;
+
+    const emitter: any = new EventEmitter();
+    const topic = config.namespace;
+    const channelOptions = ("groupId" in config) ? {groupId: config.groupId} : null;
+    const channel = channelManager.findOrCreateConsumer(topic, channelOptions);
+
+    function onMessage(message) {
+      const responder = new Responder(config, message);
+      responder.channelManager = channelManager;
+      emitter.emit("responder", responder);
+    }
+
+    channel.on("message", onMessage);
+
+    emitter.end = function () {
+      channel.removeListener("message", onMessage);
+    };
+
+    return emitter;
+  };
+
+  static createServer(config: Object) {
+    return new ResponderServer(config);
+  };
+
   sendAck(timeoutMs, responsesRemaining, cb) {
     if (!cb) {
       cb = _.last(arguments);
@@ -61,32 +88,5 @@ export class Responder {
       .channelManager
       .findOrCreateProducer(message.topics.to, this.responseChannelTimeoutMs)
       .publish(message, cb);
-  };
-
-  static createEmitter(config, channelManager) {
-    if (!channelManager) channelManager = require("./channelManager").default;
-
-    const emitter: any = new EventEmitter();
-    const topic = config.namespace;
-    const channelOptions = ("groupId" in config) ? {groupId: config.groupId} : null;
-    const channel = channelManager.findOrCreateConsumer(topic, channelOptions);
-
-    function onMessage(message) {
-      const responder = new Responder(config, message);
-      responder.channelManager = channelManager;
-      emitter.emit("responder", responder);
-    }
-
-    channel.on("message", onMessage);
-
-    emitter.end = function () {
-      channel.removeListener("message", onMessage);
-    };
-
-    return emitter;
-  };
-
-  static createServer(config: Object) {
-    return new ResponderServer(config);
   };
 }

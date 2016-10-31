@@ -10,7 +10,7 @@
     "test:unit": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/unit/",
     "test:functional": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/functional/",
     "test:integration": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/integration/",
-    "cs": "tslint --project tsconfig.json"
+    "cs": "tslint --project tsconfig.json -t stylish"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.1.2",
     "simple-mock": "^0",
-    "tslint": "^3.15.1",
+    "tslint": "^4.0.0-dev.0",
     "typescript": "^2.0.3"
   },
   "dependencies": {

@@ -1,5 +1,21 @@
 {
   "rules": {
+    "member-access": false,
+    "no-any": false,
+    "no-var-requires": false,
+    "typedef": [
+      false
+    ],
+
+    "adjacent-overload-signatures": true,
+    "member-ordering": [
+      true,
+      {
+        "order": "fields-first"
+      }
+    ],
+    "only-arrow-functions": false,
+    "no-internal-module": true,
     "class-name": true,
     "comment-format": [
       true
@@ -8,7 +24,16 @@
       true,
       "spaces"
     ],
-    "no-console": [true, "debug", "error", "info", "log", "time", "timeEnd", "trace"],
+    "no-console": [
+      true,
+      "debug",
+      "error",
+      "info",
+      "log",
+      "time",
+      "timeEnd",
+      "trace"
+    ],
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,

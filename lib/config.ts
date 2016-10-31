@@ -4,7 +4,7 @@ import {resolve} from "path";
 const _ = require("lodash");
 
 type adapterName = "amqp" | "local";
-type amqpExchangeType = "fanout" | "topic"
+type amqpExchangeType = "fanout" | "topic";
 
 export interface BrokerConfig {
   [key: string]: any;
