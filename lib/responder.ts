@@ -80,8 +80,7 @@ export class Responder {
   _sendMessage(message, cb?: Function): void {
     messageFactory.completeMeta(message, this.meta);
     if (!cb) {
-      cb = () => {
-      };
+      cb = (): void => {};
     }
 
     this

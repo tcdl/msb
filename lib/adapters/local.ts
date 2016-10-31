@@ -16,7 +16,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
     return {
       channel: (topic): BrokerPublisherAdapter => {
         return {
-          publish: (message: Message, cb: (err?: Error) => void) => {
+          publish: (message: Message, cb: (err?: Error) => void): void => {
             const clonedMessage = JSON.parse(JSON.stringify(message));
 
             process.nextTick((): void => {
@@ -44,7 +44,9 @@ class LocalBrokerAdapter implements BrokerAdapter {
     this.localBus.on((<LocalConfig>config).channel, onMessage);
 
     return Object.create(channel, {
-      close: () => this.localBus.removeListener("message", onMessage),
+      close: (): void => {
+        this.localBus.removeListener("message", onMessage);
+      },
       onceConsuming: _noop,
       confirmProcessedMessage: _noop,
       rejectMessage: _noop
@@ -59,4 +61,6 @@ export function create(): BrokerAdapter {
   return new LocalBrokerAdapter();
 }
 
-function _noop(): void {} //todo: remove
+//todo: remove
+function _noop(): void {
+}

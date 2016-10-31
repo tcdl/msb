@@ -36,11 +36,11 @@ export function createMockResponder(config, channelManager): any {
 
   return {
     requests: requests,
-    respondWith: (responses) => {
+    respondWith: (responses): any => {
       stack.push(responses);
       return this;
     },
-    end: () => {
+    end: (): void => {
       waitTimeouts.forEach(clearTimeout);
       emitter.end();
     }

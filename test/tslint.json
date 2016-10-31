@@ -4,7 +4,8 @@
     "no-any": false,
     "no-var-requires": false,
     "typedef": [
-      true
+      true,
+      "arrow-call-signature"
     ],
     "adjacent-overload-signatures": true,
     "member-ordering": [

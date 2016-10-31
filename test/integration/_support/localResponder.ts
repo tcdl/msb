@@ -14,14 +14,14 @@ export function createLocalResponder() {
   })
     .use(validateWithSchema.middleware(payloadSchema))
     .use([
-      (request, response, next) => {
+      (request, response, next): void => {
         if (request.body && request.body.instruction === "error") {
-          return next(new Error());
+          next(new Error());
+        } else {
+          next();
         }
-
-        next();
       },
-      (request, response, next) => {
+      (request, response, next): void => {
         response.responder.sendAck(1500, next);
       }
     ])

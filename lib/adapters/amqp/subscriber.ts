@@ -93,8 +93,11 @@ export class AMQPSubscriberAdapter extends EventEmitter {
 
     const exchange = connection.exchange({ exchange: config.channel, type: config.type });
 
-    const done = (err) => {
-      if (err) return this.emit("error", err);
+    const done = (err): void => {
+      if (err) {
+        this.emit("error", err);
+        return;
+      }
       this.emitConsuming();
     };
 

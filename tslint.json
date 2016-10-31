@@ -5,7 +5,8 @@
     "no-var-requires": false,
     "typedef": [
       true,
-      "call-signature"
+      "call-signature",
+      "arrow-call-signature"
     ],
 
     "adjacent-overload-signatures": true,
