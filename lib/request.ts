@@ -4,7 +4,7 @@ import validateWithSchema = require("./validateWithSchema");
 
 const _ = require("lodash");
 
-export default function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void) {
+export default function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void): Requester {
   if (_.isString(options)) {
     options = {
       namespace: options,
@@ -29,7 +29,7 @@ export default function (options: any, payload: MessagePayload, cb: (err: Error,
   let responsePayload: MessagePayload;
   let responseMessage: Message;
 
-  let onResponseFn = function (payload: MessagePayload, message: Message) {
+  let onResponseFn = function (payload: MessagePayload, message: Message): void {
     responsePayload = payload;
     responseMessage = message;
   };
@@ -45,7 +45,7 @@ export default function (options: any, payload: MessagePayload, cb: (err: Error,
   requester
     .on("payload", onResponseFn)
     .once("error", cb)
-    .once("end", function () {
+    .once("end", (): void => {
       cb(null, responsePayload, responseMessage);
     });
 

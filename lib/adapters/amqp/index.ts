@@ -1,4 +1,9 @@
-import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../adapter";
+import {
+  BrokerAdapter,
+  BrokerPublisherAdapterFactory,
+  BrokerSubscriberAdapter,
+  BrokerPublisherAdapter
+} from "../adapter";
 import {BrokerConfig, ConfigAMQP} from "../../config";
 import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
@@ -14,7 +19,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
     const publisher = new AMQPPublisherAdapter(<ConfigAMQP>config, this.sharedConnection(config));
 
     return {
-      channel: function(topic) {
+      channel: (topic): BrokerPublisherAdapter => {
         return {
           publish: (message: Message, cb: (err?: Error) => void) => {
             publisher.publish(topic, message, cb);

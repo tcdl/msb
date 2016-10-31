@@ -16,7 +16,7 @@ export class ResponderServer {
     this._errStack = [];
   }
 
-  use(middleware) {
+  use(middleware): this {
     this._stack.push(middleware);
     if (isArray(middleware)) {
       this._stack = _.flatten(this._stack);
@@ -24,7 +24,7 @@ export class ResponderServer {
 
     let errStack = this._errStack;
     const prevLength = errStack.length;
-    this._stack.forEach(function (fn) {
+    this._stack.forEach((fn): void => {
       if (fn.length > 3) errStack.push(fn);
     });
 
@@ -34,19 +34,19 @@ export class ResponderServer {
     return this;
   };
 
-  onResponder(responder) {
+  onResponder(responder): void {
     const self = this;
     const request = responder.originalMessage.payload;
     const response = new ResponderResponse(responder);
 
-    async.applyEachSeries(this._stack, request, response, function (err) {
+    async.applyEachSeries(this._stack, request, response, (err): void => {
       if (!err) return;
       if (!self._errStack.length) return self._errorHandler(request, response, err);
       async.applyEachSeries(self._errStack, err, request, response, self._errorHandler.bind(null, request, response, err));
     });
   };
 
-  listen(channelManager?) {
+  listen(channelManager?): this {
     if (this.emitter) throw new Error("Already listening");
 
     this.emitter = Responder.createEmitter(this.config, channelManager);
@@ -54,14 +54,14 @@ export class ResponderServer {
     return this;
   };
 
-  close() {
+  close(): void {
     if (!this.emitter) throw new Error("Not listening");
 
     this.emitter.end();
     delete(this.emitter);
   };
 
-  _errorHandler(request, response, err, ultimateErr?) {
+  _errorHandler(request, response, err, ultimateErr?): void {
     err = ultimateErr || err;
     response.writeHead(err.statusCode || 500);
     response.end();

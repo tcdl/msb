@@ -71,7 +71,7 @@ export class Config {
   /**
    * @todo Make private?
    */
-  _init() {
+  _init(): void {
     if (process.env.MSB_CONFIG_PATH) {
       const configPath = resolve(process.env.MSB_CONFIG_PATH);
       const jsonObj = require(configPath);
@@ -81,6 +81,6 @@ export class Config {
   }
 }
 
-export function create() {
+export function create(): Config {
   return new Config();
 }

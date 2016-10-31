@@ -16,7 +16,7 @@ export class Requester extends Collector {
       config.requestChannelTimeoutMs : 15 * 60000;
   }
 
-  publish(payload: messageFactory.MessagePayload): Requester {
+  publish(payload: messageFactory.MessagePayload): this {
     if (payload) {
       this.message.payload = payload;
     }
@@ -35,7 +35,7 @@ export class Requester extends Collector {
     return this;
   }
 
-  publishMessage(): Requester {
+  publishMessage(): this {
     this
       .channelManager
       .findOrCreateProducer(this.message.topics.to, {}, this.requestChannelTimeoutMs)
@@ -53,7 +53,7 @@ export class Requester extends Collector {
     return this;
   }
 
-  shouldAcceptMessageFn(message: messageFactory.Message) {
+  shouldAcceptMessageFn(message: messageFactory.Message): boolean {
     return message.correlationId === this.message.correlationId;
   }
 }

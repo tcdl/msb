@@ -74,14 +74,14 @@ export class Collector extends EventEmitter {
     return Math.max(this.responsesRemaining, responsesRemaining);
   }
 
-  enableTimeout(): Collector {
+  enableTimeout(): this {
     clearTimeout(this.timer);
     const newTimeoutMs: number = this.currentTimeoutMs - (Date.now() - this.startedAt.valueOf());
     this.timer = setTimeout(() => this.end(), newTimeoutMs);
     return this;
   }
 
-  listenForResponses(topic, shouldAcceptMessageFn) {
+  listenForResponses(topic, shouldAcceptMessageFn): this {
     if (this.listeners("error").length < 2) {
       logger.warn("A Collector 'error' event handler should be implemented.");
     }
@@ -182,8 +182,9 @@ export class Collector extends EventEmitter {
     return timeoutMs;
   };
 
-  private incResponsesRemaining(inc) {
-    return this.responsesRemaining = Math.max(this.responsesRemaining + inc, 0);
+  private incResponsesRemaining(inc): number {
+    this.responsesRemaining = Math.max(this.responsesRemaining + inc, 0);
+    return this.responsesRemaining;
   };
 
   private setResponsesRemainingForResponderId(responderId: string, responsesRemaining: number): number {

@@ -4,10 +4,8 @@
     "no-any": false,
     "no-var-requires": false,
     "typedef": [
-      true,
-      "call-signature"
+      true
     ],
-
     "adjacent-overload-signatures": true,
     "member-ordering": [
       true,

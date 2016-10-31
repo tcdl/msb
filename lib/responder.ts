@@ -24,7 +24,7 @@ export class Responder {
       config.responseChannelTimeoutMs : 15 * 60000; // Default: 15 minutes
   }
 
-  static createEmitter(config, channelManager) {
+  static createEmitter(config, channelManager): any {//todo new type from EventEmitter
     if (!channelManager) channelManager = require("./channelManager").default;
 
     const emitter: any = new EventEmitter();
@@ -32,7 +32,7 @@ export class Responder {
     const channelOptions = ("groupId" in config) ? {groupId: config.groupId} : null;
     const channel = channelManager.findOrCreateConsumer(topic, channelOptions);
 
-    function onMessage(message) {
+    function onMessage(message): void {
       const responder = new Responder(config, message);
       responder.channelManager = channelManager;
       emitter.emit("responder", responder);
@@ -40,18 +40,18 @@ export class Responder {
 
     channel.on("message", onMessage);
 
-    emitter.end = function () {
+    emitter.end = (): void => {
       channel.removeListener("message", onMessage);
     };
 
     return emitter;
   };
 
-  static createServer(config: Object) {
+  static createServer(config: Object): ResponderServer {
     return new ResponderServer(config);
   };
 
-  sendAck(timeoutMs, responsesRemaining, cb) {
+  sendAck(timeoutMs, responsesRemaining, cb): void {
     if (!cb) {
       cb = _.last(arguments);
       if (!_.isFunction(cb)) cb = null;
@@ -71,13 +71,13 @@ export class Responder {
     this._sendMessage(ackMessage, cb);
   };
 
-  send(payload, cb) {
+  send(payload, cb): void {
     this.ack.responsesRemaining = -1;
     const message = messageFactory.createResponseMessage(this.config, this.originalMessage, this.ack, payload);
     this._sendMessage(message, cb);
   };
 
-  _sendMessage(message, cb?: Function) {
+  _sendMessage(message, cb?: Function): void {
     messageFactory.completeMeta(message, this.meta);
     if (!cb) {
       cb = () => {

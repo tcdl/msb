@@ -10,7 +10,7 @@ export class AMQPPublisherAdapter {
     this.connection = connection;
   }
 
-  close() {
+  close(): void {
     // Do nothing
   }
 
@@ -22,14 +22,12 @@ export class AMQPPublisherAdapter {
   }
 
   private publishMessageStr(topic: string, messageStr: string, routingKey: string, cb: (err?: Error) => void): void {
-    const self = this;
-
     this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, (err) => {
       if (err && err.error && err.error.replyCode === 404) {
-        return self.ensureExchange(topic, function(err) {
+        return this.ensureExchange(topic, (err): void => {
           if (err) return cb(err);
 
-          self.publishMessageStr(topic, messageStr, routingKey, cb);
+          this.publishMessageStr(topic, messageStr, routingKey, cb);
         });
       }
       if (err) return cb(err);
@@ -37,7 +35,7 @@ export class AMQPPublisherAdapter {
     });
   }
 
-  private ensureExchange(topic: string, cb: Function) {
+  private ensureExchange(topic: string, cb: Function): void {
     const exchange = this.connection.exchange({
       exchange: topic,
       type: this.config.type

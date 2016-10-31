@@ -77,8 +77,8 @@ class SchemaValidationError extends Error {
 
 class ValidateWithSchema {
 
-  middleware(schema) {
-    return (request, response, next) => {
+  middleware(schema): (request, response, next) => void {
+    return (request, response, next): void => {
       try {
         this.validateWithSchema(schema, request);
       } catch (e) {
@@ -89,9 +89,9 @@ class ValidateWithSchema {
     };
   }
 
-  onEvent(schema, successHandlerFn, errorHandlerFn?) {
+  onEvent(schema, successHandlerFn, errorHandlerFn?): (message) => void {
     const self = this;
-    return function (message) {
+    return function (message): void {
       try {
         self.validateWithSchema(schema, message);
       } catch (e) {

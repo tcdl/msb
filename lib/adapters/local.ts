@@ -1,6 +1,12 @@
+import {
+  BrokerAdapter,
+  BrokerPublisherAdapterFactory,
+  BrokerSubscriberAdapter,
+  BrokerPublisherAdapter
+} from "./adapter";
 import {EventEmitter} from "events";
-import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "./adapter";
 import {BrokerConfig, LocalConfig} from "../config";
+import {Message} from "../messageFactory";
 
 class LocalBrokerAdapter implements BrokerAdapter {
   localBus = new EventEmitter();
@@ -8,12 +14,12 @@ class LocalBrokerAdapter implements BrokerAdapter {
   Publish(config: BrokerConfig): BrokerPublisherAdapterFactory {
     const adapter = this;
     return {
-      channel: function(topic) {
+      channel: (topic): BrokerPublisherAdapter => {
         return {
-          publish: function(message, cb) {
+          publish: (message: Message, cb: (err?: Error) => void) => {
             const clonedMessage = JSON.parse(JSON.stringify(message));
 
-            process.nextTick(function() {
+            process.nextTick((): void => {
               adapter.localBus.emit(topic, clonedMessage);
               (cb || _noop)();
             });
@@ -27,7 +33,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
   Subscribe(config: BrokerConfig): BrokerSubscriberAdapter {
     const channel = new EventEmitter();
 
-    function onMessage(message) {
+    function onMessage(message): void {
       try {
         channel.emit("message", message);
       } catch (err) {
@@ -53,4 +59,4 @@ export function create(): BrokerAdapter {
   return new LocalBrokerAdapter();
 }
 
-function _noop() {}
+function _noop(): void {} //todo: remove

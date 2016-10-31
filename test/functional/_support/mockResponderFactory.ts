@@ -2,14 +2,14 @@ const async = require("async");
 import {Responder} from "../../..";
 
 
-export function createMockResponder(config, channelManager) {
+export function createMockResponder(config, channelManager): any {
   let requests = [];
   let stack = [];
   let waitTimeouts = [];
   let emitter = Responder.createEmitter(config, channelManager);
 
   let i = 0;
-  emitter.on("responder", function (responder) {
+  emitter.on("responder", function (responder): void {
     requests.push(responder.originalMessage);
 
     let responses = stack[i++];
@@ -17,7 +17,7 @@ export function createMockResponder(config, channelManager) {
     if (!responses) return;
 
     async.eachSeries(responses, (response, next) => {
-      function respond() {
+      function respond(): void {
         if (response.type === "ack") {
           return responder.sendAck(response.timeoutMs,
             response.responsesRemaining, next);

@@ -26,18 +26,18 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     this.init();
   }
 
-  close() {
+  close(): void {
     this.isClosed = true;
     this.connection.removeListener("ready", () => this.ensureConsuming());
     if (this.consumer) this.consumer.close();
   }
 
-  onceConsuming(cb) {
+  onceConsuming(cb): void {
     if (this.consumer && this.consumer.consumerState === "open") return cb();
     this.once("consuming", cb);
   }
 
-  confirmProcessedMessage(message: Message, _safe: boolean) {
+  confirmProcessedMessage(message: Message, _safe: boolean): void {
     const envelope = this.ackMap.get(message);
     // Only use _safe if you can"t know whether message has already been confirmed/rejected
     if (_safe && !envelope) return;
@@ -45,18 +45,18 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     this.ackMap.delete(message);
   }
 
-  rejectMessage(message: Message) {
+  rejectMessage(message: Message): void {
     const envelope = this.ackMap.get(message);
     envelope.reject(); // Will fail if `!config.prefetchCount`
     this.ackMap.delete(message);
   }
 
-  private init() {
+  private init(): void {
     this.connection.on("ready", () => this.ensureConsuming());
     if (this.connection.state === "open") this.ensureConsuming();
   }
 
-  private onMessage(envelope: any) {
+  private onMessage(envelope: any): void {
     const message = envelope.data.toString();
 
     process.nextTick(() => {
@@ -74,19 +74,19 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     });
   }
 
-  private onSelfError() {
+  private onSelfError(): void {
     // Do nothing
   }
 
-  private onConsumerError(err) {
+  private onConsumerError(err): void {
     this.emit("error", err);
   }
 
-  private emitConsuming() {
+  private emitConsuming(): void {
     this.emit("consuming");
   }
 
-  private ensureConsuming() {
+  private ensureConsuming(): void {
     const config = this.config;
     const connection = this.connection;
     let consumer = this.consumer;
@@ -126,7 +126,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     });
   }
 
-  private getQueueOptions() {
+  private getQueueOptions(): QueueOptions {
     if (this.queueOptions) return this.queueOptions;
 
     const config = this.config;

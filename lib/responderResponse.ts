@@ -1,5 +1,7 @@
+import {Responder} from "./responder";
+
 export class ResponderResponse {
-  responder: any;
+  responder: Responder;
   body: any;
   _hasBody: boolean;
   _header: any;
@@ -9,7 +11,7 @@ export class ResponderResponse {
     [key: string]: string;
   };
 
-  constructor(responder) {
+  constructor(responder: Responder) {
     this.responder = responder;
     this.body = null;
     this.headers = {};
@@ -49,7 +51,7 @@ export class ResponderResponse {
     }
   }
 
-  end(body, cb) {
+  end(body, cb): void {
     if (!cb && typeof body === "function") {
       cb = body;
       body = this.body;
@@ -77,7 +79,7 @@ export class ResponderResponse {
         payload.body = body;
       }
     }
-    return this.responder.send(payload, cb);
+    this.responder.send(payload, cb);
   };
 
 }

@@ -1,3 +1,5 @@
+/* tslint:disable:typedef */
+//todo: refactoring
 const _ = require("lodash");
 import {EventEmitter} from "events";
 const debug = require("debug")("msb:channelManager");
@@ -236,3 +238,4 @@ function noop__() {
 function noopCb(cb) {
   cb();
 }
+/* tslint:enable:typedef */
