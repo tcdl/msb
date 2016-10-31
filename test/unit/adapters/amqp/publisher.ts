@@ -60,7 +60,7 @@ describe("AMQPPublisherAdapter", function () {
         publisher.publish("non-existent1", {
           message: "etc"
         }, (err) => {
-          if (err) return console.error(err) || done(err);
+          if (err) return done(err);
 
           expect(publisher.publishMessageStr.callCount).equals(2);
           expect(connection.publish.callCount).equals(2);

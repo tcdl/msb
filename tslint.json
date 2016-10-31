@@ -8,6 +8,7 @@
       true,
       "spaces"
     ],
+    "no-console": [true, "debug", "error", "info", "log", "time", "timeEnd", "trace"],
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,
