@@ -59,9 +59,9 @@ describe("config", function () {
       simple.mock(process.env, "MSB_BROKER_ADAPTER", "a");
       simple.mock(process.env, "MSB_BROKER_HOST", "c");
       simple.mock(process.env, "MSB_BROKER_PORT", "e");
-      simple.mock(process.env, "MSB_BROKER_PASS", "g");
-      simple.mock(process.env, "MSB_BROKER_USER", "i");
-      simple.mock(process.env, "MSB_AMQP_VHOST", "j");
+      simple.mock(process.env, "MSB_BROKER_PASSWORD", "g");
+      simple.mock(process.env, "MSB_BROKER_USER_NAME", "i");
+      simple.mock(process.env, "MSB_BROKER_VIRTUAL_HOST", "j");
 
       const config = create();
 
@@ -72,6 +72,31 @@ describe("config", function () {
       expect(config.amqp.password).equals("g");
       expect(config.amqp.vhost).equals("j");
       done();
+    });
+
+    it("should set ssl to false on missed MSB_BROKER_USE_SSL", function (done) {
+      const config = create();
+      expect(config.amqp.ssl).equals(false);
+      done();
+    });
+
+    let tests = [
+      {env: "0", exprected: false},
+      {env: "false", exprected: false},
+      {env: "1", exprected: true},
+      {env: "true", exprected: true},
+      {env: "any falue", exprected: false},
+    ];
+
+    tests.forEach(function (test) {
+      it(`should set ssl to ${test.exprected} on MSB_BROKER_USE_SSL="${test.env}"`, function (done) {
+        simple.mock(process.env, "MSB_BROKER_USE_SSL", test.env);
+
+        const config = create();
+
+        expect(config.amqp.ssl).equals(test.exprected);
+        done();
+      });
     });
   });
 

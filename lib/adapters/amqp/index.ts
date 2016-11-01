@@ -39,7 +39,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
     this.connection.close();
   }
 
-  private sharedConnection(config: BrokerConfig): any {
+  private sharedConnection(config: any): any {
     if (this.connection) return this.connection;
 
     this.connection = new AMQP(_.clone(config));
