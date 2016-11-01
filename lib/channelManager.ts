@@ -84,9 +84,10 @@ channelManager.create = function () {
   };
 
   channelManager.createRawProducer = function (topic, options) {
+    const adapter = getAdapter();
     let producerConfig = _.merge(adapterConfig, options);
 
-    return getAdapter().Publish(producerConfig).channel(helpers.validatedTopic(topic));
+    return adapter.Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
 
   channelManager.findOrCreateConsumer = function (topic, options) {
