@@ -107,7 +107,7 @@ export function endContext(): void {
   contextMessage = null;
 }
 
-export function _createTags(config, originalMessage): string[] {
+function _createTags(config: MessageConfig, originalMessage: Message): string[] {
   return _.union(config && config.tags, originalMessage && originalMessage.tags);
 }
 

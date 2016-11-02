@@ -16,7 +16,8 @@ export class ResponderServer {
     this._errStack = [];
   }
 
-  use(middleware): this {
+  //todo: overload
+  use(middleware: any): this {
     this._stack.push(middleware);
     if (isArray(middleware)) {
       this._stack = _.flatten(this._stack);
@@ -34,7 +35,7 @@ export class ResponderServer {
     return this;
   };
 
-  onResponder(responder): void {
+  onResponder(responder: Responder): void {
     const self = this;
     const request = responder.originalMessage.payload;
     const response = new ResponderResponse(responder);
@@ -46,7 +47,7 @@ export class ResponderServer {
     });
   };
 
-  listen(channelManager?): this {
+  listen(channelManager?: any): this {
     if (this.emitter) throw new Error("Already listening");
 
     this.emitter = Responder.createEmitter(this.config, channelManager);
@@ -61,7 +62,7 @@ export class ResponderServer {
     delete(this.emitter);
   };
 
-  _errorHandler(request, response, err, ultimateErr?): void {
+  _errorHandler(request: any, response: any, err: any, ultimateErr?: any): void {
     err = ultimateErr || err;
     response.writeHead(err.statusCode || 500);
     response.end();

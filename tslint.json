@@ -6,7 +6,8 @@
     "typedef": [
       true,
       "call-signature",
-      "arrow-call-signature"
+      "arrow-call-signature",
+      "parameter"
     ],
 
     "adjacent-overload-signatures": true,

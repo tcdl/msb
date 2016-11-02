@@ -33,7 +33,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
   Subscribe(config: BrokerConfig): BrokerSubscriberAdapter {
     const channel = new EventEmitter();
 
-    function onMessage(message): void {
+    function onMessage(message: Message): void {
       try {
         channel.emit("message", message);
       } catch (err) {

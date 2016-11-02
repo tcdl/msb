@@ -32,7 +32,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     if (this.consumer) this.consumer.close();
   }
 
-  onceConsuming(cb): void {
+  onceConsuming(cb: Function): void {
     if (this.consumer && this.consumer.consumerState === "open") return cb();
     this.once("consuming", cb);
   }
@@ -78,7 +78,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
     // Do nothing
   }
 
-  private onConsumerError(err): void {
+  private onConsumerError(err: Error): void {
     this.emit("error", err);
   }
 

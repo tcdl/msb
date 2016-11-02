@@ -1,4 +1,4 @@
-import {validateMultiple, ValidationError, MultiResult} from "tv4";
+import {validateMultiple, ValidationError, MultiResult, JsonSchema} from "tv4";
 import {Message} from "./messageFactory";
 
 class SchemaValidationError extends Error {
@@ -77,7 +77,7 @@ class SchemaValidationError extends Error {
 
 class ValidateWithSchema {
 
-  middleware(schema): (request, response, next) => void {
+  middleware(schema: JsonSchema): (request: any, response: any, next: Function) => void {
     return (request, response, next): void => {
       try {
         this.validateWithSchema(schema, request);
@@ -89,9 +89,9 @@ class ValidateWithSchema {
     };
   }
 
-  onEvent(schema, successHandlerFn, errorHandlerFn?): (message) => void {
+  onEvent(schema: JsonSchema, successHandlerFn: Function, errorHandlerFn?: Function): (message: Message) => void {
     const self = this;
-    return function (message): void {
+    return function (message: Message): void {
       try {
         self.validateWithSchema(schema, message);
       } catch (e) {
@@ -106,7 +106,7 @@ class ValidateWithSchema {
     };
   }
 
-  private validateWithSchema(schema, message): void {
+  private validateWithSchema(schema: JsonSchema, message: Message): void {
     let result = validateMultiple(message, schema);
     if (result.valid) return;
 

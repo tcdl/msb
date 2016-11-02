@@ -1,5 +1,5 @@
 import {EventEmitter} from "events";
-import {Message} from "./messageFactory";
+import {Message, MessageAck} from "./messageFactory";
 import {msb} from "../msb";
 import * as logger from "./support/logger";
 
@@ -81,7 +81,7 @@ export class Collector extends EventEmitter {
     return this;
   }
 
-  listenForResponses(topic, shouldAcceptMessageFn): this {
+  listenForResponses(topic: string, shouldAcceptMessageFn: (message: Message) => boolean): this {
     if (this.listeners("error").length < 2) {
       logger.warn("A Collector 'error' event handler should be implemented.");
     }
@@ -144,7 +144,7 @@ export class Collector extends EventEmitter {
     }, newTimeoutMs);
   };
 
-  private processAck(ack): void {
+  private processAck(ack: MessageAck): void {
     if (!ack) return; // `null` ack is valid
 
     if ("responsesRemaining" in ack) {
@@ -175,14 +175,14 @@ export class Collector extends EventEmitter {
     return timeoutMs;
   }
 
-  private setTimeoutMsForResponderId(responderId, timeoutMs): number {
+  private setTimeoutMsForResponderId(responderId: string, timeoutMs: number): number {
     let timeoutMsById = this.timeoutMsById = this.timeoutMsById || {};
     if (timeoutMsById[responderId] === timeoutMs) return null; // Not changed
     timeoutMsById[responderId] = timeoutMs;
     return timeoutMs;
   };
 
-  private incResponsesRemaining(inc): number {
+  private incResponsesRemaining(inc: number): number {
     this.responsesRemaining = Math.max(this.responsesRemaining + inc, 0);
     return this.responsesRemaining;
   };

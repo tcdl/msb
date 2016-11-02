@@ -51,7 +51,7 @@ export class ResponderResponse {
     }
   }
 
-  end(body, cb): void {
+  end(body: any, cb?: Function): void {
     if (!cb && typeof body === "function") {
       cb = body;
       body = this.body;

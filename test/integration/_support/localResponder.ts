@@ -14,7 +14,7 @@ export function createLocalResponder() {
   })
     .use(validateWithSchema.middleware(payloadSchema))
     .use([
-      (request, response, next): void => {
+      (request: any, response: any, next: any): void => {
         if (request.body && request.body.instruction === "error") {
           next(new Error());
         } else {

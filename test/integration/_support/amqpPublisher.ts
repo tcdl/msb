@@ -4,7 +4,7 @@ const _ = require("lodash");
 const async = require("async");
 const AMQP = require("amqp-coffee");
 
-export function create(topic, cb) {
+export function create(topic: string, cb: Function) {
   const connection = new AMQP(configCreate().amqp);
 
   connection.once("ready", () => {
