@@ -1,6 +1,9 @@
 import {expect} from "chai";
 const simple = require("simple-mock");
 import {ResponderResponse} from "../../lib/responderResponse";
+import {Responder} from "../../lib/responder";
+import {Message} from "../../lib/messageFactory";
+
 
 describe("ResponderResponse", function() {
   let mockResponder;
@@ -8,11 +11,17 @@ describe("ResponderResponse", function() {
 
   describe("for a normal responder", function() {
     beforeEach(function(done) {
-      mockResponder = {
-        originalMessage: {
-          payload: {}
-        }
+      let originalMessage: Message = {
+        id: "id",
+        correlationId: "correlationId",
+        tags: ["tag"],
+        topics: {},
+        meta: null,
+        ack: null,
+        payload: {}
       };
+
+      mockResponder = new Responder({}, originalMessage);
       simple.mock(mockResponder, "send");
       response = new ResponderResponse(mockResponder);
       done();
@@ -112,13 +121,19 @@ describe("ResponderResponse", function() {
 
   describe("where the request method is HEAD", function() {
     beforeEach(function(done) {
-      mockResponder = {
-        originalMessage: {
-          payload: {
-            method: "HEAD"
-          }
+      let originalMessage: Message = {
+        id: "id",
+        correlationId: "correlationId",
+        tags: ["tag"],
+        topics: {},
+        meta: null,
+        ack: null,
+        payload: {
+          method: "HEAD"
         }
       };
+
+      mockResponder = new Responder({}, originalMessage);
       simple.mock(mockResponder, "send");
       response = new ResponderResponse(mockResponder);
       done();
