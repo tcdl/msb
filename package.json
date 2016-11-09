@@ -15,10 +15,11 @@
   "scripts": {
     "build": "tsc",
     "cs": "tslint --project tsconfig.json -t stylish",
+    "coveralls": "tsc --sourceMap && NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "test": "npm run cs && npm run build && npm run test:unit && npm run test:functional && npm run test:integration",
-    "test:functional": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/functional/",
-    "test:integration": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/integration/",
-    "test:unit": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha ./test/unit/"
+    "test:functional": "NODE_ENV=test mocha ./test/functional/",
+    "test:integration": "NODE_ENV=test mocha ./test/integration/",
+    "test:unit": "NODE_ENV=test mocha ./test/unit/"
   },
   "dependencies": {
     "amqp-coffee": "^0.1.25",
@@ -37,6 +38,7 @@
     "@types/node": "^6.0.46",
     "@types/tv4": "^1.2.28",
     "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.1.2",
     "simple-mock": "^0.7.2",
