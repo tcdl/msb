@@ -34,6 +34,8 @@ export interface LocalConfig extends BrokerConfig {
 }
 
 export class Config {
+  static readonly DEFAULT_SSL_VALUE = false;
+
   schema: JsonSchema;
   cleanupConsumers: boolean;
   autoMessageContext: boolean;
@@ -54,7 +56,7 @@ export class Config {
       login: process.env.MSB_BROKER_USER_NAME || "guest",
       password: process.env.MSB_BROKER_PASSWORD || "guest",
       vhost: process.env.MSB_BROKER_VIRTUAL_HOST || "/",
-      ssl: this.sslValue(),
+      ssl: Config.getBoolean(process.env.MSB_BROKER_USE_SSL, Config.DEFAULT_SSL_VALUE),
       groupId: serviceDetails.name,
       durable: false,
       heartbeat: 10000, // In milliseconds
@@ -66,6 +68,20 @@ export class Config {
     this.local = {};
 
     this._init();
+  }
+
+  private static getBoolean(value: string, defaultValue: boolean): boolean {
+    if (!value) {
+      return defaultValue;
+    }
+
+    if (value.toLowerCase() === "true") {
+      return true;
+    }
+    if (value.toLowerCase() === "false") {
+      return false;
+    }
+    return defaultValue;
   }
 
   configure(obj: Object): void {
@@ -82,21 +98,6 @@ export class Config {
       delete(require.cache[configPath]);
       this.configure(jsonObj);
     }
-  }
-
-  private sslValue(): boolean {
-    const DEFAULT_SSL_VALUE = false;
-    if (!process.env.MSB_BROKER_USE_SSL) {
-      return false;
-    }
-    let ssl: string = process.env.MSB_BROKER_USE_SSL;
-    if (ssl.toLowerCase() === "true" || ssl === "1") {
-      return true;
-    }
-    if (ssl.toLowerCase() === "false" || ssl === "0") {
-      return false;
-    }
-    return DEFAULT_SSL_VALUE;
   }
 }
 

@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {join} from "path";
 const simple = require("simple-mock");
-import {create} from "../../lib/config";
+import {create, Config} from "../../lib/config";
 
 describe("config", function () {
   afterEach(function (done) {
@@ -81,11 +81,10 @@ describe("config", function () {
     });
 
     let tests = [
-      {env: "0", exprected: false},
-      {env: "false", exprected: false},
-      {env: "1", exprected: true},
       {env: "true", exprected: true},
-      {env: "any falue", exprected: false},
+      {env: "false", exprected: false},
+      {env: "any falue", exprected: Config.DEFAULT_SSL_VALUE},
+      {env: undefined, exprected: Config.DEFAULT_SSL_VALUE},
     ];
 
     tests.forEach(function (test) {
