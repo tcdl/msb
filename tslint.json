@@ -10,7 +10,7 @@
       "parameter"
     ],
 
-    "adjacent-overload-signatures": true,
+    "adjacent-overload-signatures": false,
     "member-ordering": [
       true,
       {

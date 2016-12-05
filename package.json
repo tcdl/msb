@@ -35,7 +35,7 @@
     "@types/chai": "^3.4.34",
     "@types/core-js": "^0.9.34",
     "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.46",
+    "@types/node": "6.0.46",
     "@types/tv4": "^1.2.28",
     "chai": "^3.5.0",
     "coveralls": "^2.11.14",
