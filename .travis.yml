@@ -1,5 +1,6 @@
 language: node_js
 node_js:
+- '7'
 - '6'
 - '5'
 - '4'
@@ -15,7 +16,7 @@ deploy:
   provider: npm
   email: integration-dev@thomascookonline.com
   api_key:
-    secure: eAnDeDBA4JRj9OgijQ7XhV+v2xHM7eebRZ5kfRbbP52tIVq2mPpKcBM6eZHkodIfSrr4YQ6AJrezlszDkK5794lnjz1LhzhUwSwMYgCZ0TUPJEZpgrfSiHlNJuaLOBea2uro8DblWepwJA4urd3wAXi/jlZ/lFcaQofe6ybCPOA=
+    secure: lzF+SNlNL/cX097wwbboBH/oMLdYm5U3pmGyySLHuKtdnzvRuvWoFnFvR3s0V4UEkYrGijqCz5NvvhlbAFgSaQvgctxlhW5082ZcnWr8R+pYGOrooxcseZwXC3nwhBe6lT/mmjyW5VyhDrk7LG3nGzfGuv/BfiTxcCbHm9YrLB0=
   on:
     tags: true
     repo: tcdl/msb
