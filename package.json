@@ -14,8 +14,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "cs": "tslint --project tsconfig.json -t stylish",
     "coveralls": "tsc --sourceMap && NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "cs": "tslint --project tsconfig.json -t stylish",
+    "fix:cs": "tslint --project tsconfig.json -t stylish --fix",
     "test": "npm run cs && npm run build && npm run test:unit && npm run test:functional && npm run test:integration",
     "test:functional": "NODE_ENV=test mocha ./test/functional/",
     "test:integration": "NODE_ENV=test mocha ./test/integration/",

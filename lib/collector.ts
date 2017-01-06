@@ -1,10 +1,10 @@
 import {EventEmitter} from "events";
-import {msb} from "../msb";
+import {BrokerSubscriberAdapter} from "./adapters/adapter";
 import {Message, MessageAck} from "./messageFactory";
 import * as logger from "./support/logger";
 
 export class Collector extends EventEmitter {
-  channelManager: msb.channelManager;
+  channelManager: any; // Todo: Should be channelManager class
   startedAt: Date;
   isCanceled: boolean;
   waitForAcksMs?: number;
@@ -14,7 +14,7 @@ export class Collector extends EventEmitter {
   timeoutMs: number;
   ackMessages: Message[];
   payloadMessages: Message[];
-  responseChannel: msb.rawConsumer;
+  responseChannel: BrokerSubscriberAdapter;
 
   private timer: NodeJS.Timer;
   private ackTimer: NodeJS.Timer;
