@@ -1,46 +1,52 @@
 {
   "name": "msb",
-  "version": "1.0.0",
+  "version": "2.0.0-RC0",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
-  "typings": "msb.d.ts",
-  "scripts": {
-    "test": "npm run cs && npm run test-no-cs",
-    "test-no-cs": "NODE_ENV=test mocha",
-    "cs": "jscs **/*.js",
-    "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages",
-    "coveralls": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "prepush": "npm test"
+  "bin": {
+    "msb": "./bin/msb",
+    "msb-save": "./bin/msb-save"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/tcdl/msb.git"
   },
-  "bin": {
-    "msb": "./bin/msb",
-    "msb-save": "./bin/msb-save"
-  },
-  "devDependencies": {
-    "chai": "^3.5.0",
-    "coveralls": "^2.11.14",
-    "istanbul": "^0.4.5",
-    "jscs": "^3.0.2",
-    "mocha": "^3.1.1",
-    "msb-test-utils": "^2.0.0",
-    "simple-mock": "^0"
+  "scripts": {
+    "build": "tsc",
+    "coveralls": "tsc --sourceMap && NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "cs": "tslint --project tsconfig.json -t stylish",
+    "fix:cs": "tslint --project tsconfig.json -t stylish --fix",
+    "test": "npm run cs && npm run build && npm run test:unit && npm run test:functional && npm run test:integration",
+    "test:functional": "NODE_ENV=test mocha ./test/functional/",
+    "test:integration": "NODE_ENV=test mocha ./test/integration/",
+    "test:unit": "NODE_ENV=test mocha ./test/unit/"
   },
   "dependencies": {
-    "amqp-coffee": "^0.1.25",
-    "async": "^2.0.0",
-    "cli-table": "^0.3.1",
-    "debug": "^2.1.1",
-    "ip": "^1.1.2",
-    "lodash": "^4.6.1",
-    "lodash.get": "^4.1.2",
-    "minimist": "^1.1.1",
-    "split": "^1.0.0",
-    "tv4": "^1.1.9",
-    "weak-map": "^1.0.5"
+    "amqp-coffee": "0.1.29",
+    "async": "2.1.4",
+    "debug": "2.6.0",
+    "lodash": "4.17.4",
+    "lodash.get": "4.4.2",
+    "minimist": "1.2.0",
+    "split": "1.0.0",
+    "tv4": "1.2.7"
+  },
+  "devDependencies": {
+    "@types/chai": "3.4.34",
+    "@types/core-js": "0.9.35",
+    "@types/mocha": "2.2.35",
+    "@types/node": "6.0.46",
+    "@types/tv4": "1.2.28",
+    "chai": "3.5.0",
+    "coveralls": "2.11.15",
+    "istanbul": "1.1.0-alpha.1",
+    "mocha": "3.2.0",
+    "simple-mock": "0.7.3",
+    "tslint": "4.3.0",
+    "typescript": "2.1.4"
+  },
+  "engines": {
+    "node": ">=4"
   }
 }

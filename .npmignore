@@ -1,11 +1,11 @@
 .idea
 .npmrc
 test
+coverage
 .editorconfig
 .gitignore
-.jscsrc
-.jshintrc
 .npmignore
 .travis.yml
 CONTRIBUTING.md
-wallaby.js
+tsconfig.json
+tslint.json

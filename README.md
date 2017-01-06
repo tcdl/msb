@@ -310,7 +310,12 @@ msb.createChannelManager().configure(config); // Additional channelManager
 - MSB_SERVICE_VERSION (Default: `version` in the package.json of the main module.)
 - MSB_SERVICE_INSTANCE_ID (Default: generated universally unique 12-byte/24-char hex string.)
 - MSB_BROKER_ADAPTER One of 'amqp' or 'local' (Default: 'amqp')
-- MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.amqp` overriding defaults.
+- MSB_BROKER_HOST, default "127.0.0.1".
+- MSB_BROKER_PORT, default 5672.
+- MSB_BROKER_USER_NAME, default "guest".
+- MSB_BROKER_PASSWORD, default "guest".
+- MSB_BROKER_VIRTUAL_HOST, default "/".
+- MSB_BROKER_USE_SSL, default "false".
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
 
 ## Tools
