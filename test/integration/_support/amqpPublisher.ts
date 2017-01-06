@@ -17,11 +17,11 @@ export function create(topic: string, cb: Function) {
           const str = (_.isObject(message)) ? JSON.stringify(message) : message;
           connection.publish(topic, "", str, {
             deliveryMode: 2,
-            confirm: true
+            confirm: true,
           }, next);
         }, cb);
       },
-      close: connection.close.bind(connection)
+      close: connection.close.bind(connection),
     };
 
     cb(null, publisher);

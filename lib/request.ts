@@ -8,7 +8,7 @@ export default function (options: any, payload: MessagePayload, cb: (err: Error,
   if (_.isString(options)) {
     options = {
       namespace: options,
-      waitForResponses: 1
+      waitForResponses: 1,
     };
   } else if (!("waitForResponses" in options)) {
     options.waitForResponses = 1;

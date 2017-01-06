@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {resolve, join} from "path";
+import {join, resolve} from "path";
 const serviceDetailsModulePath = resolve(__dirname, "../../../lib/support/serviceDetails.js");
 const simple = require("simple-mock");
 
@@ -18,8 +18,8 @@ describe("serviceDetails", function () {
         netmask: "255.255.255.0",
         family: "IPv4",
         mac: "60:03:08:92:27:88",
-        internal: false
-      }]
+        internal: false,
+      }],
     };
     simple.mock(require("os"), "networkInterfaces").returnWith(fakeInterfaces);
     simple.mock(require("os"), "hostname").returnWith("abchost");

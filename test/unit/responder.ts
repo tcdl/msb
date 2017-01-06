@@ -35,7 +35,7 @@ describe("Responder", function () {
         id: "id",
         correlationId: "1234",
         tags: [],
-        topics: {}
+        topics: {},
       };
       new Responder({}, message);
 
@@ -51,7 +51,7 @@ describe("Responder", function () {
         id: "id",
         correlationId: "1234",
         tags: [],
-        topics: {response: "response"}
+        topics: {response: "response"},
       };
 
       responder = new Responder({}, message);
@@ -180,7 +180,7 @@ describe("Responder", function () {
         id: "id",
         correlationId: "1234",
         tags: [],
-        topics: {response: "response"}
+        topics: {response: "response"},
       };
       responder = new Responder({}, message);
 
@@ -199,7 +199,7 @@ describe("Responder", function () {
         id: "id",
         correlationId: "1234",
         tags: [],
-        topics: {response: "response"}
+        topics: {response: "response"},
       };
       responder = new Responder({}, message);
 
@@ -215,7 +215,7 @@ describe("Responder", function () {
 
       expect(function () {
         responder._sendMessage({
-          topics: {to: "example"}
+          topics: {to: "example"},
         }, cb);
       }).to.not.throw();
 
@@ -233,7 +233,7 @@ describe("Responder", function () {
     it("can be called without a cb", function (done) {
       expect(function () {
         responder._sendMessage({
-          topics: {to: "example"}
+          topics: {to: "example"},
         });
       }).to.not.throw();
 

@@ -140,7 +140,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
       queue: queueName,
       exclusive: !config.groupId,
       prefetchCount: config.prefetchCount,
-      passive: false
+      passive: false,
     };
 
     if (config.durable) {

@@ -10,7 +10,7 @@ describe("validatedTopic()", function () {
       "etc:other*",
       "etc:Capitalized",
       "etc:unexpected:",
-      "etc::double"
+      "etc::double",
     ];
 
     invalidTopics.forEach(function (topic) {
@@ -30,7 +30,7 @@ describe("validatedTopic()", function () {
       "etc:one1",
       "etc1:one",
       "etc:a-b",
-      "etc-etc:a"
+      "etc-etc:a",
     ];
 
     validTopics.forEach(function (topic) {
@@ -54,7 +54,7 @@ describe("topicWithoutInstanceId()", function () {
       "with:abc123": "with",
       "simple": "simple",
       "simple:multi:aaa:levels": "simple:multi:aaa:levels",
-      "simple:multi:aaa:levels:abc": "simple:multi:aaa:levels"
+      "simple:multi:aaa:levels:abc": "simple:multi:aaa:levels",
     };
 
     Object.keys(topics).forEach(function (topic) {

@@ -1,13 +1,13 @@
+import {BrokerConfig, ConfigAMQP} from "../../config";
+import {Message} from "../../messageFactory";
 import {
   BrokerAdapter,
+  BrokerPublisherAdapter,
   BrokerPublisherAdapterFactory,
   BrokerSubscriberAdapter,
-  BrokerPublisherAdapter
 } from "../adapter";
-import {BrokerConfig, ConfigAMQP} from "../../config";
 import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
-import {Message} from "../../messageFactory";
 
 const AMQP = require("amqp-coffee");
 const _ = require("lodash");
@@ -16,7 +16,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
   private connection: any;
 
   Publish(config: BrokerConfig): BrokerPublisherAdapterFactory {
-    const publisher = new AMQPPublisherAdapter(<ConfigAMQP>config, this.sharedConnection(config));
+    const publisher = new AMQPPublisherAdapter(<ConfigAMQP> config, this.sharedConnection(config));
 
     return {
       channel: (topic): BrokerPublisherAdapter => {
@@ -24,14 +24,14 @@ class AMQPBrokerAdapter implements BrokerAdapter {
           publish: (message: Message, cb: (err?: Error) => void): void => {
             publisher.publish(topic, message, cb);
           },
-          close: (): void => publisher.close()
+          close: (): void => publisher.close(),
         };
-      }
+      },
     };
   }
 
   Subscribe(config: BrokerConfig): BrokerSubscriberAdapter {
-    return new AMQPSubscriberAdapter(<ConfigAMQP>config, this.sharedConnection(config));
+    return new AMQPSubscriberAdapter(<ConfigAMQP> config, this.sharedConnection(config));
   }
 
   close(): void {

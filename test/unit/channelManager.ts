@@ -5,8 +5,8 @@ import * as amqp from "../../lib/adapters/amqp";
 import * as config from "../../lib/config";
 // import {create as createChannelManager} from "../lib/channelManager";
 const createChannelManager = (require("../../lib/channelManager")).create;
-import * as messageFactory from "../../lib/messageFactory";
 import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../../lib/adapters/adapter";
+import * as messageFactory from "../../lib/messageFactory";
 describe("channelManager", function () {
   let queue: BrokerAdapter;
   let channelManager;
@@ -22,7 +22,7 @@ describe("channelManager", function () {
     simple.mock(amqp, "create").returnWith(queue);
     simple.mock(config, "amqp", {
       host: "mock.host",
-      port: "99999"
+      port: "99999",
     });
     simple.mock(config, "schema", null);
     simple.mock(config, "cleanupConsumers", true);
@@ -139,7 +139,7 @@ describe("channelManager", function () {
       expect((queue.Subscribe as any).lastCall.args[0]).deep.include({
         channel: "con1:1",
         host: "mock.host",
-        port: "99999"
+        port: "99999",
       });
 
       const consumer2 = channelManager.findOrCreateConsumer("con1:2");
@@ -147,7 +147,7 @@ describe("channelManager", function () {
       expect((queue.Subscribe as any).lastCall.args[0]).deep.include({
         channel: "con1:2",
         host: "mock.host",
-        port: "99999"
+        port: "99999",
       });
 
       const consumer1b = channelManager.findOrCreateConsumer("con1:1");
@@ -179,14 +179,14 @@ describe("channelManager", function () {
       expect((queue.Subscribe as any).called).to.be.true;
       expect((queue.Subscribe as any).lastCall.args[0]).deep.include({
         durable: false,
-        type: "fanout"
+        type: "fanout",
       });
 
       const consumer2 = channelManager.findOrCreateConsumer("con1:2", {type: "topic", durable: true});
 
       expect((queue.Subscribe as any).lastCall.args[0]).deep.include({
         durable: true,
-        type: "topic"
+        type: "topic",
       });
 
       done();
@@ -210,7 +210,7 @@ describe("channelManager", function () {
     });
 
     it("will listen for messages and emit a new message event", function (done) {
-      let mockSubscriber = <BrokerSubscriberAdapter>{};
+      let mockSubscriber = <BrokerSubscriberAdapter> {};
       simple.mock(mockSubscriber, "on");
       simple.mock(channelManager, "createRawConsumer").returnWith(mockSubscriber);
 
@@ -261,7 +261,7 @@ describe("channelManager", function () {
       it("will remove the cached channel", function (done) {
         expect(channelManager.CONSUMER_REMOVED_TOPIC_EVENT).to.exist;
 
-        let mockSubscriber = <BrokerSubscriberAdapter>new EventEmitter();
+        let mockSubscriber = <BrokerSubscriberAdapter> new EventEmitter();
         simple.mock(mockSubscriber, "close").returnWith();
         simple.mock(channelManager, "createRawConsumer").returnWith(mockSubscriber);
 

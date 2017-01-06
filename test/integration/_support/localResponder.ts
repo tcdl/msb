@@ -3,14 +3,14 @@ let i = 1001;
 const payloadSchema = {
   type: "object",
   properties: {
-    body: {type: "object"}
-  }
+    body: {type: "object"},
+  },
 };
 
 export function createLocalResponder() {
   return Responder.createServer({
     namespace: "test:general",
-    tags: ["b"]
+    tags: ["b"],
   })
     .use(validateWithSchema.middleware(payloadSchema))
     .use([
@@ -23,7 +23,7 @@ export function createLocalResponder() {
       },
       (request, response, next): void => {
         response.responder.sendAck(1500, next);
-      }
+      },
     ])
     .use((request, response, next) => {
       response.body = i++;

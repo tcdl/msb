@@ -1,7 +1,6 @@
 const async = require("async");
 import {Responder} from "../../..";
 
-
 export function createMockResponder(config, channelManager): any {
   let requests = [];
   let stack = [];
@@ -43,6 +42,6 @@ export function createMockResponder(config, channelManager): any {
     end: (): void => {
       waitTimeouts.forEach(clearTimeout);
       emitter.end();
-    }
+    },
   };
 }

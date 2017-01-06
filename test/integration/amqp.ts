@@ -2,13 +2,13 @@ import {expect} from "chai";
 const simple = require("simple-mock");
 const _ = require("lodash");
 
+import {createChannelManager, validateWithSchema} from "../..";
 import {AMQPSubscriberAdapter} from "../../lib/adapters/amqp/subscriber";
 import * as amqpPublisher from "./_support/amqpPublisher";
-import {createChannelManager, validateWithSchema} from "../..";
 
 const fixtures = {
   consumer_basic: require("./_fixtures/integration_consumer_basic.json"),
-  consumer_schema: require("./_fixtures/integration_consumer_schema")
+  consumer_schema: require("./_fixtures/integration_consumer_schema"),
 };
 
 describe("AMQP Integration", function() {
@@ -42,13 +42,13 @@ describe("AMQP Integration", function() {
       channelManager = createChannelManager().configure({
         brokerAdapter: "amqp",
         amqp: {
-          prefetchCount: 1
-        }
+          prefetchCount: 1,
+        },
       });
 
       consumer = channelManager
         .findOrCreateConsumer("integration:test:consumer", {
-          groupId: "integration-test"
+          groupId: "integration-test",
         })
         .onceConsuming(done);
     });
@@ -75,7 +75,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         fixtures.consumer_basic,
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -105,7 +105,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         "breaking",
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -138,7 +138,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         "breaking",
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -171,7 +171,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         {breaking: "meh"},
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -201,13 +201,13 @@ describe("AMQP Integration", function() {
       consumer.on("message", onMessageMethod);
 
       const expiredMessage = _.merge({}, fixtures.consumer_basic, {
-        meta: {ttl: 10000}
+        meta: {ttl: 10000},
       });
 
       publisher.publish([
         fixtures.consumer_basic,
         expiredMessage,
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -240,14 +240,14 @@ describe("AMQP Integration", function() {
 
       const validMessage = _.merge({}, fixtures.consumer_basic, {
         payload: {
-          body: {}
-        }
+          body: {},
+        },
       });
 
       publisher.publish([
         validMessage,
         fixtures.consumer_basic,
-        validMessage
+        validMessage,
       ], function (err) {
         if (err) return done(err);
 
@@ -289,14 +289,14 @@ describe("AMQP Integration", function() {
       channelManager = createChannelManager().configure({
         brokerAdapter: "amqp",
         amqp: {
-          prefetchCount: 1
-        }
+          prefetchCount: 1,
+        },
       });
 
       consumer = channelManager
         .findOrCreateConsumer("integration:test:consumer", {
           groupId: "integration-test",
-          autoConfirm: false
+          autoConfirm: false,
         })
         .onceConsuming(done);
     });
@@ -322,7 +322,7 @@ describe("AMQP Integration", function() {
 
       publisher.publish([
         fixtures.consumer_basic,
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -360,7 +360,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         fixtures.consumer_basic,
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -393,7 +393,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         "breaking",
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -427,7 +427,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         "breaking",
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -462,7 +462,7 @@ describe("AMQP Integration", function() {
       publisher.publish([
         fixtures.consumer_basic,
         {breaking: "meh"},
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -494,13 +494,13 @@ describe("AMQP Integration", function() {
       consumer.on("message", onMessageMethod);
 
       const expiredMessage = _.merge({}, fixtures.consumer_basic, {
-        meta: {ttl: 10000}
+        meta: {ttl: 10000},
       });
 
       publisher.publish([
         fixtures.consumer_basic,
         expiredMessage,
-        fixtures.consumer_basic
+        fixtures.consumer_basic,
       ], function (err) {
         if (err) return done(err);
 
@@ -535,14 +535,14 @@ describe("AMQP Integration", function() {
 
       const validMessage = _.merge({}, fixtures.consumer_basic, {
         payload: {
-          body: {}
-        }
+          body: {},
+        },
       });
 
       publisher.publish([
         validMessage,
         fixtures.consumer_basic,
-        validMessage
+        validMessage,
       ], function (err) {
         if (err) return done(err);
 
@@ -579,14 +579,14 @@ describe("AMQP Integration", function() {
 
       const validMessage = _.merge({}, fixtures.consumer_basic, {
         payload: {
-          body: {}
-        }
+          body: {},
+        },
       });
 
       publisher.publish([
         validMessage,
         fixtures.consumer_basic,
-        validMessage
+        validMessage,
       ], function (err) {
         if (err) return done(err);
 

@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {join} from "path";
 const simple = require("simple-mock");
-import {create, Config} from "../../lib/config";
+import {Config, create} from "../../lib/config";
 
 describe("config", function () {
   afterEach(function (done) {
@@ -20,7 +20,7 @@ describe("config", function () {
     describe("configure()", function () {
       it("should merge provided options", function (done) {
         config.configure({
-          etc: "abc"
+          etc: "abc",
         });
 
         expect(config.etc).equals("abc");

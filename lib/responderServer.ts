@@ -1,8 +1,8 @@
 import {isArray} from "util";
 const _ = require("lodash");
 const async = require("async");
-import {ResponderResponse} from "./responderResponse";
 import {Responder} from "./responder";
+import {ResponderResponse} from "./responderResponse";
 
 export class ResponderServer {
   config: Object;

@@ -1,5 +1,5 @@
-import {Message} from "../../messageFactory";
 import {ConfigAMQP} from "../../config";
+import {Message} from "../../messageFactory";
 
 export class AMQPPublisherAdapter {
   private config: ConfigAMQP;
@@ -38,7 +38,7 @@ export class AMQPPublisherAdapter {
   private ensureExchange(topic: string, cb: Function): void {
     const exchange = this.connection.exchange({
       exchange: topic,
-      type: this.config.type
+      type: this.config.type,
     });
 
     exchange.declare(cb);

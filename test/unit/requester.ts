@@ -40,7 +40,7 @@ describe("Requester", function() {
       producer.publish.callbackWith(expectedErr);
 
       const obj = new Requester({
-        waitForResponses: 0
+        waitForResponses: 0,
       });
 
       obj
@@ -60,7 +60,7 @@ describe("Requester", function() {
       const endHandler = simple.mock();
 
       const obj = new Requester({
-        waitForResponses: 0
+        waitForResponses: 0,
       });
 
       obj
@@ -79,7 +79,7 @@ describe("Requester", function() {
       const endHandler = simple.mock();
 
       const obj = new Requester({
-        waitForResponses: 1
+        waitForResponses: 1,
       });
 
       const bindMock = simple.mock(obj.shouldAcceptMessageFn, "bind").returnWith("testValue");
@@ -105,7 +105,7 @@ describe("Requester", function() {
 
       const obj = new Requester({
         waitForResponses: 0,
-        waitForAcksMs: 800
+        waitForAcksMs: 800,
       });
 
       const bindMock = simple.mock(obj.shouldAcceptMessageFn, "bind").returnWith("testValue");
@@ -135,14 +135,14 @@ describe("Requester", function() {
         id: "id",
         tags: [],
         correlationId: obj.message.correlationId,
-        topics: {}
+        topics: {},
       })).to.be.true;
 
       expect(obj.shouldAcceptMessageFn({
         id: "id",
         correlationId: "other",
         tags: [],
-        topics: {}
+        topics: {},
       })).to.be.false;
 
       done();

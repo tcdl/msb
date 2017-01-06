@@ -25,7 +25,7 @@ describe("Collector", function () {
       const config = {
         waitForResponsesMs: 555,
         waitForAcksMs: 50,
-        waitForResponses: 1
+        waitForResponses: 1,
       };
       const collector = new Collector(config);
 
@@ -82,12 +82,12 @@ describe("Collector", function () {
           a: 1000,
           b: 1500,
           c: 500,
-          d: 2000
+          d: 2000,
         };
 
         collector.responsesRemainingById = {
           b: 1,
-          d: 0 // Skip this timeout
+          d: 0, // Skip this timeout
         };
 
         const result = collector.getMaxTimeoutMs();
@@ -99,7 +99,7 @@ describe("Collector", function () {
 
         collector.timeoutMs = 2000;
         collector.timeoutMsById = {
-          b: 1500
+          b: 1500,
         };
 
         const result = collector.getMaxTimeoutMs();
@@ -124,7 +124,7 @@ describe("Collector", function () {
         collector.responsesRemainingById = {
           a: 4,
           b: 5,
-          c: 3
+          c: 3,
         };
 
         const result = collector.getResponsesRemaining();
@@ -136,7 +136,7 @@ describe("Collector", function () {
 
         collector.responsesRemaining = 1;
         collector.responsesRemainingById = {
-          a: 0
+          a: 0,
         };
 
         const result = collector.getResponsesRemaining();
@@ -304,7 +304,7 @@ describe("Collector", function () {
 
         collector.processAck({
           responderId: "a",
-          timeoutMs: 5000
+          timeoutMs: 5000,
         });
 
         expect(collector.setTimeoutMsForResponderId.called).to.be.true;
@@ -318,7 +318,7 @@ describe("Collector", function () {
       it("will take the max timeout", function (done) {
         collector.processAck({
           responderId: "a",
-          timeoutMs: 1500
+          timeoutMs: 1500,
         });
 
         expect(collector.setTimeoutMsForResponderId.called).to.be.true;
@@ -330,7 +330,7 @@ describe("Collector", function () {
       it("will set the responses remaining per responder", function (done) {
         collector.processAck({
           responderId: "a",
-          responsesRemaining: 1
+          responsesRemaining: 1,
         });
 
         expect(collector.setResponsesRemainingForResponderId.called).to.be.true;
@@ -441,7 +441,7 @@ describe("Collector", function () {
 
         message = {
           ack: "ack",
-          payload: {}
+          payload: {},
         };
 
         done();

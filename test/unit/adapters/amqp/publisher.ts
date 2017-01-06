@@ -33,7 +33,7 @@ describe("AMQPPublisherAdapter", function () {
       connection.publish.callbackWith();
 
       publisher.publish("existing", {
-        message: "etc"
+        message: "etc",
       }, (err) => {
         if (err) return done(err);
         done();
@@ -52,13 +52,13 @@ describe("AMQPPublisherAdapter", function () {
       it("can publish a single message", function (done) {
         connection.publish.callbackWith({
           error: {
-            replyCode: 404
-          }
+            replyCode: 404,
+          },
         });
         connection.publish.callbackWith();
 
         publisher.publish("non-existent1", {
-          message: "etc"
+          message: "etc",
         }, (err) => {
           if (err) return done(err);
 
@@ -72,13 +72,13 @@ describe("AMQPPublisherAdapter", function () {
       it("can publish multiple messages in queue", function (done) {
         connection.publish.callbackWith({
           error: {
-            replyCode: 404
-          }
+            replyCode: 404,
+          },
         });
         connection.publish.callbackWith({
           error: {
-            replyCode: 404
-          }
+            replyCode: 404,
+          },
         });
         connection.publish.callbackWith();
         connection.publish.callbackWith();
@@ -86,11 +86,11 @@ describe("AMQPPublisherAdapter", function () {
         const cb = simple.mock();
 
         publisher.publish("non-existent2", {
-          message: 1
+          message: 1,
         }, cb);
 
         publisher.publish("non-existent2", {
-          message: 2
+          message: 2,
         }, cb);
 
         setTimeout(() => {

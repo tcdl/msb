@@ -17,7 +17,7 @@ export function createBaseMessage(config?: MessageConfig, originalMessage?: Mess
     topics: {},
     meta: null, // To be filled with createMeta() -> completeMeta() sequence
     ack: null, // To be filled on ack or response
-    payload: {}
+    payload: {},
   };
 
   return message;
@@ -76,7 +76,7 @@ export function createAck(config?: MessageConfig): MessageAck {
   return {
     responderId: generateId(), // config.groupId || generateId(),
     responsesRemaining: null, // -n decrements, 0 resets, n increments
-    timeoutMs: null // Defaults to the timeout on the collector/requester
+    timeoutMs: null, // Defaults to the timeout on the collector/requester
   };
 }
 
@@ -88,7 +88,7 @@ export function createMeta(config?: MessageConfig, originalMessage?: Message): M
     createdAt: new Date(),
     publishedAt: null,
     durationMs: null,
-    serviceDetails: serviceDetails
+    serviceDetails: serviceDetails,
   };
 }
 

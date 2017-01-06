@@ -25,12 +25,12 @@ export interface ConfigAMQP extends BrokerConfig {
   prefetchCount?: number;
   autoConfirm?: boolean;
   type?: amqpExchangeType;
-  channel?: string; //todo: this property should not be passed via broker config
+  channel?: string; // todo: this property should not be passed via broker config
   bindingKeys?: string[];
 }
 
 export interface LocalConfig extends BrokerConfig {
-  channel?: string; //todo: this property should not be passed via broker config
+  channel?: string; // todo: this property should not be passed via broker config
 }
 
 export class Config {
@@ -62,7 +62,7 @@ export class Config {
       heartbeat: 10000, // In milliseconds
       prefetchCount: 1,
       autoConfirm: true,
-      type: "fanout"
+      type: "fanout",
     };
 
     this.local = {};

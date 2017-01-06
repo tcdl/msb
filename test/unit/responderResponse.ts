@@ -1,9 +1,8 @@
 import {expect} from "chai";
 const simple = require("simple-mock");
-import {ResponderResponse} from "../../lib/responderResponse";
-import {Responder} from "../../lib/responder";
 import {Message} from "../../lib/messageFactory";
-
+import {Responder} from "../../lib/responder";
+import {ResponderResponse} from "../../lib/responderResponse";
 
 describe("ResponderResponse", function() {
   let mockResponder;
@@ -18,7 +17,7 @@ describe("ResponderResponse", function() {
         topics: {},
         meta: null,
         ack: null,
-        payload: {}
+        payload: {},
       };
 
       mockResponder = new Responder({}, originalMessage);
@@ -41,7 +40,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
-            body: response.body
+            body: response.body,
           });
           done();
         });
@@ -56,7 +55,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
-            body: response.body
+            body: response.body,
           });
           done();
         });
@@ -66,7 +65,7 @@ describe("ResponderResponse", function() {
         mockResponder.send.callbackWith();
 
         response.writeHead(204, {
-          test: "val"
+          test: "val",
         });
         response.body = "overwriteMe";
 
@@ -76,8 +75,8 @@ describe("ResponderResponse", function() {
             statusCode: 204,
             body: null,
             headers: {
-              test: "val"
-            }
+              test: "val",
+            },
           });
           done();
         });
@@ -95,7 +94,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
             body: null,
-            bodyBuffer: newBody.toString("base64")
+            bodyBuffer: newBody.toString("base64"),
           });
           done();
         });
@@ -111,7 +110,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
-            body: "arb"
+            body: "arb",
           });
           done();
         });
@@ -129,8 +128,8 @@ describe("ResponderResponse", function() {
         meta: null,
         ack: null,
         payload: {
-          method: "HEAD"
-        }
+          method: "HEAD",
+        },
       };
 
       mockResponder = new Responder({}, originalMessage);
@@ -147,7 +146,7 @@ describe("ResponderResponse", function() {
           expect(mockResponder.send.called).to.be.true;
           expect(mockResponder.send.lastCall.args[0]).deep.equals({
             statusCode: response.statusCode,
-            body: null
+            body: null,
           });
           done();
         });

@@ -1,6 +1,6 @@
 import {EventEmitter} from "events";
-import {Message, MessageAck} from "./messageFactory";
 import {msb} from "../msb";
+import {Message, MessageAck} from "./messageFactory";
 import * as logger from "./support/logger";
 
 export class Collector extends EventEmitter {
@@ -63,14 +63,14 @@ export class Collector extends EventEmitter {
   }
 
   getResponsesRemaining(): number {
-    if (!Object.keys(this.responsesRemainingById).length) {
+    let keys = Object.keys(this.responsesRemainingById);
+    if (!keys) {
       return this.responsesRemaining;
     }
 
-    let responsesRemaining = 0;
-    for (let key in this.responsesRemainingById) {
-      responsesRemaining += this.responsesRemainingById[key];
-    }
+    let responsesRemaining = keys.reduce((previousValue, key) => {
+      return previousValue + this.responsesRemainingById[key];
+    }, 0);
     return Math.max(this.responsesRemaining, responsesRemaining);
   }
 

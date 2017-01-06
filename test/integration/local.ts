@@ -1,6 +1,6 @@
 import {expect} from "chai";
 const simple = require("simple-mock");
-import {configure, Requester, logger} from "../..";
+import {configure, logger, Requester} from "../..";
 import {createLocalResponder} from "./_support/localResponder";
 
 describe("Local", function() {
@@ -8,7 +8,7 @@ describe("Local", function() {
     simple.mock(logger, "warn").returnWith();
 
     configure({
-      brokerAdapter: "local"
+      brokerAdapter: "local",
     });
     done();
   });
@@ -42,7 +42,7 @@ describe("Local", function() {
       requester
       .publish({
         headers: {},
-        body: "not_object"
+        body: "not_object",
       })
       .once("error", done)
       .once("end", function() {
@@ -50,7 +50,7 @@ describe("Local", function() {
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 422,
-          body: null
+          body: null,
         });
         done();
       });
@@ -60,7 +60,7 @@ describe("Local", function() {
       requester
       .publish({
         headers: {},
-        body: { instruction: "error" }
+        body: { instruction: "error" },
       })
       .once("error", done)
       .once("end", function() {
@@ -68,7 +68,7 @@ describe("Local", function() {
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 500,
-          body: "Special Message"
+          body: "Special Message",
         });
         done();
       });
@@ -78,7 +78,7 @@ describe("Local", function() {
       requester
       .publish({
         headers: {},
-        body: {}
+        body: {},
       })
       .once("error", done);
 
@@ -86,12 +86,12 @@ describe("Local", function() {
         namespace: "test:general",
         ackTimeout: 100,
         waitForResponsesMs: 500,
-        tags: ["a"]
+        tags: ["a"],
       });
       requester
       .publish({
         headers: {},
-        body: {}
+        body: {},
       })
       .once("error", done)
       .once("end", function() {
@@ -99,7 +99,7 @@ describe("Local", function() {
         expect(requester.payloadMessages).length(1);
         expect(requester.payloadMessages[0].payload).deep.equals({
           statusCode: 200,
-          body: 1002
+          body: 1002,
         });
         expect(requester.payloadMessages[0].tags.sort()).deep.equals(["a", "b"]);
         done();

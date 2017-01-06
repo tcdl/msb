@@ -1,7 +1,7 @@
 import generateId = require("./generateId");
+import {accessSync} from "fs";
 import {hostname, networkInterfaces} from "os";
 import {resolve} from "path";
-import {accessSync} from "fs";
 
 interface PackageJson {
   [key: string]: any;
@@ -13,7 +13,7 @@ function getMainPackage(): PackageJson {
   let mainModuleName;
   const mainModuleNameOnError = {
     name: "unknown",
-    version: "unknown"
+    version: "unknown",
   };
 
   try {
@@ -60,5 +60,5 @@ export = {
   pid: process.pid,
   name: process.env.MSB_SERVICE_NAME || mainPackage.name,
   version: process.env.MSB_SERVICE_VERSION || mainPackage.version,
-  instanceId: process.env.MSB_SERVICE_INSTANCE_ID || generateId()
+  instanceId: process.env.MSB_SERVICE_INSTANCE_ID || generateId(),
 };

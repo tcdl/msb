@@ -4,16 +4,16 @@ const _ = require("lodash");
 import {EventEmitter} from "events";
 const debug = require("debug")("msb:channelManager");
 import validateWithSchema = require("./validateWithSchema");
+import {create} from "./config";
 import * as messageFactory from "./messageFactory";
 import * as helpers from "./support/helpers";
 import * as logger from "./support/logger";
-import {create} from "./config";
 
 let channelManager = exports;
 
 const ADAPTER_PATHS = {
   amqp: "./adapters/amqp",
-  local: "./adapters/local"
+  local: "./adapters/local",
 };
 
 channelManager.create = function () {
@@ -174,7 +174,7 @@ channelManager.create = function () {
     let a = getAdapter();
 
     let subscriberConfig = _.merge({
-      channel: helpers.validatedTopic(topic)
+      channel: helpers.validatedTopic(topic),
     }, adapterConfig, options);
 
     return a.Subscribe(subscriberConfig);

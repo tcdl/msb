@@ -1,6 +1,6 @@
 import {expect} from "chai";
-import {Requester} from "../../lib/requester";
 import request from "../../lib/request";
+import {Requester} from "../../lib/requester";
 
 const simple = require("simple-mock");
 
@@ -17,7 +17,7 @@ describe("request()", function () {
 
   describe("with only a topic", function () {
     beforeEach(function (done) {
-      (<any>Requester.prototype.publish).callFn(function () {
+      (<any> Requester.prototype.publish).callFn(function () {
         return this;
       });
       done();
@@ -25,7 +25,7 @@ describe("request()", function () {
 
     it("calls back on end with a response", function (done) {
       const requester = request("my:topic", {
-        my: "payload"
+        my: "payload",
       }, (err, responsePayload, responseMessage) => {
         if (err) return done(err);
 
@@ -44,7 +44,7 @@ describe("request()", function () {
 
     it("calls back on error", function (done) {
       const requester = request("my:topic", {
-        my: "payload"
+        my: "payload",
       }, (err, responsePayload, responseMessage) => {
 
         expect(err instanceof Error).to.be.true;
@@ -68,9 +68,9 @@ describe("request()", function () {
         responseSchema: {type: "object"},
         channelManager: {},
         waitForResponses: 5,
-        waitForResponsesMs: 5000
+        waitForResponsesMs: 5000,
       };
-      (<any>Requester.prototype.publish).callFn(function () {
+      (<any> Requester.prototype.publish).callFn(function () {
         return this;
       });
       done();
@@ -80,7 +80,7 @@ describe("request()", function () {
       const mockPayload = {};
 
       const requester = request(config, {
-        my: "payload"
+        my: "payload",
       }, (err, responsePayload, responseMessage) => {
         if (err) return done(err);
 
@@ -100,7 +100,7 @@ describe("request()", function () {
 
     it("calls back on validation error", function (done) {
       const requester = request(config, {
-        my: "payload"
+        my: "payload",
       }, (err, responsePayload, responseMessage) => {
 
         expect(err instanceof Error).to.be.true;

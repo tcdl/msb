@@ -1,12 +1,12 @@
-import {
-  BrokerAdapter,
-  BrokerPublisherAdapterFactory,
-  BrokerSubscriberAdapter,
-  BrokerPublisherAdapter
-} from "./adapter";
 import {EventEmitter} from "events";
 import {BrokerConfig, LocalConfig} from "../config";
 import {Message} from "../messageFactory";
+import {
+  BrokerAdapter,
+  BrokerPublisherAdapter,
+  BrokerPublisherAdapterFactory,
+  BrokerSubscriberAdapter,
+} from "./adapter";
 
 class LocalBrokerAdapter implements BrokerAdapter {
   localBus = new EventEmitter();
@@ -24,9 +24,9 @@ class LocalBrokerAdapter implements BrokerAdapter {
               (cb || _noop)();
             });
           },
-          close: _noop
+          close: _noop,
         };
-      }
+      },
     };
   }
 
@@ -41,7 +41,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
       }
     }
 
-    this.localBus.on((<LocalConfig>config).channel, onMessage);
+    this.localBus.on((<LocalConfig> config).channel, onMessage);
 
     return Object.create(channel, {
       close: (): void => {
@@ -49,7 +49,7 @@ class LocalBrokerAdapter implements BrokerAdapter {
       },
       onceConsuming: _noop,
       confirmProcessedMessage: _noop,
-      rejectMessage: _noop
+      rejectMessage: _noop,
     });
   }
 

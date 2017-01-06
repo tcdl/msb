@@ -17,7 +17,7 @@ describe("messageFactory", function () {
         id: "123",
         correlationId: "123",
         tags: ["tag"],
-        topics: {to: "to"}
+        topics: {to: "to"},
       };
       meta = messageFactory.createMeta(messageConfig);
       done();

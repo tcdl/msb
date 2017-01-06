@@ -1,4 +1,4 @@
-import {validateMultiple, ValidationError, MultiResult, JsonSchema} from "tv4";
+import {JsonSchema, MultiResult, validateMultiple, ValidationError} from "tv4";
 import {Message} from "./messageFactory";
 
 class SchemaValidationError extends Error {
@@ -9,7 +9,7 @@ class SchemaValidationError extends Error {
     errors: ValidationError[],
     missing: string[],
     messageId?: string,
-    topic?: string
+    topic?: string,
   };
 
   constructor(result: MultiResult, msbMessage: Message) {
@@ -19,7 +19,7 @@ class SchemaValidationError extends Error {
     this.statusCode = 422;
     this.details = {
       errors: result.errors,
-      missing: result.missing
+      missing: result.missing,
     };
 
     if (typeof msbMessage === "object") {
@@ -39,8 +39,8 @@ class SchemaValidationError extends Error {
       type: this.name,
       details: {
         errors: this.flatErrorDetails(this.details.errors, []),
-        missing: this.details.missing
-      }
+        missing: this.details.missing,
+      },
     };
   }
 
@@ -54,7 +54,7 @@ class SchemaValidationError extends Error {
         message: error.message,
         //params: error.params,
         dataPath: error.dataPath,
-        schemaPath: error.schemaPath
+        schemaPath: error.schemaPath,
       });
       if (error.subErrors) {
         this.flatErrorDetails(error.subErrors, arr);

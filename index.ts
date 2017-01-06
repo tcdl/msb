@@ -20,4 +20,3 @@ try {
   require("msb-loggly");
 } catch (e) {
 }
-

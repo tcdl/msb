@@ -1,5 +1,5 @@
-import * as messageFactory from "./messageFactory";
 import {Collector} from "./collector";
+import * as messageFactory from "./messageFactory";
 
 export class Requester extends Collector {
   meta: messageFactory.MessageMeta;

@@ -4,9 +4,9 @@ export = {
     payload: {
       type: "object",
       properties: {
-        body: { type: "object" }
+        body: { type: "object" },
       },
-      required: ["body"]
-    }
-  }
+      required: ["body"],
+    },
+  },
 };

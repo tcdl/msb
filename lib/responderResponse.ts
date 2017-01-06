@@ -65,7 +65,7 @@ export class ResponderResponse {
 
     const payload: any = {
       statusCode: this.statusCode,
-      body: null
+      body: null,
     };
 
     if (this._header) {
