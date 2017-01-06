@@ -1,7 +1,7 @@
 # Middleware with forward
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node \
+$ node \
 example/util/start \
 example/middleware/pub \
 example/middleware/sub \

@@ -32,7 +32,7 @@ You can test this with more broadcasters and more consumers.
 ## Broadcaster (x1) + Deliver Once (x2)
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node \
+$ node \
 example/util/start \
 example/pubsub/deliverOnce \
 example/pubsub/deliverOnce \
@@ -59,13 +59,13 @@ You can test this with more broadcasters and more consumers.
 ## Broadcaster (x1) + Deliver Once Queued (x1)
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node example/pubsub/deliverOnceQueued
+$ node example/pubsub/deliverOnceQueued
 ```
 
 In a separate terminal session, start:
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node example/pubsub/broadcaster
+$ node example/pubsub/broadcaster
 ```
 
 If you now stop and start your consumer, you should see that messages that were published while it was offline should show up as soon as it connects again, e.g.
@@ -77,7 +77,7 @@ deliverOnceQueued:2
 deliverOnceQueued:3
 deliverOnceQueued:4
 ^C%
-$ MSB_BROKER_ADAPTER=amqp node example/pubsub/deliverOnceQueued
+$ node example/pubsub/deliverOnceQueued
 deliverOnceQueued:5
 deliverOnceQueued:6
 deliverOnceQueued:7
@@ -90,7 +90,7 @@ Add more consumers in different terminal sessions and vary their numbers to see 
 ## Combined
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node \
+$ node \
 example/util/start \
 example/pubsub/deliverAll \
 example/pubsub/deliverAll \
@@ -129,7 +129,7 @@ Try starting up additonal broadcasters and consumers in separate terminal sessio
 Start some consumers on AMQP:
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node \
+$ node \
 example/util/start \
 example/pubsub/deliverAll \
 example/pubsub/deliverOnceQueued
@@ -174,7 +174,7 @@ deliverAll:33
 ## Broker Confirm/Reject
 
 ```
-$ MSB_BROKER_ADAPTER=amqp node \
+$ node \
 example/util/start \
 example/pubsub/deliverConfirmReject \
 example/pubsub/broadcaster

@@ -6,7 +6,7 @@ example/util/start \
 example/routingKey/pub \
 example/routingKey/subAll \
 example/routingKey/subEven \
-example/routingKey/subOdd \
+example/routingKey/subOdd
 ```
 
 You should get an output like this, where for every pub there should be middleware/resend/sub:

@@ -19,12 +19,13 @@ function sendRequest() {
     }
   };
 
-  var requester = msb.Requester({
+  var requester = new msb.Requester({
     namespace: 'example:topic',
     waitForResponses: 1,
     waitForResponsesMs: 1000, // a.k.a. responseTimeout
     waitForAcksMs: 500
-  })
+  });
+  requester
   .on('payload', function(payload, _fullMessage) {
     console.log('<-requestMulti:' + z + ':' + payload.body.doc.i);
   })
