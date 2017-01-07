@@ -47,6 +47,9 @@ export class Responder {
     return emitter;
   };
 
+  /**
+   * @deprecated since v2.0. Use createEmitter() instead
+   */
   static createServer(config: any): ResponderServer {
     return new ResponderServer(config);
   };

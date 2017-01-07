@@ -81,7 +81,7 @@ export function createAck(config?: MessageConfig): MessageAck {
 }
 
 export function createMeta(config?: MessageConfig, originalMessage?: Message): MessageMeta {
-  if (originalMessage === undefined) originalMessage = contextMessage;
+  if (originalMessage === undefined) originalMessage = contextMessage; // TODO: obsolete?
 
   return {
     ttl: (config && config.ttl) || null,

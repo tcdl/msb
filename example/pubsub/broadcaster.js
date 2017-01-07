@@ -1,34 +1,19 @@
-'use strict';
 /**
  * This broadcaster will emit 10 messages per second
  */
 var msb = require('../..');
-var messageFactory = msb.messageFactory;
-var i = 0;
+let i = 0;
 
 function sendBroadcast() {
-  var message = messageFactory.createBroadcastMessage({
-    namespace: 'test:pubsub',
-    ttl: 30000 // Optional
-  });
-  var j = i++;
 
-  message.payload = {
-    body: {
-      i: j
-    }
-  };
+  // TODO: auto-complete doesn't work
+  let publisher = new msb.Publisher.Builder('test:pubsub')
+    .withMessageConfig({ttl: 3000})
+    .withBrokerConfig({groupId: false})
+    .build();
 
-  messageFactory.completeMeta(message, message.meta);
-
-  msb
-  .channelManager
-  .findOrCreateProducer(message.topics.to)
-  .publish(message, function(err) {
-    if (err) return console.error(err);
-
-    console.log('broadcaster:' + j);
-  });
+  let payload = {body: {i: i++}};
+  publisher.publish(payload, ()=> console.log(`broadcaster: ${i}`));
 }
 
 setInterval(sendBroadcast, 100);
