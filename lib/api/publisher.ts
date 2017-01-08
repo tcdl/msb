@@ -1,9 +1,9 @@
-import * as messageFactory from "./messageFactory";
-import {MessageConfig} from "./messageFactory";
-import {MessagePayload} from "./messageFactory";
-import {BrokerConfig} from "./config";
+import * as messageFactory from "../messageFactory";
+import {MessageConfig} from "../messageFactory";
+import {MessagePayload} from "../messageFactory";
+import {BrokerConfig} from "../config";
 // TODO: how to import via typescript
-const channelManager = require("./channelManager").default;
+const channelManager = require("./../channelManager").default;
 
 export namespace Publisher {
 
