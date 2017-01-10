@@ -1,3 +1,4 @@
+import {ConfigAMQP, Config, BrokerConfig} from "../config";
 const channelManager = require("./../channelManager").default;
 
 export namespace Subscriber {
@@ -5,9 +6,13 @@ export namespace Subscriber {
   import EventEmitter = NodeJS.EventEmitter;
   export class Builder {
     private _topic: string;
+    private _prefetchCount: number = 1;
     private _autoConfirm: boolean = true;
     private _durable: boolean = false;
     private _groupId: any = false;
+
+    private _bindingKeys?: string[]; // TODO: combine with exchangeType?
+    private _exchangeType?: string = 'fanout'; // TODO: AMQP specific
 
     constructor(topic: string) {
       this._topic = topic;
@@ -15,6 +20,16 @@ export namespace Subscriber {
 
     get topic(): string {
       return this._topic;
+    }
+
+
+    get prefetchCount(): number {
+      return this._prefetchCount;
+    }
+
+    withPrefetchCount(value: number): Builder {
+      this._prefetchCount = value;
+      return this;
     }
 
     get autoConfirm(): boolean {
@@ -44,35 +59,51 @@ export namespace Subscriber {
       return this;
     }
 
-    subscribe(): EventEmitter{
+
+    get bindingKeys(): string[] {
+      return this._bindingKeys;
+    }
+
+    withBindingKeys(value: string[]): Builder {
+      this._bindingKeys = value;
+      return this;
+    }
+
+    get exchangeType(): string {
+      return this._exchangeType;
+    }
+
+    withExchangeType(value: string): Builder {
+      this._exchangeType = value;
+      return this;
+    }
+
+    subscribe(): EventEmitter {
       return new Client(this).subscribe();
     }
 
   }
 
   export class Client {
-    private _topic: string;
-    private _autoConfirm: boolean;
-    private _durable: boolean;
-    private _groupId: any;
+    private topic: string;
+    private brokerConfig: BrokerConfig;
 
     constructor(builder: Builder) {
-      this._topic = builder.topic;
-      this._autoConfirm = builder.autoConfirm;
-      this._durable = builder.durable;
-      this._groupId = builder.groupId;
+      this.topic = builder.topic;
+
+      this.brokerConfig = {
+        prefetchCount: builder.prefetchCount,
+        autoConfirm: builder.autoConfirm,
+        durable: builder.durable,
+        groupId: builder.groupId,
+        bindingKeys: builder.bindingKeys,
+        type: builder.exchangeType
+      };
     }
 
     subscribe(): EventEmitter {
-
-      let options = {
-        autoConfirm: this._autoConfirm,
-        durable: this._durable,
-        groupId: this._groupId
-      };
-
       return channelManager
-        .findOrCreateConsumer(this._topic, options);
+        .findOrCreateConsumer(this.topic, this.brokerConfig);
     }
 
 

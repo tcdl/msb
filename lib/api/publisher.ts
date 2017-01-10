@@ -9,9 +9,11 @@ export namespace Publisher {
 
   export class Builder {
     private _topic: string;
-    private _routingKey?: string;
-    private _messageConfig?: MessageConfig; // ttl, tags
-    private _brokerConfig?: BrokerConfig; // groupId, durable
+    private _ttl?: number;
+    private _tags?: string[];
+
+    private _routingKey?: string; // TODO: combine with exchangeType?
+    private _exchangeType?: string = 'fanout'; // TODO: AMQP specific
 
     constructor(topic: string) {
       this._topic = topic;
@@ -20,6 +22,25 @@ export namespace Publisher {
     get topic(): string {
       return this._topic;
     }
+
+    get ttl(): number {
+      return this._ttl;
+    }
+
+    withTtl(value: number): Builder {
+      this._ttl = value;
+      return this;
+    }
+
+    get tags(): string[] {
+      return this._tags;
+    }
+
+    withTags(value: string[]): Builder {
+      this._tags = value;
+      return this;
+    }
+
 
     get routingKey(): string {
       return this._routingKey;
@@ -30,21 +51,12 @@ export namespace Publisher {
       return this;
     }
 
-    get messageConfig(): MessageConfig {
-      return this._messageConfig;
+    get exchangeType(): string {
+      return this._exchangeType;
     }
 
-    withMessageConfig(value: MessageConfig): Builder {
-      this._messageConfig = value;
-      return this;
-    }
-
-    get brokerConfig(): BrokerConfig {
-      return this._brokerConfig;
-    }
-
-    withBrokerConfig(value: BrokerConfig): Builder {
-      this._brokerConfig = value;
+    withExchangeType(value: string): Builder {
+      this._exchangeType = value;
       return this;
     }
 
@@ -56,34 +68,39 @@ export namespace Publisher {
 
   export class Client {
     private topic: string;
-    private routingKey?: string;
-    private messageConfig?: MessageConfig; // ttl, tags
-    private brokerConfig?: BrokerConfig; // groupId, durable
-
-    private message: messageFactory.Message;
+    private messageConfig?: MessageConfig;
+    private brokerConfig?: BrokerConfig;
 
     constructor(builder: Builder) {
       this.topic = builder.topic;
-      this.routingKey = builder.routingKey;
-      this.messageConfig = builder.messageConfig;
-      this.brokerConfig = builder.brokerConfig;
+
+      this.messageConfig = {
+        namespace: builder.topic,
+        routingKey: builder.routingKey,
+        ttl: builder.ttl,
+        tags: builder.tags
+      };
+
+      this.brokerConfig = {
+        type: builder.exchangeType
+      }
     }
 
-    // TODO: autoConfirm?
     // TODO: cb is optional
     publish(payload: MessagePayload, cb?: any) {
-      // TODO: take out namespace from MessageConfig
+
+      // TODO: take out namespace from MessageConfig and pass it explicitly
       this.messageConfig.namespace = this.topic;
-      this.message = messageFactory.createBroadcastMessage(this.messageConfig);
+      let message = messageFactory.createBroadcastMessage(this.messageConfig);
       // TODO: if meta is null, get it from the message
       // TODO: we need a method which creates and completes meta at once
-      messageFactory.completeMeta(this.message, this.message.meta);
+      messageFactory.completeMeta(message, message.meta);
 
-      this.message.payload = payload;
+      message.payload = payload;
 
       channelManager
         .findOrCreateProducer(this.topic, this.brokerConfig, null)
-        .publish(this.message, function (err) {
+        .publish(message, function (err) {
           if (err) return cb(err);
           return cb();
         });

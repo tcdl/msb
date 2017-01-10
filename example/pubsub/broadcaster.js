@@ -10,7 +10,7 @@ function sendBroadcast() {
 
   // TODO: auto-complete doesn't work
   msb.publisher('test:pubsub')
-    .withMessageConfig({ttl: 30000})
+    .withTtl(30000)
     .publish(payload, ()=> console.log(`broadcaster: ${i}`));
 }
 
