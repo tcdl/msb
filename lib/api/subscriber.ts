@@ -44,8 +44,8 @@ export namespace Subscriber {
       return this;
     }
 
-    build(): Client {
-      return new Client(this);
+    subscribe(): EventEmitter{
+      return new Client(this).subscribe();
     }
 
   }

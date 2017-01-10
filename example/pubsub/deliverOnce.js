@@ -4,11 +4,9 @@
  */
 var msb = require('../..');
 
-const subscriber = msb.subscriber('test:pubsub')
+msb.subscriber('test:pubsub')
   .withGroupId('example-string')
-  .build();
-
-subscriber.subscribe()
+  .subscribe()
   .on('message', function (message) {
     console.log(`deliverOnce: ${message.payload.body.i}`);
   })

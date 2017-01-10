@@ -48,8 +48,8 @@ export namespace Publisher {
       return this;
     }
 
-    build(): Client {
-      return new Client(this);
+    publish(payload: MessagePayload, cb?: any) {
+      new Client(this).publish(payload, cb);
     }
 
   }
