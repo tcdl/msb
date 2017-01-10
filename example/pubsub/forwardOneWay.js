@@ -1,5 +1,8 @@
 'use strict';
 /**
+ *
+ * TODO: can we deprecate this one?
+ *
  * This will listen on the default adapter and forward to another adapter
  */
 var msb = require('../..');
