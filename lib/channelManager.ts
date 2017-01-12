@@ -155,7 +155,9 @@ channelManager.create = function () {
       }
     });
 
-    channel.raw.on("error", channel.emit.bind(channel, "error"));
+    channel.raw.on("error", channel.emit.bind(channel, "error")); // TODO: wtf?
+
+    // channel.raw.on("consuming", channel.emit("consuming"));
 
     channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, topic);
 

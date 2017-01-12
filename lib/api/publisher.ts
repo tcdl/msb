@@ -60,7 +60,7 @@ export namespace Publisher {
       return this;
     }
 
-    publish(payload: MessagePayload, cb?: any) {
+    publish(payload: MessagePayload, cb?: Function) {
       new Client(this).publish(payload, cb);
     }
 
@@ -87,7 +87,8 @@ export namespace Publisher {
     }
 
     // TODO: cb is optional
-    publish(payload: MessagePayload, cb?: any) {
+    publish(payload: MessagePayload, cb?: Function) {
+      const callback = cb || function(){}; // do nothing
 
       // TODO: take out namespace from MessageConfig and pass it explicitly
       this.messageConfig.namespace = this.topic;
@@ -101,8 +102,8 @@ export namespace Publisher {
       channelManager
         .findOrCreateProducer(this.topic, this.brokerConfig, null)
         .publish(message, function (err) {
-          if (err) return cb(err);
-          return cb();
+          if (err) return callback(err);
+          return callback();
         });
     }
 

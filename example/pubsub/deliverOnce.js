@@ -6,7 +6,7 @@ var msb = require('../..');
 
 msb.subscriber('test:pubsub')
   .withGroupId('example-string')
-  .subscribe()
+  .createEmitter()
   .on('message', function (message) {
     console.log(`deliverOnce: ${message.payload.body.i}`);
   })

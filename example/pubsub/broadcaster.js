@@ -8,7 +8,6 @@ function sendBroadcast() {
 
   let payload = {body: {i: i++}};
 
-  // TODO: auto-complete doesn't work
   msb.publisher('test:pubsub')
     .withTtl(30000)
     .publish(payload, ()=> console.log(`broadcaster: ${i}`));

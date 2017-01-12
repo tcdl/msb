@@ -1,4 +1,4 @@
-import {ConfigAMQP, Config, BrokerConfig} from "../config";
+import {BrokerConfig} from "../config";
 const channelManager = require("./../channelManager").default;
 
 export namespace Subscriber {
@@ -78,8 +78,8 @@ export namespace Subscriber {
       return this;
     }
 
-    subscribe(): EventEmitter {
-      return new Client(this).subscribe();
+    createEmitter(): EventEmitter {
+      return new Client(this).createEmitter();
     }
 
   }
@@ -101,7 +101,7 @@ export namespace Subscriber {
       };
     }
 
-    subscribe(): EventEmitter {
+    createEmitter(): EventEmitter {
       return channelManager
         .findOrCreateConsumer(this.topic, this.brokerConfig);
     }

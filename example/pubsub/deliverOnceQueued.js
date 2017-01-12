@@ -7,7 +7,7 @@ var msb = require('../..');
 msb.subscriber('test:pubsub')
   .withGroupId('example-string-alt')
   .withDurable(true)
-  .subscribe()
+  .createEmitter()
   .on('message', function (message) {
     console.log(`deliverOnceQueued: ${message.payload.body.i}`);
   })

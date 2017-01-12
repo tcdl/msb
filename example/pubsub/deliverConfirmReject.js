@@ -20,6 +20,6 @@ const onMessage = function (message, channel) {
 
 msb.subscriber('test:pubsub')
   .withAutoConfirm(false)
-  .subscribe()
+  .createEmitter()
   .on('message', onMessage)
   .on('error', console.error);
