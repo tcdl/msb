@@ -1,5 +1,5 @@
-import {Publisher} from "./publisher";
-import {Subscriber} from "./subscriber";
+import * as publisherModule from "./publisher";
+import * as subscriberModule from "./subscriber";
 
 /**
  * Creates Publisher.Builder class
@@ -7,7 +7,7 @@ import {Subscriber} from "./subscriber";
  * @returns {Publisher.Builder}
  */
 export function publisher(topic) {
-  return new Publisher.Builder(topic);
+  return new publisherModule.Builder(topic);
 }
 
 /**
@@ -16,5 +16,5 @@ export function publisher(topic) {
  * @returns {Subscriber.Builder}
  */
 export function subscriber(topic) {
-  return new Subscriber.Builder(topic);
+  return new subscriberModule.Builder(topic);
 }

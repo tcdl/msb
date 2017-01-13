@@ -34,7 +34,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
 
   onceConsuming(cb: Function): void {
     if (this.consumer && this.consumer.consumerState === "open") return cb();
-    this.once("consuming", cb); // TODO: does it wok?
+    this.once("consuming", cb); // TODO: rename event to onReady or ready
   }
 
   confirmProcessedMessage(message: Message, _safe: boolean): void {

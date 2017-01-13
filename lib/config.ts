@@ -22,10 +22,10 @@ export interface ConfigAMQP extends BrokerConfig {
   heartbeat?: number;
   channel?: string; // todo: this property should not be passed via broker config
 
-  // TODO: review
+  // TODO: review and take out into a separate config
   type?: amqpExchangeType; // consumer and producer specific
   bindingKeys?: string[]; // consumer specific
-  groupId?: string;// consumer specific
+  groupId?: string; // consumer specific
   durable?: boolean; // consumer specific
   autoConfirm?: boolean; // consumer specific
   prefetchCount?: number; // consumer specific
