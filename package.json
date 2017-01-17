@@ -44,6 +44,7 @@
     "istanbul": "1.1.0-alpha.1",
     "mocha": "3.2.0",
     "simple-mock": "0.7.3",
+    "sinon": "^1.17.7",
     "tslint": "4.4.2",
     "typescript": "2.1.5"
   },
