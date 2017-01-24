@@ -60,82 +60,78 @@ Every message-broker pattern in this module is based on one of these publish/sub
 
 #### Broadcast
 
-The broadcaster should ensure their messages are formatted according to the [envelope schema](schema.js). A time-to-live (ttl) can be optionally provided to ensure messages cannot be delivered after this amount of milliseconds. (This value is sensitive to synchronisation of clocks between producers and consumers.) The payload should be provided as a JSON-serializable object.
+It's pretty easy to get started with publishing messages. You just need to specify a topic and provide a message.
 
 ```js
-var message = messageFactory.createBroadcastMessage({
-  namespace: 'test:pubsub',
-  ttl: 30000 // Optional
-})
-
-message.payload = { /* ... */ }
+msb.publisher('test:pubsub')
+  .publish(message);
 ```
 
-The implementer should decide how they want to handle messages that cannot be delivered to the message broker, i.e. where an error is passed back.
+Publisher wraps the message internally according to the [envelope schema](schema.js).
+
+There is a set of optional parameters which could be useful for you. You can define them using the following methods:
+ - `.withTtl()` - a time-to-live to ensure messages cannot be delivered after this amount of milliseconds. This value is sensitive to synchronisation of clocks between producers and consumers.
+ - `.withTags()` - a list of tags for extra information
+ - `.withExchangeType()` - allows to specify exchange type (RabbitMQ specific)
+ - `.withRoutingKey()` - allows to specify routing key, should be used in conjunction with exchange type `topic` (RabbitMQ specific)
+
+By providing a callback you can handle messages that cannot be delivered to the message broker, i.e. where an error is passed back.
+
+Here is the ultimate example that contains all available options:
 
 ```js
-msb
-.channelManager
-.findOrCreateProducer('test:pubsub')
-.publish(message, function(err) {
-  if (err) return debug(err)
+msb.publisher('test:pubsub')
+  .withTtl(30000)
+  .withTags(['black','red'])
+  .withExchangeType('topic')
+  .withRoutingKey('*.crazy.*')
+  .publish(payload, (err) => {
+     if (err) return console.error(err);
 
-  //...
-})
+     //...
+   });
 ```
 
 #### Deliver to All
 
-All listeners will receive all messages published to this topic, as long as they are online at the time the message is published.
+This is an implementation of [Publish-Subscribe Channel pattern](http://www.enterpriseintegrationpatterns.com/patterns/messaging/PublishSubscribeChannel.html)
+All listeners will receive all messages published to this topic, as long as they are online at the time the message is published
 
 ```js
-msb
-.channelManager
-.findOrCreateConsumer('test:pubsub', { groupId: false })
-.on('message', function(message) {
-  //...
-})
-.on('error', debug)
+msb.subscriber('test:pubsub')
+  .createEmitter()
+  .on('message', (message)=> console.log(message));
+  .on('error', console.error);
 ```
 
 #### Deliver Once (AMQP Only)
 
+This is an implementation of [Competing Consumers pattern](http://www.enterpriseintegrationpatterns.com/patterns/messaging/CompetingConsumers.html)
 Only one listener will receive each message published to the specified topic.
 
-##### Online Listeners Only
-
-Listeners will only receive messages published while they are online.
-
 ```js
-msb
-.channelManager
-.findOrCreateConsumer('test:pubsub', {
-  groupId: 'example-string'
-})
-.on('message', function(message) {
-  //...
-})
-.on('error', debug)
+msb.subscriber('test:pubsub')
+  .withGroupId('example-string')
+  .createEmitter()
+  .on('message', (message)=> console.log(message));
+  .on('error', console.error);
 ```
 
-##### Queued While Offline
-
-Listeners will also receive messages published while they were offline, queued up in the message broker. Messages that has a time-to-live (ttl) specified will not be delivered after this time has been exceeded.
-
-Note that messages will only be queued from the first time this listener has been instantiated.
+It is possible that listeners receive messages published while they were offline, queued up in the message broker.
+In order to achieve this you need to define a queue as a durable using method `.withDurable(true)`
 
 ```js
-msb
-.channelManager
-.findOrCreateConsumer('test:pubsub', {
-  groupId: 'example-string',
-  durable: true
-})
-.on('message', function(message) {
-  //...
-})
-.on('error', debug)
+msb.subscriber('test:pubsub')
+  .withGroupId('example-string')
+  .withDurable(true)
+  .createEmitter()
+  .on('message', (message)=> console.log(message));
+  .on('error', console.error);
 ```
+
+Notes:
+- Messages that has a time-to-live (ttl) specified will not be delivered after this time has been exceeded.
+- Messages will only be queued from the first time this listener has been instantiated.
 
 ### Request/Response
 
