@@ -23,7 +23,7 @@
     "test:unit": "NODE_ENV=test mocha ./test/unit/"
   },
   "dependencies": {
-    "amqp-coffee": "0.1.29",
+    "amqp-coffee": "0.1.30",
     "async": "2.1.4",
     "debug": "2.6.0",
     "lodash": "4.17.4",
