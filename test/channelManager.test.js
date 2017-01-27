@@ -339,4 +339,65 @@ describe('channelManager', function() {
       });
     });
   });
+
+  describe('After close', function() {
+    it('should recreate producer', function(done) {
+      var mockPublisher = {};
+
+      simple.mock(queue, 'Publish').returnWith(mockPublisher);
+
+      simple
+        .mock(mockPublisher, 'channel')
+        .returnWith({})
+        .returnWith({})
+        .returnWith(null);
+
+      var producer1a = channelManager.findOrCreateProducer('prod1:1');
+      var producer1b = channelManager.findOrCreateProducer('prod1:1');
+      expect(producer1a).equals(producer1b);
+
+      channelManager.close();
+
+      var producer2 = channelManager.findOrCreateProducer('prod1:1');
+
+      expect(producer2).to.not.equal(producer1a);
+      expect(producer2).to.not.equal(producer1b);
+      done();
+    });
+
+    it('should recreate consumer', function(done) {
+      var mockSubscriber = {};
+
+      simple.mock(mockSubscriber, 'setMaxListeners');
+      simple.mock(mockSubscriber, 'on');
+
+      simple
+        .mock(queue, 'Subscribe')
+        .returnWith(mockSubscriber)
+        .returnWith(mockSubscriber)
+        .returnWith(null);
+
+      var consumer1a = channelManager.findOrCreateConsumer('con1:1');
+
+      expect(queue.Subscribe.called).to.be.true;
+      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+        channel: 'con1:1',
+        host: 'mock.host',
+        port: '99999'
+      });
+
+      var consumer1b = channelManager.findOrCreateConsumer('con1:1');
+
+      expect(consumer1a).equals(consumer1b);
+
+      channelManager.close();
+
+      var consumer2 = channelManager.findOrCreateConsumer('con1:1');
+
+      expect(consumer2).to.not.equal(consumer1a);
+      expect(consumer2).to.not.equal(consumer1a);
+
+      done();
+    });
+  });
 });
