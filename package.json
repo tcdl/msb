@@ -1,46 +1,44 @@
 {
   "name": "msb",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
-  "typings": "msb.d.ts",
-  "scripts": {
-    "test": "npm run cs && npm run test-no-cs",
-    "test-no-cs": "NODE_ENV=test mocha",
-    "cs": "jscs **/*.js",
-    "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages",
-    "coveralls": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "prepush": "npm test"
+  "bin": {
+    "msb": "./bin/msb",
+    "msb-save": "./bin/msb-save"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/tcdl/msb.git"
   },
-  "bin": {
-    "msb": "./bin/msb",
-    "msb-save": "./bin/msb-save"
-  },
-  "devDependencies": {
-    "chai": "^3.5.0",
-    "coveralls": "^2.11.14",
-    "istanbul": "^0.4.5",
-    "jscs": "^3.0.2",
-    "mocha": "^3.1.1",
-    "msb-test-utils": "^2.0.0",
-    "simple-mock": "^0"
+  "scripts": {
+    "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages",
+    "coveralls": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "cs": "jscs **/*.js",
+    "prepush": "npm test",
+    "test": "npm run cs && npm run test-no-cs",
+    "test-no-cs": "NODE_ENV=test mocha"
   },
   "dependencies": {
-    "amqp-coffee": "^0.1.25",
-    "async": "^2.0.0",
-    "cli-table": "^0.3.1",
-    "debug": "^2.1.1",
-    "ip": "^1.1.2",
-    "lodash": "^4.6.1",
-    "lodash.get": "^4.1.2",
-    "minimist": "^1.1.1",
+    "amqp-coffee": "^0.1.30",
+    "debug": "^2.6.0",
+    "ip": "^1.1.4",
+    "lodash": "^4.17.4",
+    "lodash.get": "^4.4.2",
+    "minimist": "^1.2.0",
     "split": "^1.0.0",
-    "tv4": "^1.1.9",
-    "weak-map": "^1.0.5"
-  }
+    "tv4": "^1.2.7"
+  },
+  "devDependencies": {
+    "async": "^2.1.4",
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.15",
+    "istanbul": "^0.4.5",
+    "jscs": "^3.0.7",
+    "mocha": "^3.2.0",
+    "msb-test-utils": "^2.0.0",
+    "simple-mock": "^0.7.3"
+  },
+  "typings": "msb.d.ts"
 }
