@@ -106,6 +106,7 @@ channelManager.create = function () {
       autoConfirm = adapterConfig && adapterConfig.autoConfirm;
     }
 
+    // TODO: is it ok to add custom methods to EventEmitter?
     channel.onceConsuming = (channel.raw.onceConsuming) ? function (cb) {
       channel.raw.onceConsuming(cb);
       return channel;
@@ -128,7 +129,9 @@ channelManager.create = function () {
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, topic);
 
       if (config.autoMessageContext) messageFactory.startContext(message);
-      channel.emit("message", message);
+
+      // TODO: emit custom object rather than instance of EventEmitter
+      channel.emit("message", message, channel);
       if (config.autoMessageContext) messageFactory.endContext();
 
       if (autoConfirm) channel.confirmProcessedMessage(message, true);
@@ -152,7 +155,9 @@ channelManager.create = function () {
       }
     });
 
-    channel.raw.on("error", channel.emit.bind(channel, "error"));
+    channel.raw.on("error", channel.emit.bind(channel, "error")); // TODO: wtf?
+
+    // channel.raw.on("consuming", channel.emit("consuming"));
 
     channelManager.emit(channelManager.CONSUMER_NEW_TOPIC_EVENT, topic);
 

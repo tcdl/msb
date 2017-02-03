@@ -8,6 +8,8 @@ after_success:
   - npm run coveralls
 services:
   - rabbitmq
+before_deploy:
+  - npm run build
 deploy:
   provider: npm
   email: integration-dev@thomascookonline.com

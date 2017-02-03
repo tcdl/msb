@@ -14,12 +14,13 @@
   },
   "scripts": {
     "build": "tsc",
-    "coveralls": "tsc --sourceMap && NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "coveralls": "NODE_ENV=test nyc mocha | coveralls",
     "cs": "tslint --project tsconfig.json -t stylish",
     "fix:cs": "tslint --project tsconfig.json -t stylish --fix",
-    "test": "npm run cs && npm run build && npm run test:unit && npm run test:functional && npm run test:integration",
+    "test": "npm run cs && npm run test:types && npm run test:unit && npm run test:functional && npm run test:integration",
     "test:functional": "NODE_ENV=test mocha ./test/functional/",
     "test:integration": "NODE_ENV=test mocha ./test/integration/",
+    "test:types": "tsc --noEmit",
     "test:unit": "NODE_ENV=test mocha ./test/unit/"
   },
   "dependencies": {
@@ -37,16 +38,27 @@
     "@types/core-js": "0.9.35",
     "@types/mocha": "2.2.35",
     "@types/node": "6.0.46",
+    "@types/sinon": "^1.16.34",
     "@types/tv4": "1.2.28",
     "chai": "3.5.0",
     "coveralls": "2.11.15",
-    "istanbul": "1.1.0-alpha.1",
     "mocha": "3.2.0",
+    "nyc": "^10.1.2",
     "simple-mock": "0.7.3",
+    "sinon": "^1.17.7",
+    "ts-node": "^2.0.0",
     "tslint": "4.4.2",
     "typescript": "2.1.5"
   },
   "engines": {
     "node": ">=4"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "text-lcov"
+    ]
   }
 }

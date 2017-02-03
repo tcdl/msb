@@ -1,34 +1,16 @@
-'use strict';
 /**
- * This broadcaster will emit 10 messages per second
+ * This broadcaster will emit 2 messages per second
  */
 var msb = require('../..');
-var messageFactory = msb.messageFactory;
-var i = 0;
+let i = 0;
 
 function sendBroadcast() {
-  var message = messageFactory.createBroadcastMessage({
-    namespace: 'test:pubsub',
-    ttl: 30000 // Optional
-  });
-  var j = i++;
 
-  message.payload = {
-    body: {
-      i: j
-    }
-  };
+  let payload = {body: {i: i++}};
 
-  messageFactory.completeMeta(message, message.meta);
-
-  msb
-  .channelManager
-  .findOrCreateProducer(message.topics.to)
-  .publish(message, function(err) {
-    if (err) return console.error(err);
-
-    console.log('broadcaster:' + j);
-  });
+  msb.publisher('test:pubsub')
+    .withTtl(30000)
+    .publish(payload, ()=> console.log(`broadcaster: ${i}`));
 }
 
-setInterval(sendBroadcast, 100);
+setInterval(sendBroadcast, 500);

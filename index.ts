@@ -1,3 +1,5 @@
+
+// TODO: don't export internal classes
 const channelManagerObject = require("./lib/channelManager");
 export const createChannelManager = channelManagerObject.create;
 export const channelManager = channelManagerObject.default;
@@ -11,6 +13,10 @@ export let validateWithSchema = require("./lib/validateWithSchema");
 export let serviceDetails = require("./lib/support/serviceDetails");
 export let logger = require("./lib/support/logger");
 export let plugins = {};
+
+// export API functions
+export {publisher} from "./lib/api/utils";
+export {subscriber} from "./lib/api/utils";
 
 try {
   require("msb-newrelic");

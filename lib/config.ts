@@ -19,14 +19,16 @@ export interface ConfigAMQP extends BrokerConfig {
   password?: string;
   vhost?: string;
   ssl?: boolean;
-  groupId?: string;
-  durable?: boolean;
   heartbeat?: number;
-  prefetchCount?: number;
-  autoConfirm?: boolean;
-  type?: amqpExchangeType;
   channel?: string; // todo: this property should not be passed via broker config
-  bindingKeys?: string[];
+
+  // TODO: review and take out into a separate config
+  type?: amqpExchangeType; // consumer and producer specific
+  bindingKeys?: string[]; // consumer specific
+  groupId?: string; // consumer specific
+  durable?: boolean; // consumer specific
+  autoConfirm?: boolean; // consumer specific
+  prefetchCount?: number; // consumer specific
 }
 
 export interface LocalConfig extends BrokerConfig {

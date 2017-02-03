@@ -81,7 +81,7 @@ export function createAck(config?: MessageConfig): MessageAck {
 }
 
 export function createMeta(config?: MessageConfig, originalMessage?: Message): MessageMeta {
-  if (originalMessage === undefined) originalMessage = contextMessage;
+  if (originalMessage === undefined) originalMessage = contextMessage; // TODO: obsolete?
 
   return {
     ttl: (config && config.ttl) || null,
@@ -114,6 +114,9 @@ function _createTags(config: MessageConfig, originalMessage: Message): string[] 
 export interface MessageConfig {
   ttl?: number;
   tags?: string[];
+  /**
+   * @deprecated since version 2.0
+   */
   middlewareNamespace?: string;
   namespace: string;
   routingKey?: string;

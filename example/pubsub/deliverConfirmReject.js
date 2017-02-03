@@ -4,21 +4,22 @@
  */
 var msb = require('../..');
 
-var consumer = msb
-.channelManager
-.findOrCreateConsumer('test:pubsub', {
-  autoConfirm: false
-})
-.on('message', function(message) {
+const onMessage = function (message, channel) {
   var i = message.payload.body.i;
+
   if (i % 3) {
-    console.log('deliverConfirm:' + i, '(' + process.pid + ')');
-    consumer.confirmProcessedMessage(message);
+    console.log(`deliverConfirm: ${i}`);
+    channel.confirmProcessedMessage(message);
   } else {
-    console.log('deliverReject:' + i, '(' + process.pid + ')');
-    setTimeout(function() {
-      consumer.rejectMessage(message);
+    console.log(`deliverReject: ${i}`);
+    setTimeout(function () {
+      channel.rejectMessage(message);
     }, 500);
   }
-})
-.on('error', console.error);
+};
+
+msb.subscriber('test:pubsub')
+  .withAutoConfirm(false)
+  .createEmitter()
+  .on('message', onMessage)
+  .on('error', console.error);

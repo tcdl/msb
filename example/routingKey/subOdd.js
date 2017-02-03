@@ -2,12 +2,11 @@
 /**
  * This subscriber will receive all messages published
  */
-var msb = require('../..');
+const msb = require('../..');
 
-msb
-  .channelManager
-  .findOrCreateConsumer('test:pubsub:routing-key', { type: 'topic', bindingKeys: 'odd', groupId: false})
-  .on('message', function(message) {
-    console.log('subOdd:' + message.payload.body.i);
-  })
+msb.subscriber('test:pubsub:routing-key')
+  .withExchangeType('topic')
+  .withBindingKeys(['odd'])
+  .createEmitter()
+  .on('message', (message) => console.log('subOdd:' + message.payload.body.i))
   .on('error', console.error);

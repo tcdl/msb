@@ -2,3 +2,4 @@
 --inline-diffs
 --ui=bdd
 --timeout=10000
+--compilers ts:ts-node/register

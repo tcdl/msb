@@ -4,12 +4,10 @@
  */
 var msb = require('../..');
 
-msb
-.channelManager
-.findOrCreateConsumer('test:pubsub', {
-  groupId: 'example-string'
-})
-.on('message', function(message) {
-  console.log('deliverOnce:' + message.payload.body.i, '(' + process.pid + ')');
-})
-.on('error', console.error);
+msb.subscriber('test:pubsub')
+  .withGroupId('example-string')
+  .createEmitter()
+  .on('message', function (message) {
+    console.log(`deliverOnce: ${message.payload.body.i}`);
+  })
+  .on('error', console.error);
