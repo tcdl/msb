@@ -1,0 +1,1 @@
+exports.configurationTestValue = Date.now();

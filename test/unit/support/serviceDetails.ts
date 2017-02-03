@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import {join, resolve} from "path";
-const serviceDetailsModulePath = resolve(__dirname, "../../../lib/support/serviceDetails.js");
+const serviceDetailsModulePath = resolve(__dirname, "../../../lib/support/serviceDetails.ts");
 const simple = require("simple-mock");
 
 describe("serviceDetails", function () {
