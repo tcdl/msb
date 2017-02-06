@@ -29,8 +29,8 @@ export default function (options: any, payload: MessagePayload, cb: (err: Error,
   let responsePayload: MessagePayload;
   let responseMessage: Message;
 
-  let onResponseFn = function (payload: MessagePayload, message: Message): void {
-    responsePayload = payload;
+  let onResponseFn = function (payloadInResponseFn: MessagePayload, message: Message): void {
+    responsePayload = payloadInResponseFn;
     responseMessage = message;
   };
 

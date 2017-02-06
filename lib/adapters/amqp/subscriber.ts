@@ -101,20 +101,20 @@ export class AMQPSubscriberAdapter extends EventEmitter {
       this.emitConsuming();
     };
 
-    exchange.declare((err) => {
-      if (err) return done(err);
+    exchange.declare((errInExchangeDeclare) => {
+      if (errInExchangeDeclare) return done(errInExchangeDeclare);
 
       const queueOptions = this.getQueueOptions();
       const queue = connection.queue(queueOptions);
       const bindingKeys = !config.bindingKeys ? [""] :
         _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
 
-      queue.declare(queueOptions, (err) => {
-        if (err) return done(err);
+      queue.declare(queueOptions, (errInQueueDeclare) => {
+        if (errInQueueDeclare) return done(errInQueueDeclare);
 
-        for (let index = 0; index < bindingKeys.length; ++index) {
-          queue.bind(config.channel, bindingKeys[index], (err) => {
-            if (err) return done(err);
+        for (let bindingKey of bindingKeys) {
+          queue.bind(config.channel, bindingKey, (errInQueueBind) => {
+            if (errInQueueBind) return done(errInQueueBind);
             if (this.isClosed) return; // Skip if already closed
 
             if (consumer) {

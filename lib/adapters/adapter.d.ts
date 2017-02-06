@@ -1,6 +1,6 @@
 import {EventEmitter} from "events";
-import {Message} from "../messageFactory";
 import {BrokerConfig} from "../config";
+import {Message} from "../messageFactory";
 
 interface BrokerAdapter {
   Publish(config: BrokerConfig): BrokerPublisherAdapterFactory;
