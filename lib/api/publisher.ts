@@ -72,7 +72,6 @@ export class Publisher {
     this.topic = builder.topic;
 
     this.messageConfig = {
-      namespace: builder.topic,
       routingKey: builder.routingKey,
       ttl: builder.ttl,
       tags: builder.tags,
@@ -87,12 +86,7 @@ export class Publisher {
     const callback = cb || function () {
       }; // do nothing
 
-    // TODO: take out namespace from MessageConfig and pass it explicitly
-    this.messageConfig.namespace = this.topic;
-    let message = messageFactory.createBroadcastMessage(this.messageConfig);
-    // TODO: if meta is null, get it from the message
-    // TODO: we need a method which creates and completes meta at once
-    messageFactory.completeMeta(message, message.meta);
+    let message = messageFactory.createEventMessage(this.topic, payload, this.messageConfig);
 
     message.payload = payload;
 
