@@ -12,19 +12,13 @@ describe("Responder", function () {
   describe("()", function () {
 
     it("cannot be initialized without a config", function (done) {
-
-      expect(function () {
-        new Responder(null);
-      }).to.throw();
+      expect(() => new Responder(null)).to.throw();
 
       done();
     });
 
     it("cannot be initialized without an original message", function (done) {
-
-      expect(function () {
-        new Responder({});
-      }).to.throw();
+      expect(() => new Responder({})).to.throw();
 
       done();
     });
@@ -37,7 +31,7 @@ describe("Responder", function () {
         tags: [],
         topics: {},
       };
-      new Responder({}, message);
+      new Responder({}, message); // tslint:disable-line:no-unused-new
 
       done();
     });

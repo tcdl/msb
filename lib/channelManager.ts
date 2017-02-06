@@ -9,14 +9,14 @@ import * as messageFactory from "./messageFactory";
 import * as helpers from "./support/helpers";
 import * as logger from "./support/logger";
 
-let channelManager = exports;
+let channelManagerExports = exports;
 
 const ADAPTER_PATHS = {
   amqp: "./adapters/amqp",
   local: "./adapters/local",
 };
 
-channelManager.create = function () {
+channelManagerExports.create = function () {
   let channelManager: any = new EventEmitter();
   let config = create();
   let producersByTopic = {};
@@ -84,10 +84,10 @@ channelManager.create = function () {
   };
 
   channelManager.createRawProducer = function (topic, options) {
-    const adapter = getAdapter();
+    const adap = getAdapter();
     let producerConfig = _.merge(adapterConfig, options);
 
-    return adapter.Publish(producerConfig).channel(helpers.validatedTopic(topic));
+    return adap.Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
 
   channelManager.findOrCreateConsumer = function (topic, options) {
@@ -165,7 +165,7 @@ channelManager.create = function () {
 
     channel.on("removeListener", function (eventName) {
       if (eventName !== "message") return;
-      if (~consumerTopicsToCheck.indexOf(topic) || channel.listeners(eventName).length) return;
+      if (consumerTopicsToCheck.indexOf(topic) > -1 || channel.listeners(eventName).length) return;
       consumerTopicsToCheck.push(topic);
 
       if (consumerTopicsToCheck.length > 1) return;
@@ -230,7 +230,7 @@ channelManager.create = function () {
   return channelManager;
 };
 
-channelManager.default = channelManager.create();
+channelManagerExports.default = channelManagerExports.create();
 
 function messageHasExpired(message) {
   return message.meta && message.meta.ttl &&
