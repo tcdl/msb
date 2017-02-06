@@ -41,7 +41,7 @@
     "@types/sinon": "^1.16.34",
     "@types/tv4": "1.2.28",
     "chai": "3.5.0",
-    "coveralls": "2.11.15",
+    "coveralls": "2.11.16",
     "mocha": "3.2.0",
     "nyc": "^10.1.2",
     "simple-mock": "0.7.3",
