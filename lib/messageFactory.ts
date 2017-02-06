@@ -23,14 +23,17 @@ export function createBaseMessage(config?: MessageConfig, originalMessage?: Mess
   return message;
 }
 
-export function createDirectedMessage(config?: MessageConfig, originalMessage?: Message): Message {
+/**
+ * @deprecated
+ */
+export function createDirectedMessage(namespace: string, config?: MessageConfig, originalMessage?: Message): Message {
   const message = createBaseMessage(config, originalMessage);
 
   if (config.middlewareNamespace) {
-    message.topics.forward = config.namespace;
+    message.topics.forward = namespace;
     message.topics.to = config.middlewareNamespace;
   } else {
-    message.topics.to = config.namespace;
+    message.topics.to = namespace;
   }
 
   if (config.routingKey) {
@@ -40,19 +43,30 @@ export function createDirectedMessage(config?: MessageConfig, originalMessage?: 
   return message;
 }
 
-export function createBroadcastMessage(config?: MessageConfig, originalMessage?: Message): Message {
+/**
+ * @deprecated
+ */
+export function createBroadcastMessage(namespace: string, config?: MessageConfig, originalMessage?: Message): Message {
   const meta = createMeta(config, originalMessage);
-  const message = createDirectedMessage(config, originalMessage);
+  const message = createDirectedMessage(namespace, config, originalMessage);
 
   message.meta = meta;
 
   return message;
 }
 
-export function createRequestMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const message = createDirectedMessage(config, originalMessage);
+export function createEventMessage(namespace: string, payload: any, config?: MessageConfig): Message {
+  const meta = createMeta(config, null);
+  const message = createDirectedMessage(namespace, config, null);
+  message.meta = meta;
+  message.payload = payload;
+  return completeMeta(message, message.meta);
+}
 
-  message.topics.response = config.namespace + ":response:" + INSTANCE_ID;
+export function createRequestMessage(namespace: string, payload: any, config?: MessageConfig): Message {
+  const message = createEventMessage(namespace, payload, config);
+
+  message.topics.response = namespace + ":response:" + INSTANCE_ID;
 
   return message;
 }
@@ -118,7 +132,6 @@ export interface MessageConfig {
    * @deprecated since version 2.0
    */
   middlewareNamespace?: string;
-  namespace: string;
   routingKey?: string;
 }
 
