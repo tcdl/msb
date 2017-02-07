@@ -86,7 +86,7 @@ export class Publisher {
     const callback = cb || function () {
       }; // do nothing
 
-    let message = messageFactory.createEventMessage(this.topic, payload, this.messageConfig);
+    let message = messageFactory.createMessage(this.topic, payload, this.messageConfig);
 
     message.payload = payload;
 

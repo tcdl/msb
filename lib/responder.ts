@@ -2,11 +2,11 @@ import {EventEmitter} from "events";
 const _ = require("lodash");
 import * as messageFactory from "./messageFactory";
 import {ResponderServer} from "./responderServer";
+import generateId = require("./support/generateId");
 
 export class Responder {
   channelManager: any;
   config: any;
-  meta: messageFactory.MessageMeta;
   ack: messageFactory.MessageAck;
   originalMessage: messageFactory.Message;
   responseChannelTimeoutMs: number;
@@ -17,8 +17,11 @@ export class Responder {
 
     this.channelManager = require("./channelManager").default;
     this.config = config;
-    this.meta = messageFactory.createMeta(config, originalMessage);
-    this.ack = messageFactory.createAck(config);
+    this.ack = {
+      responderId: generateId(),
+      responsesRemaining: null, // -n decrements, 0 resets, n increments
+      timeoutMs: null, // Defaults to the timeout on the collector/requester
+    };
     this.originalMessage = originalMessage;
     this.responseChannelTimeoutMs = ("responseChannelTimeoutMs" in config) ?
       config.responseChannelTimeoutMs : 15 * 60000; // Default: 15 minutes
@@ -82,7 +85,7 @@ export class Responder {
   };
 
   _sendMessage(message: messageFactory.Message, cb?: Function): void {
-    messageFactory.completeMeta(message, this.meta);
+    messageFactory.updateMetaPublishedDate(message);
     if (!cb) {
       cb = (): void => {};
     }

@@ -6,7 +6,7 @@ import Message = messageFactory.Message;
 
 describe("messageFactory", function () {
 
-  describe("completeMeta()", function () {
+  describe("updateMetaPublishedDate()", function () {
     let messageConfig: MessageConfig;
     let originalMessage: Message;
     let meta: MessageMeta;
@@ -25,7 +25,7 @@ describe("messageFactory", function () {
 
     it("should add meta to the message", function (done) {
 
-      const message = messageFactory.completeMeta(originalMessage, meta);
+      const message = messageFactory.updateMetaPublishedDate(originalMessage, meta);
 
       expect(message.meta).to.exist;
       expect(message.meta).deep.equals(meta);
@@ -66,7 +66,7 @@ describe("messageFactory", function () {
 
       expect(meta.publishedAt).equals(null);
 
-      const message = messageFactory.completeMeta(originalMessage, meta);
+      const message = messageFactory.updateMetaPublishedDate(originalMessage, meta);
 
       expect(message.meta).to.exist;
       expect(message.meta.publishedAt instanceof Date).to.be.true;
