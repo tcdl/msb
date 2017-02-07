@@ -3,7 +3,7 @@ const simple = require("simple-mock");
 import {configure, logger, Requester} from "../..";
 import {createLocalResponder} from "./_support/localResponder";
 
-describe("Local", function() {
+describe.only("Local", function() {
   before(function(done) {
     simple.mock(logger, "warn").returnWith();
 
@@ -20,16 +20,16 @@ describe("Local", function() {
 
   describe("responder", function() {
     let requester;
-    let responder;
+    let responderEmitter;
 
     before(function(done) {
-      responder = createLocalResponder();
-      responder.listen();
+      responderEmitter = createLocalResponder();
+      //responder.listen();
       done();
     });
 
     after(function(done) {
-      responder.close();
+      responderEmitter.end();
       done();
     });
 
@@ -38,7 +38,7 @@ describe("Local", function() {
       done();
     });
 
-    it("will validate the request payload", function(done) {
+    it.only("will validate the request payload", function(done) {
       requester
       .publish({
         headers: {},

@@ -106,7 +106,7 @@ class ValidateWithSchema {
     };
   }
 
-  private validateWithSchema(schema: JsonSchema, message: Message): void {
+  validateWithSchema(schema: JsonSchema, message: Message): void {
     let result = validateMultiple(message, schema);
     if (result.valid) return;
 
