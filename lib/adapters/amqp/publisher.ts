@@ -24,8 +24,8 @@ export class AMQPPublisherAdapter {
   private publishMessageStr(topic: string, messageStr: string, routingKey: string, cb: (err?: Error) => void): void {
     this.connection.publish(topic, routingKey, messageStr, { deliveryMode: 2, confirm: true }, (err) => {
       if (err && err.error && err.error.replyCode === 404) {
-        return this.ensureExchange(topic, (err): void => {
-          if (err) return cb(err);
+        return this.ensureExchange(topic, (error): void => {
+          if (error) return cb(error);
 
           this.publishMessageStr(topic, messageStr, routingKey, cb);
         });
