@@ -10,12 +10,9 @@ let contextMessage: Message = null;
 export function createMessage(namespace: string, payload: any, config?: MessageConfig, originalMessage?: Message): Message {
   if (originalMessage === undefined) originalMessage = contextMessage;
 
-  const createdAt = new Date();
   const metadata: MessageMeta = {
     ttl: (config && config.ttl) || null,
-    createdAt: createdAt,
-    publishedAt: createdAt,
-    durationMs: 0,
+    createdAt: new Date(),
     serviceDetails: serviceDetails,
   };
 
@@ -25,7 +22,7 @@ export function createMessage(namespace: string, payload: any, config?: MessageC
     tags: _.union(config && config.tags, originalMessage && originalMessage.tags),
     topics: config.routingKey ? {to: namespace, routingKey: config.routingKey} : {to: namespace},
     meta: metadata,
-    payload: payload
+    payload: payload,
   };
 }
 
@@ -46,13 +43,6 @@ export function createResponseMessage(originalMessage: Message, payload: Message
 
 export function createAckMessage(originalMessage: Message, ack: MessageAck, config?: MessageConfig): Message {
   return createResponseMessage(originalMessage, null, ack, config);
-}
-
-export function updateMetaPublishedDate(message: Message): Message {
-  const meta = message.meta;
-  meta.publishedAt = new Date();
-  meta.durationMs = meta.publishedAt.valueOf() - meta.createdAt.valueOf();
-  return message;
 }
 
 export function startContext(message?: Message): void {
