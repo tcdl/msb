@@ -25,7 +25,7 @@ export class Requester extends Collector {
       this.listenForResponses(this.message.topics.response, this.shouldAcceptMessageFn.bind(this));
     }
 
-    messageFactory.completeMeta(this.message, this.meta);
+    messageFactory.updateMetaPublishedDate(this.message, this.meta);
 
     if (!this.responseChannel) {
       return this.publishMessage();
