@@ -73,14 +73,14 @@ export class Responder {
       this.ack.responsesRemaining = responsesRemaining;
     }
 
-    const ackMessage = messageFactory.createAckMessage(this.config, this.originalMessage, this.ack);
+    const ackMessage = messageFactory.createAckMessage(this.originalMessage, this.ack, this.config);
 
     this._sendMessage(ackMessage, cb);
   };
 
   send(payload: messageFactory.MessagePayload, cb: Function): void {
     this.ack.responsesRemaining = -1;
-    const message = messageFactory.createResponseMessage(this.config, this.originalMessage, this.ack, payload);
+    const message = messageFactory.createResponseMessage(this.originalMessage, payload, this.ack, this.config);
     this._sendMessage(message, cb);
   };
 
