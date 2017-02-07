@@ -1,4 +1,4 @@
-import {Responder, validateWithSchema, messageFactory} from "../../..";
+import {messageFactory, Responder, validateWithSchema} from "../../..";
 
 let i = 1001;
 const payloadSchema = {
@@ -12,7 +12,7 @@ export function createLocalResponder() {
   let responderEmitter = Responder.createEmitter({
     namespace: "test:general",
     tags: ["b"],
-  }).on('responder', (responder : Responder) => {
+  }).on("responder", (responder: Responder) => {
     let payload = {body: null, statusCode: null};
     const request = responder.originalMessage.payload;
     try {
@@ -37,7 +37,7 @@ export function createLocalResponder() {
         payload.body = "Special Message";
         payload.statusCode = 500;
       }
-        responder.send(payload);
+      responder.send(payload);
     }
   });
   return responderEmitter;
