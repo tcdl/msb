@@ -5,12 +5,12 @@
 var msb = require('../..');
 var j = 0;
 
-msb.Responder.createServer({
+msb.Responder.createEmitter({
   namespace: 'example:topic'
-})
-.use(function(request, response, next) {
+}).on('responder', function(responder) {
+  var payload = {body: null, statusCode: null};
 
-  var z = request.body.doc.z;
+  var z = responder.originalMessage.payload.body.doc.z;
   var i = j++;
 
   var body = {
@@ -19,9 +19,9 @@ msb.Responder.createServer({
     }
   };
 
-  response.writeHead(200); // HTTP-compatible
-  response.end(body); // To be provided in response `payload.body`
+  payload.body = body;
+  payload.statusCode = 200; // HTTP-compatible
+  responder.send(payload);
 
   console.log('->respondOnce:' + z + ':' + i);
-})
-.listen();
+});

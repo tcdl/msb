@@ -3,7 +3,7 @@ const simple = require("simple-mock");
 import {configure, logger, Requester} from "../..";
 import {createLocalResponder} from "./_support/localResponder";
 
-describe.only("Local", function() {
+describe("Local", function() {
   before(function(done) {
     simple.mock(logger, "warn").returnWith();
 
@@ -38,7 +38,7 @@ describe.only("Local", function() {
       done();
     });
 
-    it.only("will validate the request payload", function(done) {
+    it("will validate the request payload", function(done) {
       requester
       .publish({
         headers: {},
