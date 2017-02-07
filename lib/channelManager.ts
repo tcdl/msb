@@ -128,11 +128,8 @@ channelManagerExports.create = function () {
       }
       channelManager.emit(channelManager.CONSUMER_NEW_MESSAGE_EVENT, topic);
 
-      if (config.autoMessageContext) messageFactory.startContext(message);
-
       // TODO: emit custom object rather than instance of EventEmitter
       channel.emit("message", message, channel);
-      if (config.autoMessageContext) messageFactory.endContext();
 
       if (autoConfirm) channel.confirmProcessedMessage(message, true);
     }
