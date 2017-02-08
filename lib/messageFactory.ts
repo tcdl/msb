@@ -1,5 +1,6 @@
 import serviceDetails = require("./support/serviceDetails");
 import generateId = require("./support/generateId");
+
 const _ = require("lodash");
 
 const INSTANCE_ID = serviceDetails.instanceId;
