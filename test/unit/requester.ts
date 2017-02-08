@@ -11,15 +11,6 @@ describe("Requester", function() {
     done();
   });
 
-  it("can be initialized", function(done) {
-    simple.mock(messageFactory, "createRequestMessage");
-
-    const obj = new Requester({});
-
-    expect((messageFactory.createRequestMessage as any).called).to.equal(true);
-    done();
-  });
-
   describe("publish()", function() {
     let producer;
 
@@ -31,6 +22,22 @@ describe("Requester", function() {
         return producer;
       });
 
+      done();
+    });
+
+    it("can create a proper message", function(done) {
+      simple.mock(messageFactory, "createRequestMessage");
+
+      const obj = new Requester({
+        namespace: "my:topic",
+        waitForResponses: 0,
+      });
+
+      obj.publish({message: "hello"});
+
+      expect((messageFactory.createRequestMessage as any).called).to.equal(true);
+      expect((messageFactory.createRequestMessage as any).lastCall.args[0]).to.equal("my:topic");
+      expect((messageFactory.createRequestMessage as any).lastCall.args[1]).to.deep.equal({message: "hello"});
       done();
     });
 
@@ -82,16 +89,17 @@ describe("Requester", function() {
         waitForResponses: 1,
       });
 
-      const bindMock = simple.mock(obj.shouldAcceptMessageFn, "bind").returnWith("testValue");
       simple.mock(obj, "listenForResponses").returnWith();
+      simple.mock(messageFactory, "createRequestMessage").returnWith({
+        topics: {to: "my:topic", response: "my:topic:response"},
+      });
 
       obj
       .on("end", endHandler)
       .publish({});
 
-      expect(bindMock.lastCall.args[0]).to.equal(obj);
-      expect((obj.listenForResponses as any).lastCall.args[0]).to.equal(obj.message.topics.response);
-      expect((obj.listenForResponses as any).lastCall.args[1]).to.equal("testValue");
+      expect((obj.listenForResponses as any).called).to.equal(true);
+      expect((obj.listenForResponses as any).lastCall.args[0]).to.equal("my:topic:response");
       expect(producer.publish.called).to.equal(true);
       expect(endHandler.called).to.equal(false);
 
@@ -108,45 +116,49 @@ describe("Requester", function() {
         waitForAcksMs: 800,
       });
 
-      const bindMock = simple.mock(obj.shouldAcceptMessageFn, "bind").returnWith("testValue");
       simple.mock(obj, "listenForResponses").returnWith();
       simple.mock(obj, "isAwaitingAcks").returnWith(true);
+      simple.mock(messageFactory, "createRequestMessage").returnWith({
+        topics: {to: "my:topic", response: "my:topic:response"},
+      });
 
       obj
       .on("end", endHandler)
       .publish({});
 
-      expect(bindMock.lastCall.args[0]).to.equal(obj);
-      expect((obj.listenForResponses as any).lastCall.args[0]).to.equal(obj.message.topics.response);
-      expect((obj.listenForResponses as any).lastCall.args[1]).to.equal("testValue");
+      expect((obj.listenForResponses as any).called).to.equal(true);
+      expect((obj.listenForResponses as any).lastCall.args[0]).to.equal("my:topic:response");
       expect(producer.publish.called).to.equal(true);
       expect(endHandler.called).to.equal(false);
 
       done();
     });
-  });
 
-  describe("shouldAcceptMessageFn()", function() {
+    it("can accept response by correlation ID", function(done) {
+      producer.publish.callbackWith();
 
-    it("should per default match on message id", function(done) {
-      const obj = new Requester({});
+      const obj = new Requester({
+        namespace: "my:topic",
+        waitForResponses: 1,
+      });
 
-      expect(obj.shouldAcceptMessageFn({
-        id: "id",
-        tags: [],
-        correlationId: obj.message.correlationId,
-        topics: {},
-      })).to.be.true;
+      simple.mock(obj, "listenForResponses").returnWith();
+      simple.mock(messageFactory, "createRequestMessage").returnWith({
+        correlationId: "123",
+        topics: {to: "my:topic", response: "my:topic:response"},
+      });
 
-      expect(obj.shouldAcceptMessageFn({
-        id: "id",
-        correlationId: "other",
-        tags: [],
-        topics: {},
-      })).to.be.false;
+      obj.publish({});
+
+      expect((obj.listenForResponses as any).called).to.equal(true);
+      expect((obj.listenForResponses as any).lastCall.args[1]).to.be.a("function");
+
+      const shouldAcceptMessageFn = (obj.listenForResponses as any).lastCall.args[1];
+
+      expect(shouldAcceptMessageFn({correlationId: "123"})).to.be.equal(true);
+      expect(shouldAcceptMessageFn({correlationId: "other"})).to.be.equal(false);
 
       done();
     });
-
   });
 });

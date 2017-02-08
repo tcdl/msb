@@ -40,7 +40,6 @@ export class Config {
 
   schema: JsonSchema;
   cleanupConsumers: boolean;
-  autoMessageContext: boolean;
   brokerAdapter: adapterName;
   amqp: ConfigAMQP;
   local: LocalConfig;
@@ -48,7 +47,6 @@ export class Config {
   constructor() {
     this.schema = require("../schema");
     this.cleanupConsumers = false;
-    this.autoMessageContext = true;
     this.brokerAdapter = process.env.MSB_BROKER_ADAPTER || "amqp";
 
     this.amqp = {

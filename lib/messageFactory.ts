@@ -5,120 +5,46 @@ const _ = require("lodash");
 
 const INSTANCE_ID = serviceDetails.instanceId;
 
-let contextMessage: Message = null;
-
-export function createBaseMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  if (originalMessage === undefined) originalMessage = contextMessage;
-
-  const message = {
-    id: generateId(), // This identifies this message
-    correlationId: generateId(), // This identifies this flow
-    tags: _createTags(config, originalMessage),
-    topics: {},
-    meta: null, // To be filled with createMeta() -> completeMeta() sequence
-    ack: null, // To be filled on ack or response
-    payload: {},
-  };
-
-  return message;
-}
-
-export function createDirectedMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const message = createBaseMessage(config, originalMessage);
-
-  if (config.middlewareNamespace) {
-    message.topics.forward = config.namespace;
-    message.topics.to = config.middlewareNamespace;
-  } else {
-    message.topics.to = config.namespace;
-  }
-
-  if (config.routingKey) {
-    message.topics.routingKey = config.routingKey;
-  }
-
-  return message;
-}
-
-export function createBroadcastMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const meta = createMeta(config, originalMessage);
-  const message = createDirectedMessage(config, originalMessage);
-
-  message.meta = meta;
-
-  return message;
-}
-
-export function createRequestMessage(config?: MessageConfig, originalMessage?: Message): Message {
-  const message = createDirectedMessage(config, originalMessage);
-
-  message.topics.response = config.namespace + ":response:" + INSTANCE_ID;
-
-  return message;
-}
-
-export function createResponseMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck, payload?: MessagePayload): Message {
-  const message = createBaseMessage(config, originalMessage);
-
-  message.correlationId = originalMessage && originalMessage.correlationId;
-  message.topics.to = originalMessage.topics.response;
-  message.ack = ack;
-  message.payload = payload;
-
-  return message;
-}
-
-export function createAckMessage(config: MessageConfig, originalMessage: Message, ack: MessageAck): Message {
-  return createResponseMessage(config, originalMessage, ack, null);
-}
-
-export function createAck(config?: MessageConfig): MessageAck {
-  return {
-    responderId: generateId(), // config.groupId || generateId(),
-    responsesRemaining: null, // -n decrements, 0 resets, n increments
-    timeoutMs: null, // Defaults to the timeout on the collector/requester
-  };
-}
-
-export function createMeta(config?: MessageConfig, originalMessage?: Message): MessageMeta {
-  if (originalMessage === undefined) originalMessage = contextMessage; // TODO: obsolete?
-
-  return {
+export function createMessage(namespace: string, payload: any, config?: MessageConfig): Message {
+  const metadata: MessageMeta = {
     ttl: (config && config.ttl) || null,
     createdAt: new Date(),
-    publishedAt: null,
-    durationMs: null,
     serviceDetails: serviceDetails,
+  };
+
+  return {
+    id: generateId(),
+    correlationId: generateId(),
+    tags: (config && config.tags) || [],
+    topics: (config && config.routingKey) ? {to: namespace, routingKey: config.routingKey} : {to: namespace},
+    meta: metadata,
+    payload: payload,
   };
 }
 
-export function completeMeta(message?: Message, meta?: MessageMeta): Message {
-  meta.publishedAt = new Date();
-  meta.durationMs = meta.publishedAt.valueOf() - meta.createdAt.valueOf();
-  message.meta = meta;
+export function createRequestMessage(namespace: string, payload: any, config?: MessageConfig): Message {
+  const message = createMessage(namespace, payload, config);
+  message.topics.response = namespace + ":response:" + INSTANCE_ID;
+
   return message;
 }
 
-export function startContext(message?: Message): void {
-  contextMessage = message;
+export function createResponseMessage(originalMessage: Message, payload: MessagePayload, ack: MessageAck, config?: MessageConfig): Message {
+  const message = createMessage(originalMessage.topics.response, payload, config);
+  message.correlationId = originalMessage.correlationId;
+  message.ack = ack;
+  message.tags = _.union(originalMessage.tags, message.tags);
+
+  return message;
 }
 
-export function endContext(): void {
-  contextMessage = null;
-}
-
-function _createTags(config: MessageConfig, originalMessage: Message): string[] {
-  return _.union(config && config.tags, originalMessage && originalMessage.tags);
+export function createAckMessage(originalMessage: Message, ack: MessageAck, config?: MessageConfig): Message {
+  return createResponseMessage(originalMessage, null, ack, config);
 }
 
 export interface MessageConfig {
   ttl?: number;
   tags?: string[];
-  /**
-   * @deprecated since version 2.0
-   */
-  middlewareNamespace?: string;
-  namespace: string;
   routingKey?: string;
 }
 
