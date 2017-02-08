@@ -189,13 +189,13 @@ describe("Responder", function () {
     let mockChannel;
 
     beforeEach(function (done) {
-      const message = {
+      const originalMessage = {
         id: "id",
         correlationId: "1234",
         tags: [],
         topics: {response: "response"},
       };
-      responder = new Responder({}, message);
+      responder = new Responder({}, originalMessage);
 
       mockChannel = {};
       simple.mock(mockChannel, "publish");
@@ -205,38 +205,37 @@ describe("Responder", function () {
     });
 
     it("can be called with a cb", function (done) {
+      const message = {
+        topics: {to: "example"},
+      };
       const cb = simple.mock();
 
       expect(function () {
-        responder._sendMessage({
-          topics: {to: "example"},
-        }, cb);
+        responder._sendMessage(message, cb);
       }).to.not.throw();
 
       expect(channelManager.findOrCreateProducer.called).to.be.true;
       expect(channelManager.findOrCreateProducer.lastCall.args[0]).equals("example");
       expect(mockChannel.publish.called).to.be.true;
+      expect(mockChannel.publish.lastCall.args[0]).equals(message);
       expect(mockChannel.publish.lastCall.args[1]).equals(cb);
-
-      const message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
-      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
 
       done();
     });
 
     it("can be called without a cb", function (done) {
+      const message = {
+        topics: {to: "example"},
+      };
+
       expect(function () {
-        responder._sendMessage({
-          topics: {to: "example"},
-        });
+        responder._sendMessage(message);
       }).to.not.throw();
 
       expect(channelManager.findOrCreateProducer.called).to.be.true;
       expect(channelManager.findOrCreateProducer.lastCall.args[0]).equals("example");
       expect(mockChannel.publish.called).to.be.true;
-
-      const message = JSON.parse(JSON.stringify(mockChannel.publish.lastCall.args[0]));
-      expect(message.meta).deep.equals(JSON.parse(JSON.stringify(responder.meta)));
+      expect(mockChannel.publish.lastCall.args[0]).equals(message);
 
       done();
     });

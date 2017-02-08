@@ -77,7 +77,6 @@ export class Responder {
   };
 
   _sendMessage(message: messageFactory.Message, cb?: Function): void {
-    messageFactory.updateMetaPublishedDate(message);
     if (!cb) {
       cb = (): void => {};
     }
