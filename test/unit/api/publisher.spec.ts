@@ -30,8 +30,6 @@ describe("api.Publisher", () => {
         publish: (message) => {
           // assert message meta
           expect(message.meta.ttl).to.be.null;
-          expect(message.meta.publishedAt).to.exist;
-          expect(message.meta.durationMs).to.exist;
 
           // assert message topic, tags, payload
           expect(message.topics.to).to.equal(TOPIC);
@@ -59,8 +57,6 @@ describe("api.Publisher", () => {
         publish: (message) => {
           // assert message meta
           expect(message.meta.ttl).to.equal(TTL);
-          expect(message.meta.publishedAt).to.exist;
-          expect(message.meta.durationMs).to.exist;
 
           // assert message topic, tags, payload
           expect(message.topics.to).to.equal(TOPIC);
