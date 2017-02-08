@@ -18,7 +18,7 @@ export class Requester extends Collector {
   }
 
   publish(payload: messageFactory.MessagePayload): this {
-    const message = messageFactory.createRequestMessage(this.namespace, payload, this.config, this.originalMessage);
+    const message = messageFactory.createRequestMessage(this.namespace, payload, this.config);
 
     if (this.waitForAcksMs || this.waitForResponses) {
       this.listenForResponses(message.topics.response, (responseMessage) => responseMessage.correlationId === message.correlationId);
