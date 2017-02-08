@@ -1,16 +1,14 @@
 import {Collector} from "./collector";
 import * as messageFactory from "./messageFactory";
-import {MessageConfig} from "./messageFactory";
 
 export class Requester extends Collector {
   namespace: string;
-  config: MessageConfig;
+  config: any;
   originalMessage: messageFactory.Message;
   requestChannelTimeoutMs: number;
 
-  constructor(namespace: string, config: any, originalMessage?: messageFactory.Message) {
+  constructor(config: any, originalMessage?: messageFactory.Message) {
     super(config);
-    this.namespace = namespace;
     this.config = config;
     this.originalMessage = originalMessage;
     this.requestChannelTimeoutMs = ("requestChannelTimeoutMs" in config) ?
@@ -18,7 +16,7 @@ export class Requester extends Collector {
   }
 
   publish(payload: messageFactory.MessagePayload): this {
-    const message = messageFactory.createRequestMessage(this.namespace, payload, this.config);
+    const message = messageFactory.createRequestMessage(this.config.namespace, payload, this.config);
 
     if (this.waitForAcksMs || this.waitForResponses) {
       this.listenForResponses(message.topics.response, (responseMessage) => responseMessage.correlationId === message.correlationId);
