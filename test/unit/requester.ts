@@ -47,7 +47,6 @@ describe("Requester", function() {
       producer.publish.callbackWith(expectedErr);
 
       const obj = new Requester({
-        namespace: "my:topic",
         waitForResponses: 0,
       });
 
@@ -68,7 +67,6 @@ describe("Requester", function() {
       const endHandler = simple.mock();
 
       const obj = new Requester({
-        namespace: "my:topic",
         waitForResponses: 0,
       });
 
@@ -88,7 +86,6 @@ describe("Requester", function() {
       const endHandler = simple.mock();
 
       const obj = new Requester({
-        namespace: "my:topic",
         waitForResponses: 1,
       });
 
@@ -115,7 +112,6 @@ describe("Requester", function() {
       const endHandler = simple.mock();
 
       const obj = new Requester({
-        namespace: "my:topic",
         waitForResponses: 0,
         waitForAcksMs: 800,
       });

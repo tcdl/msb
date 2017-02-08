@@ -2,7 +2,6 @@ import {Collector} from "./collector";
 import * as messageFactory from "./messageFactory";
 
 export class Requester extends Collector {
-  namespace: string;
   config: any;
   originalMessage: messageFactory.Message;
   requestChannelTimeoutMs: number;
