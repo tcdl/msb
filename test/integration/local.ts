@@ -24,7 +24,6 @@ describe("Local", function() {
 
     before(function(done) {
       responderEmitter = createLocalResponder();
-      //responder.listen();
       done();
     });
 

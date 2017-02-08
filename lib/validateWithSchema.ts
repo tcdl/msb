@@ -75,21 +75,7 @@ class SchemaValidationError extends Error {
   }
 }
 
-class ValidateWithSchema {
-
-  middleware(schema: JsonSchema): (request: any, response: any, next: Function) => void {
-    return (request, response, next): void => {
-      try {
-        this.validateWithSchema(schema, request);
-      } catch (e) {
-        next(e);
-        return;
-      }
-      next();
-    };
-  }
-
-  onEvent(schema: JsonSchema, successHandlerFn: Function, errorHandlerFn?: Function): (message: Message) => void {
+  function onEvent(schema: JsonSchema, successHandlerFn: Function, errorHandlerFn?: Function): (message: Message) => void {
     const self = this;
     return function (message: Message): void {
       try {
@@ -106,12 +92,11 @@ class ValidateWithSchema {
     };
   }
 
-  validateWithSchema(schema: JsonSchema, message: Message): void {
+  function validateWithSchema(schema: JsonSchema, message: Message): void {
     let result = validateMultiple(message, schema);
     if (result.valid) return;
 
     throw new SchemaValidationError(result, message);
   }
-}
 
-export = new ValidateWithSchema();
+export = {onEvent, validateWithSchema};

@@ -10,17 +10,15 @@ msb.Responder.createEmitter({
 }).on('responder', function(responder) {
   var payload = {body: null, statusCode: null};
 
-  var z = responder.originalMessage.payload.body.doc.z;
+  var z = responder.originalMessage.payload.doc.i;
   var i = j++;
 
-  var body = {
+  var payload = {
     doc: {
       i: i
     }
   };
 
-  payload.body = body;
-  payload.statusCode = 200; // HTTP-compatible
   responder.send(payload);
 
   console.log('->respondOnce:' + z + ':' + i);

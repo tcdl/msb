@@ -139,9 +139,6 @@ export interface Message {
 
 export interface MessagePayload {
   [key: string]: any;
-  statusCode?: number;
-  method?: string;
-  headers?: any;
   body?: any;
 }
 
