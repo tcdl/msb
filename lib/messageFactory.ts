@@ -13,8 +13,8 @@ export function createMessage(namespace: string, payload: any, config?: MessageC
   return {
     id: generateId(),
     correlationId: generateId(),
-    tags: config.tags || [],
-    topics: config.routingKey ? {to: namespace, routingKey: config.routingKey} : {to: namespace},
+    tags: (config && config.tags) || [],
+    topics: (config && config.routingKey) ? {to: namespace, routingKey: config.routingKey} : {to: namespace},
     meta: metadata,
     payload: payload,
   };
