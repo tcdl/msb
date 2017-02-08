@@ -3,76 +3,90 @@ import * as messageFactory from "../../lib/messageFactory";
 import MessageMeta = messageFactory.MessageMeta;
 import MessageConfig = messageFactory.MessageConfig;
 import Message = messageFactory.Message;
+import serviceDetails = require("../../lib/support/serviceDetails");
 
 describe("messageFactory", function () {
+  it("should create message for pub/sub", function (done) {
+    const message = messageFactory.createMessage("my:topic", {message: "hello"});
 
-  describe("updateMetaPublishedDate()", function () {
-    let messageConfig: MessageConfig;
-    let originalMessage: Message;
-    let meta: MessageMeta;
+    expect(message.id).to.be.a("string");
+    expect(message.topics.to).to.be.equal("my:topic");
+    expect(message.correlationId).to.be.a("string");
+    expect(message.meta).to.be.an("object");
+    expect(message.meta.createdAt).to.be.instanceOf(Date);
+    expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
+    expect(message.payload).to.be.deep.equal({message: "hello"});
+    done();
+  });
 
-    beforeEach(function (done) {
-      messageConfig = {namespace: "my:topic"};
-      originalMessage = {
-        id: "123",
-        correlationId: "123",
-        tags: ["tag"],
-        topics: {to: "to"},
-      };
-      meta = messageFactory.createMeta(messageConfig);
-      done();
-    });
+  it("should create message for pub/sub with config", function (done) {
+    const message = messageFactory.createMessage("my:topic", {}, {ttl: 3000, routingKey: "routing:key", tags: ["tag"]});
 
-    it("should add meta to the message", function (done) {
+    expect(message.meta.ttl).to.be.equal(3000);
+    expect(message.tags).to.be.deep.equal(["tag"]);
+    expect(message.topics.routingKey).to.be.equal("routing:key");
+    done();
+  });
 
-      const message = messageFactory.updateMetaPublishedDate(originalMessage, meta);
+  it("should create request message", function (done) {
+    const message = messageFactory.createRequestMessage("my:topic", {message: "hello"});
 
-      expect(message.meta).to.exist;
-      expect(message.meta).deep.equals(meta);
+    expect(message.topics.to).to.be.equal("my:topic");
+    expect(message.topics.response).to.be.a("string");
+    expect(message.correlationId).to.be.a("string");
+    expect(message.meta).to.be.an("object");
+    expect(message.meta.createdAt).to.be.instanceOf(Date);
+    expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
+    expect(message.payload).to.be.deep.equal({message: "hello"});
+    done();
+  });
 
-      done();
-    });
+  it("should create request message with config", function (done) {
+    const message = messageFactory.createRequestMessage("my:topic", {message: "hello"}, {ttl: 3000, routingKey: "routing:key", tags: ["tag"]});
 
-    it("should add to to the topics", function (done) {
-      const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
+    expect(message.meta.ttl).to.be.equal(3000);
+    expect(message.tags).to.be.deep.equal(["tag"]);
+    expect(message.topics.routingKey).to.be.equal("routing:key");
+    done();
+  });
 
-      expect(message.topics.to).to.exist;
-      expect(message.topics.to).equals(messageConfig.namespace);
+  it("should create response message", function (done) {
+    const originalMessage = {
+      id: "123",
+      correlationId: "abc",
+      tags: ["tag"],
+      topics: {to: "my:topic", response: "my:topic:response"},
+    };
 
-      done();
-    });
+    const message = messageFactory.createResponseMessage(originalMessage, {message: "hello"}, {responderId: "123"});
 
-    it("should add forward to the topics on middlewareNamespace", function (done) {
-      messageConfig.middlewareNamespace = "custom:topic";
-      const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
+    expect(message.topics.to).to.be.equal(originalMessage.topics.response);
+    expect(message.correlationId).to.be.equal(originalMessage.correlationId);
+    expect(message.meta).to.be.an("object");
+    expect(message.meta.createdAt).to.be.instanceOf(Date);
+    expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
+    expect(message.payload).to.be.deep.equal({message: "hello"});
+    expect(message.ack).to.be.deep.equal({responderId: "123"});
+    done();
+  });
 
-      expect(message.topics.forward).to.exist;
-      expect(message.topics.forward).equals(messageConfig.namespace);
-      expect(message.topics.to).to.exist;
-      expect(message.topics.to).equals(messageConfig.middlewareNamespace);
+  it("should create ack message", function (done) {
+    const originalMessage = {
+      id: "123",
+      correlationId: "abc",
+      tags: ["tag"],
+      topics: {to: "my:topic", response: "my:topic:response"},
+    };
 
-      done();
-    });
+    const message = messageFactory.createAckMessage(originalMessage, {responderId: "123"});
 
-    it("should not add forward to the topics without on middlewareNamespace", function (done) {
-      const message = messageFactory.createDirectedMessage(messageConfig, originalMessage);
-
-      expect(message.topics.forward).not.to.exist;
-
-      done();
-    });
-
-    it("should add publishedAt date", function (done) {
-
-      expect(meta.publishedAt).equals(null);
-
-      const message = messageFactory.updateMetaPublishedDate(originalMessage, meta);
-
-      expect(message.meta).to.exist;
-      expect(message.meta.publishedAt instanceof Date).to.be.true;
-      expect(Date.now() - message.meta.publishedAt.valueOf()).below(15);
-
-      done();
-    });
+    expect(message.topics.to).to.be.equal(originalMessage.topics.response);
+    expect(message.correlationId).to.be.equal(originalMessage.correlationId);
+    expect(message.meta).to.be.an("object");
+    expect(message.meta.createdAt).to.be.instanceOf(Date);
+    expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
+    expect(message.payload).to.be.equal(null);
+    expect(message.ack).to.be.deep.equal({responderId: "123"});
+    done();
   });
 });
