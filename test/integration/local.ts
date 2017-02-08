@@ -20,16 +20,15 @@ describe("Local", function() {
 
   describe("responder", function() {
     let requester;
-    let responder;
+    let responderEmitter;
 
     before(function(done) {
-      responder = createLocalResponder();
-      responder.listen();
+      responderEmitter = createLocalResponder();
       done();
     });
 
     after(function(done) {
-      responder.close();
+      responderEmitter.end();
       done();
     });
 

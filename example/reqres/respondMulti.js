@@ -12,7 +12,7 @@ msb.Responder.createEmitter({
   responder.sendAck(2000, 3); // sendAck(..., cb) is also possible
 
   var requestPayload = responder.originalMessage.payload;
-  var z = requestPayload.body.doc.z;
+  var z = requestPayload.body.doc.i;
 
   function sendPayload(payload) {
     responder.send(payload, function(err) {

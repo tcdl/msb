@@ -1,7 +1,6 @@
 import {EventEmitter} from "events";
 const _ = require("lodash");
 import * as messageFactory from "./messageFactory";
-import {ResponderServer} from "./responderServer";
 
 export class Responder {
   channelManager: any;
@@ -24,7 +23,7 @@ export class Responder {
       config.responseChannelTimeoutMs : 15 * 60000; // Default: 15 minutes
   }
 
-  static createEmitter(config: any, channelManager: any): any {//todo new type from EventEmitter
+  static createEmitter(config: any, channelManager?: any): any {
     if (!channelManager) channelManager = require("./channelManager").default;
 
     const emitter: any = new EventEmitter();
@@ -47,15 +46,8 @@ export class Responder {
     return emitter;
   };
 
-  /**
-   * @deprecated since v2.0. Use createEmitter() instead
-   */
-  static createServer(config: any): ResponderServer {
-    return new ResponderServer(config);
-  };
-
   //todo: overload this function
-  sendAck(timeoutMs: any, responsesRemaining: any, cb: any): void {
+  sendAck(timeoutMs: any, responsesRemaining?: any, cb?: any): void {
     if (!cb) {
       cb = _.last(arguments);
       if (!_.isFunction(cb)) cb = null;
@@ -75,7 +67,7 @@ export class Responder {
     this._sendMessage(ackMessage, cb);
   };
 
-  send(payload: messageFactory.MessagePayload, cb: Function): void {
+  send(payload: messageFactory.MessagePayload, cb?: Function): void {
     this.ack.responsesRemaining = -1;
     const message = messageFactory.createResponseMessage(this.config, this.originalMessage, this.ack, payload);
     this._sendMessage(message, cb);

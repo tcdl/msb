@@ -1,4 +1,5 @@
-import {Responder, validateWithSchema} from "../../..";
+import {messageFactory, Responder, validateWithSchema} from "../../..";
+
 let i = 1001;
 const payloadSchema = {
   type: "object",
@@ -8,32 +9,36 @@ const payloadSchema = {
 };
 
 export function createLocalResponder() {
-  return Responder.createServer({
+  let responderEmitter = Responder.createEmitter({
     namespace: "test:general",
     tags: ["b"],
-  })
-    .use(validateWithSchema.middleware(payloadSchema))
-    .use([
-      (request: any, response: any, next: any): void => {
-        if (request.body && request.body.instruction === "error") {
-          next(new Error());
-        } else {
-          next();
-        }
-      },
-      (request, response, next): void => {
-        response.responder.sendAck(1500, next);
-      },
-    ])
-    .use((request, response, next) => {
-      response.body = i++;
-      response.end();
-    })
-    .use((err, request, response, next) => {
-      if (err.name === "SchemaValidationError") return next();
+  }).on("responder", (responder: Responder) => {
+    let payload = {body: null, statusCode: null};
+    const request = responder.originalMessage.payload;
+    try {
+      //validation
+      validateWithSchema.validateWithSchema(payloadSchema, request);
 
-      response.writeHead(500);
-      response.body = "Special Message";
-      response.end();
-    });
+      //send ack if not an error
+      if (request.body && request.body.instruction === "error")
+        throw new Error();
+      responder.sendAck(1500);
+
+      //send body
+      payload.body = i++;
+      payload.statusCode = 200;
+      responder.send(payload);
+
+    } catch (error) {
+      //error handler
+      if (error.name === "SchemaValidationError") {
+        payload.statusCode = error.statusCode;
+      } else {
+        payload.body = "Special Message";
+        payload.statusCode = 500;
+      }
+      responder.send(payload);
+    }
+  });
+  return responderEmitter;
 }
