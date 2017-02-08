@@ -28,7 +28,10 @@ describe("Requester", function() {
     it("can create a proper message", function(done) {
       simple.mock(messageFactory, "createRequestMessage");
 
-      const obj = new Requester("my:topic", {waitForResponses: 0});
+      const obj = new Requester({
+        namespace: "my:topic",
+        waitForResponses: 0,
+      });
 
       obj.publish({message: "hello"});
 
@@ -43,7 +46,8 @@ describe("Requester", function() {
       const expectedErr = new Error();
       producer.publish.callbackWith(expectedErr);
 
-      const obj = new Requester("my:topic", {
+      const obj = new Requester({
+        namespace: "my:topic",
         waitForResponses: 0,
       });
 
@@ -63,7 +67,10 @@ describe("Requester", function() {
 
       const endHandler = simple.mock();
 
-      const obj = new Requester("my:topic", {waitForResponses: 0});
+      const obj = new Requester({
+        namespace: "my:topic",
+        waitForResponses: 0,
+      });
 
       obj
       .on("end", endHandler)
@@ -80,7 +87,8 @@ describe("Requester", function() {
 
       const endHandler = simple.mock();
 
-      const obj = new Requester("my:topic", {
+      const obj = new Requester({
+        namespace: "my:topic",
         waitForResponses: 1,
       });
 
@@ -105,7 +113,8 @@ describe("Requester", function() {
 
       const endHandler = simple.mock();
 
-      const obj = new Requester("my:topic", {
+      const obj = new Requester({
+        namespace: "my:topic",
         waitForResponses: 0,
         waitForAcksMs: 800,
       });
