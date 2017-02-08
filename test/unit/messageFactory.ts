@@ -6,12 +6,20 @@ import Message = messageFactory.Message;
 import serviceDetails = require("../../lib/support/serviceDetails");
 
 describe("messageFactory", function () {
+  const originalMessage = {
+    id: "123",
+    correlationId: "abc",
+    tags: ["tag"],
+    topics: {to: "my:topic", response: "my:topic:response"},
+  };
+
   it("should create message for pub/sub", function (done) {
     const message = messageFactory.createMessage("my:topic", {message: "hello"});
 
     expect(message.id).to.be.a("string");
     expect(message.topics.to).to.be.equal("my:topic");
     expect(message.correlationId).to.be.a("string");
+    expect(message.tags).to.be.empty;
     expect(message.meta).to.be.an("object");
     expect(message.meta.createdAt).to.be.instanceOf(Date);
     expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
@@ -34,6 +42,7 @@ describe("messageFactory", function () {
     expect(message.topics.to).to.be.equal("my:topic");
     expect(message.topics.response).to.be.a("string");
     expect(message.correlationId).to.be.a("string");
+    expect(message.tags).to.be.empty;
     expect(message.meta).to.be.an("object");
     expect(message.meta.createdAt).to.be.instanceOf(Date);
     expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
@@ -51,17 +60,11 @@ describe("messageFactory", function () {
   });
 
   it("should create response message", function (done) {
-    const originalMessage = {
-      id: "123",
-      correlationId: "abc",
-      tags: ["tag"],
-      topics: {to: "my:topic", response: "my:topic:response"},
-    };
-
     const message = messageFactory.createResponseMessage(originalMessage, {message: "hello"}, {responderId: "123"});
 
     expect(message.topics.to).to.be.equal(originalMessage.topics.response);
     expect(message.correlationId).to.be.equal(originalMessage.correlationId);
+    expect(message.tags).to.be.deep.equal(originalMessage.tags);
     expect(message.meta).to.be.an("object");
     expect(message.meta.createdAt).to.be.instanceOf(Date);
     expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
@@ -70,18 +73,20 @@ describe("messageFactory", function () {
     done();
   });
 
-  it("should create ack message", function (done) {
-    const originalMessage = {
-      id: "123",
-      correlationId: "abc",
-      tags: ["tag"],
-      topics: {to: "my:topic", response: "my:topic:response"},
-    };
+  it("should create response message with config", function (done) {
+    const message = messageFactory.createResponseMessage(originalMessage, {message: "hello"}, {responderId: "123"}, {ttl: 3000, tags: ["tag2"]});
 
+    expect(message.tags).to.be.deep.equal([originalMessage.tags[0], "tag2"]);
+    expect(message.meta.ttl).to.be.equal(3000);
+    done();
+  });
+
+  it("should create ack message", function (done) {
     const message = messageFactory.createAckMessage(originalMessage, {responderId: "123"});
 
     expect(message.topics.to).to.be.equal(originalMessage.topics.response);
     expect(message.correlationId).to.be.equal(originalMessage.correlationId);
+    expect(message.tags).to.be.deep.equal(originalMessage.tags);
     expect(message.meta).to.be.an("object");
     expect(message.meta.createdAt).to.be.instanceOf(Date);
     expect(message.meta.serviceDetails).to.be.deep.equal(serviceDetails);
