@@ -3,10 +3,10 @@ import {EventEmitter} from "events";
 const simple = require("simple-mock");
 import * as amqp from "../../lib/adapters/amqp";
 import * as config from "../../lib/config";
-// import {create as createChannelManager} from "../lib/channelManager";
 const createChannelManager = (require("../../lib/channelManager")).create;
 import {BrokerAdapter, BrokerPublisherAdapterFactory, BrokerSubscriberAdapter} from "../../lib/adapters/adapter";
 import * as messageFactory from "../../lib/messageFactory";
+
 describe("channelManager", function () {
   let queue: BrokerAdapter;
   let channelManager;
@@ -229,9 +229,6 @@ describe("channelManager", function () {
       let onMessageEvent = simple.mock();
       consumer.on("message", onMessageEvent);
 
-      simple.mock(messageFactory, "startContext");
-      simple.mock(messageFactory, "endContext");
-
       // With expired message
       onMessageFn({meta: {ttl: 1000, createdAt: new Date(Date.now() - 1001)}});
       expect(onNewMessageEvent.called).to.be.false;
@@ -242,17 +239,6 @@ describe("channelManager", function () {
       expect(onNewMessageEvent.called).to.be.true;
       expect(onNewMessageEvent.lastCall.args[0]).equals("c:etc");
       expect(onMessageEvent.called).to.be.true;
-      expect((messageFactory.startContext as any).called).to.be.true;
-      expect((messageFactory.endContext as any).called).to.be.true;
-      expect(onMessageEvent.lastCall.k).above((messageFactory.startContext as any).lastCall.k);
-      expect(onMessageEvent.lastCall.k).below((messageFactory.endContext as any).lastCall.k);
-
-      // With autoMessageContext turned off
-      simple.mock(channelManager._config, "autoMessageContext", false);
-      onMessageFn({});
-      expect(onMessageEvent.callCount).equals(2);
-      expect((messageFactory.startContext as any).callCount).equals(1);
-      expect((messageFactory.endContext as any).callCount).equals(1);
 
       done();
     });
