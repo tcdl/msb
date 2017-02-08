@@ -44,10 +44,6 @@ export function createAckMessage(originalMessage: Message, ack: MessageAck, conf
 export interface MessageConfig {
   ttl?: number;
   tags?: string[];
-  /**
-   * @deprecated since version 2.0
-   */
-  middlewareNamespace?: string;
   routingKey?: string;
 }
 
