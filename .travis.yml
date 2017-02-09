@@ -18,3 +18,4 @@ deploy:
   on:
     tags: true
     repo: tcdl/msb
+    node: '6'
