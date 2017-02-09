@@ -14,7 +14,7 @@ deploy:
   provider: npm
   email: integration-dev@thomascookonline.com
   api_key:
-    secure: lzF+SNlNL/cX097wwbboBH/oMLdYm5U3pmGyySLHuKtdnzvRuvWoFnFvR3s0V4UEkYrGijqCz5NvvhlbAFgSaQvgctxlhW5082ZcnWr8R+pYGOrooxcseZwXC3nwhBe6lT/mmjyW5VyhDrk7LG3nGzfGuv/BfiTxcCbHm9YrLB0=
+    secure: "fb+NfWLME/7WqcFUl71AHt0/f0z6frl40oJfUylXu37Ei+kfTN/uBuAndg2bNdEBoCDfgL21akQAum/nsKzMos60uaOTPg2gPpqvPdyeX3RA0NWf9I8tsNEV8/DJQBZEgVhNQfHdlWnALLBKfJvsHffnV5NOphP/o+RxfzVQQ5M="
   on:
     tags: true
     repo: tcdl/msb

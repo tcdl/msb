@@ -36,6 +36,13 @@ channelManagerExports.create = function () {
   channelManager.close = function () {
     if (!adapter || !adapter.close) return;
     adapter.close();
+
+    producersByTopic = {};
+    consumersByTopic = {};
+    consumerTopicsToCheck = [];
+    toCheckConsumers = false;
+    adapter = null;
+    adapterConfig = null;
   };
 
   channelManager.hasChannels = function () {
