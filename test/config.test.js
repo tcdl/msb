@@ -62,7 +62,6 @@ describe('config', function() {
       simple.mock(process.env, 'MSB_BROKER_PASS', 'g');
       simple.mock(process.env, 'MSB_BROKER_USER', 'i');
       simple.mock(process.env, 'MSB_AMQP_VHOST', 'j');
-      simple.mock(process.env, 'MSB_BROKER_USE_SSL', 'true');
 
       var config = require('../lib/config').create();
 
@@ -72,20 +71,13 @@ describe('config', function() {
       expect(config.amqp.login).equals('i');
       expect(config.amqp.password).equals('g');
       expect(config.amqp.vhost).equals('j');
-      expect(config.amqp.ssl).equals(true);
+      expect(config.amqp.ssl).equals(false);
+      expect(config.amqp.reconnect).equals(true);
       done();
     });
   });
 
   describe('ssl env variable', function() {
-
-    it('should be set to false by default', function(done) {
-
-      var config = require('../lib/config').create();
-
-      expect(config.amqp.ssl).equals(false);
-      done();
-    });
 
     it('should be set to false if incorrect value was provided', function(done) {
 
@@ -104,6 +96,29 @@ describe('config', function() {
       var config = require('../lib/config').create();
 
       expect(config.amqp.ssl).equals(true);
+      done();
+    });
+  });
+
+  describe('reconnect env variable', function() {
+
+    it('should be set to true if incorrect value was provided', function(done) {
+
+      simple.mock(process.env, 'MSB_BROKER_RECONNECT', '1');
+
+      var config = require('../lib/config').create();
+
+      expect(config.amqp.reconnect).equals(true);
+      done();
+    });
+
+    it('should be set to false if "false" value was provided', function(done) {
+
+      simple.mock(process.env, 'MSB_BROKER_RECONNECT', 'false');
+
+      var config = require('../lib/config').create();
+
+      expect(config.amqp.reconnect).equals(false);
       done();
     });
   });

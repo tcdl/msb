@@ -31,7 +31,7 @@
     "simple-mock": "^0"
   },
   "dependencies": {
-    "amqp-coffee": "^0.1.25",
+    "amqp-coffee": "^0.1.30",
     "async": "^2.0.0",
     "cli-table": "^0.3.1",
     "debug": "^2.1.1",
