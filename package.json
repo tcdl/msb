@@ -1,6 +1,6 @@
 {
   "name": "msb",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
@@ -31,7 +31,7 @@
     "simple-mock": "^0"
   },
   "dependencies": {
-    "amqp-coffee": "^0.1.25",
+    "amqp-coffee": "^0.1.30",
     "async": "^2.0.0",
     "cli-table": "^0.3.1",
     "debug": "^2.1.1",
