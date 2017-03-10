@@ -26,7 +26,7 @@
   "dependencies": {
     "amqp-coffee": "0.1.30",
     "async": "2.1.4",
-    "debug": "2.6.0",
+    "debug": "2.6.2",
     "lodash": "4.17.4",
     "lodash.get": "4.4.2",
     "minimist": "1.2.0",
