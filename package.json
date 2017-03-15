@@ -45,7 +45,7 @@
     "mocha": "3.2.0",
     "nyc": "^10.1.2",
     "simple-mock": "0.7.3",
-    "sinon": "^1.17.7",
+    "sinon": "^2.0.0",
     "ts-node": "^2.0.0",
     "tslint": "4.4.2",
     "typescript": "2.1.6"
