@@ -10,7 +10,7 @@ import {AMQPPublisherAdapter} from "./publisher";
 import {AMQPSubscriberAdapter} from "./subscriber";
 
 const AMQP = require("amqp-coffee");
-const _ = require("lodash");
+const clone = require("lodash.clone");
 
 class AMQPBrokerAdapter implements BrokerAdapter {
   private connection: any;
@@ -42,7 +42,7 @@ class AMQPBrokerAdapter implements BrokerAdapter {
   private sharedConnection(config: any): any {
     if (this.connection) return this.connection;
 
-    this.connection = new AMQP(_.clone(config));
+    this.connection = new AMQP(clone(config));
     this.connection.setMaxListeners(0);
     return this.connection;
   }

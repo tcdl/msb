@@ -1,6 +1,6 @@
 /* tslint:disable:typedef */
 //todo: refactoring
-const _ = require("lodash");
+const merge = require("lodash.merge");
 import {EventEmitter} from "events";
 const debug = require("debug")("msb:channelManager");
 import validateWithSchema = require("./validateWithSchema");
@@ -92,7 +92,7 @@ channelManagerExports.create = function () {
 
   channelManager.createRawProducer = function (topic, options) {
     const adap = getAdapter();
-    let producerConfig = _.merge(adapterConfig, options);
+    let producerConfig = merge(adapterConfig, options);
 
     return adap.Publish(producerConfig).channel(helpers.validatedTopic(topic));
   };
@@ -182,7 +182,7 @@ channelManagerExports.create = function () {
   channelManager.createRawConsumer = function (topic, options) {
     let a = getAdapter();
 
-    let subscriberConfig = _.merge({
+    let subscriberConfig = merge({
       channel: helpers.validatedTopic(topic),
     }, adapterConfig, options);
 

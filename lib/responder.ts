@@ -1,5 +1,7 @@
 import {EventEmitter} from "events";
-const _ = require("lodash");
+const last = require("lodash.last");
+const isFunction = require("lodash.isfunction");
+const isUndefined = require("lodash.isundefined");
 import * as messageFactory from "./messageFactory";
 import generateId = require("./support/generateId");
 
@@ -52,14 +54,14 @@ export class Responder {
   //todo: overload this function
   sendAck(timeoutMs: any, responsesRemaining?: any, cb?: any): void {
     if (!cb) {
-      cb = _.last(arguments);
-      if (!_.isFunction(cb)) cb = null;
+      cb = last(arguments);
+      if (!isFunction(cb)) cb = null;
       if (timeoutMs === cb) timeoutMs = null;
       if (responsesRemaining === cb) responsesRemaining = undefined;
     }
 
     this.ack.timeoutMs = (timeoutMs > -1) ? timeoutMs : this.ack.timeoutMs;
-    if (_.isUndefined(responsesRemaining)) {
+    if (isUndefined(responsesRemaining)) {
       this.ack.responsesRemaining = 1;
     } else {
       this.ack.responsesRemaining = responsesRemaining;

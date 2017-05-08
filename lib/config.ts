@@ -1,7 +1,7 @@
 import {JsonSchema} from "tv4";
 import serviceDetails = require("./support/serviceDetails");
 import {resolve} from "path";
-const _ = require("lodash");
+const merge = require("lodash.merge");
 
 type adapterName = "amqp" | "local";
 type amqpExchangeType = "fanout" | "topic";
@@ -85,7 +85,7 @@ export class Config {
   }
 
   configure(obj: Object): void {
-    _.merge(this, obj);
+    merge(this, obj);
   }
 
   /**

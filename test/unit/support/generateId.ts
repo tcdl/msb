@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import generateId = require("../../../lib/support/generateId");
-const _ = require("lodash");
+const uniq = require("lodash.uniq");
 const simple = require("simple-mock");
 const MAX_PER_SECOND: number = 65536;
 
@@ -35,7 +35,7 @@ describe("generateId", function () {
     }
 
     expect(ids.length).equals(MAX_PER_SECOND);
-    expect(ids.length).equals(_.uniq(ids).length);
+    expect(ids.length).equals(uniq(ids).length);
     done();
   });
 
@@ -57,7 +57,7 @@ describe("generateId", function () {
     }
 
     expect(ids.length).equals(MAX_PER_SECOND);
-    expect(ids.length).equals(_.uniq(ids).length);
+    expect(ids.length).equals(uniq(ids).length);
     done();
   });
 });

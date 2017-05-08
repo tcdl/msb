@@ -1,7 +1,7 @@
 import serviceDetails = require("./support/serviceDetails");
 import generateId = require("./support/generateId");
 
-const _ = require("lodash");
+const union = require("lodash.union");
 
 const INSTANCE_ID = serviceDetails.instanceId;
 
@@ -33,7 +33,7 @@ export function createResponseMessage(originalMessage: Message, payload: Message
   const message = createMessage(originalMessage.topics.response, payload, config);
   message.correlationId = originalMessage.correlationId;
   message.ack = ack;
-  message.tags = _.union(originalMessage.tags, message.tags);
+  message.tags = union(originalMessage.tags, message.tags);
 
   return message;
 }

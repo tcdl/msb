@@ -15,7 +15,6 @@ var argv = require('minimist')(process.argv.slice(2), {
 
 var fs = require('fs');
 var path = require('path');
-var _ = require('lodash');
 
 process
 .stdin
