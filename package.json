@@ -48,7 +48,7 @@
     "sinon": "^2.0.0",
     "ts-node": "^2.0.0",
     "tslint": "4.5.1",
-    "typescript": "2.2.1"
+    "typescript": "2.3.3"
   },
   "engines": {
     "node": ">=4"
