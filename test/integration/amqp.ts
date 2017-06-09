@@ -1,6 +1,6 @@
 import {expect} from "chai";
 const simple = require("simple-mock");
-const _ = require("lodash");
+const merge = require("lodash.merge");
 
 import {createChannelManager, validateWithSchema} from "../..";
 import {AMQPSubscriberAdapter} from "../../lib/adapters/amqp/subscriber";
@@ -200,7 +200,7 @@ describe("AMQP Integration", function() {
 
       consumer.on("message", onMessageMethod);
 
-      const expiredMessage = _.merge({}, fixtures.consumer_basic, {
+      const expiredMessage = merge({}, fixtures.consumer_basic, {
         meta: {ttl: 10000},
       });
 
@@ -238,7 +238,7 @@ describe("AMQP Integration", function() {
 
       consumer.on("message", validationMethod);
 
-      const validMessage = _.merge({}, fixtures.consumer_basic, {
+      const validMessage = merge({}, fixtures.consumer_basic, {
         payload: {
           body: {},
         },
@@ -493,7 +493,7 @@ describe("AMQP Integration", function() {
 
       consumer.on("message", onMessageMethod);
 
-      const expiredMessage = _.merge({}, fixtures.consumer_basic, {
+      const expiredMessage = merge({}, fixtures.consumer_basic, {
         meta: {ttl: 10000},
       });
 
@@ -533,7 +533,7 @@ describe("AMQP Integration", function() {
 
       consumer.on("message", validationMethod);
 
-      const validMessage = _.merge({}, fixtures.consumer_basic, {
+      const validMessage = merge({}, fixtures.consumer_basic, {
         payload: {
           body: {},
         },
@@ -577,7 +577,7 @@ describe("AMQP Integration", function() {
       consumer.on("message", validationMethod);
       consumer.on("error", onErrorMethod);
 
-      const validMessage = _.merge({}, fixtures.consumer_basic, {
+      const validMessage = merge({}, fixtures.consumer_basic, {
         payload: {
           body: {},
         },

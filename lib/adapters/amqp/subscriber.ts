@@ -3,7 +3,9 @@ import {ConfigAMQP} from "../../config";
 import {Message} from "../../messageFactory";
 import serviceDetails = require("../../support/serviceDetails");
 
-const _ = require("lodash");
+const clone = require("lodash.clone");
+const isObject = require("lodash.isobject");
+const isString = require("lodash.isstring");
 
 export class AMQPSubscriberAdapter extends EventEmitter {
   private config: ConfigAMQP;
@@ -63,7 +65,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
       let parsedMessage;
       try {
         parsedMessage = JSON.parse(message);
-        if (!_.isObject(parsedMessage)) throw new Error("Invalid message format");
+        if (!isObject(parsedMessage)) throw new Error("Invalid message format");
       } catch (e) {
         envelope.reject();
         this.emit("error", e);
@@ -107,7 +109,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
       const queueOptions = this.getQueueOptions();
       const queue = connection.queue(queueOptions);
       const bindingKeys = !config.bindingKeys ? [""] :
-        _.isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
+        isString(config.bindingKeys) ? [config.bindingKeys] : config.bindingKeys;
 
       queue.declare(queueOptions, (errInQueueDeclare) => {
         if (errInQueueDeclare) return done(errInQueueDeclare);
@@ -120,7 +122,7 @@ export class AMQPSubscriberAdapter extends EventEmitter {
             if (consumer) {
               this.consumer.resume(done);
             } else {
-              this.consumer = consumer = connection.consume(queueOptions.queue, _.clone(queueOptions), (envelope) => this.onMessage(envelope), done);
+              this.consumer = consumer = connection.consume(queueOptions.queue, clone(queueOptions), (envelope) => this.onMessage(envelope), done);
               consumer.on("error", (err) => this.onConsumerError(err));
             }
           });

@@ -2,10 +2,11 @@ import {Message, MessagePayload} from "./messageFactory";
 import {Requester} from "./requester";
 import validateWithSchema = require("./validateWithSchema");
 
-const _ = require("lodash");
+const clone = require("lodash.clone");
+const isString = require("lodash.isstring");
 
 export default function (options: any, payload: MessagePayload, cb: (err: Error, payload: MessagePayload, message: Message) => void): Requester {
-  if (_.isString(options)) {
+  if (isString(options)) {
     options = {
       namespace: options,
       waitForResponses: 1,
@@ -14,7 +15,7 @@ export default function (options: any, payload: MessagePayload, cb: (err: Error,
     options.waitForResponses = 1;
   }
 
-  options = _.clone(options);
+  options = clone(options);
 
   const channelManager = options.channelManager;
   delete(options.channelManager);
