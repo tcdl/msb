@@ -311,7 +311,11 @@ msb.createChannelManager().configure(config); // Additional channelManager
 - MSB_SERVICE_INSTANCE_ID (Default: generated universally unique 12-byte/24-char hex string.)
 - MSB_BROKER_ADAPTER One of 'amqp' or 'local' (Default: 'amqp')
 - MSB_BROKER_HOST and MSB_BROKER_PORT Maps to appropriate values in `config.amqp` overriding defaults.
+- MSB_BROKER_RECONNECT A boolean which determines whether the connection with the broker should be automatically recovered from failures (Default: 'false')
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
+
+### Connection recovery
+By default, MSB does not automatically recover failed connection with the broker. When a connection failure occurs, an error will be raised and the application process will terminate. This behaviour can be overridden by setting `MSB_BROKER_RECONNECT=true`. There is a drawback in the implementation of that functionality though. The reconnection will be done silently, without emitting any events or logging errors. Due to that it might be hard to understand if a microservice is connected to the broker or is in the middle of connection retry. 
 
 ## Tools
 
