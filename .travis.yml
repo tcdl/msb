@@ -7,16 +7,16 @@ node_js:
 - '0.12'
 - '0.11'
 - '0.10'
-- 'iojs'
+- iojs
 after_success:
-  - npm run coveralls
+- npm run coveralls
 services:
-  - rabbitmq
+- rabbitmq
 deploy:
   provider: npm
   email: integration-dev@thomascookonline.com
   api_key:
-    secure: "fb+NfWLME/7WqcFUl71AHt0/f0z6frl40oJfUylXu37Ei+kfTN/uBuAndg2bNdEBoCDfgL21akQAum/nsKzMos60uaOTPg2gPpqvPdyeX3RA0NWf9I8tsNEV8/DJQBZEgVhNQfHdlWnALLBKfJvsHffnV5NOphP/o+RxfzVQQ5M="
+    secure: UelZNGD1jKhJ9Jefbp0S8ECEDz3Q3tP67ibGLxGBliFFUgyb05MHLLwX447jO4UhW1/jIE2aAn6cy0ad/Fm+CkymOC8r8LfGR1cfp/0auN1gU0fxMiZWrz0RxBmhBIFnUD+I+j6mjxU8ceABCsxwpMy6MHQlCOAl1ffOk2s+n1U=
   on:
     tags: true
     repo: tcdl/msb
