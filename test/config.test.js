@@ -72,7 +72,7 @@ describe('config', function() {
       expect(config.amqp.password).equals('g');
       expect(config.amqp.vhost).equals('j');
       expect(config.amqp.ssl).equals(false);
-      expect(config.amqp.reconnect).equals(true);
+      expect(config.amqp.reconnect).equals(false);
       done();
     });
   });
@@ -102,23 +102,23 @@ describe('config', function() {
 
   describe('reconnect env variable', function() {
 
-    it('should be set to true if incorrect value was provided', function(done) {
+    it('should be set to false if incorrect value was provided', function(done) {
 
       simple.mock(process.env, 'MSB_BROKER_RECONNECT', '1');
 
       var config = require('../lib/config').create();
 
-      expect(config.amqp.reconnect).equals(true);
+      expect(config.amqp.reconnect).equals(false);
       done();
     });
 
-    it('should be set to false if "false" value was provided', function(done) {
+    it('should be set to true if "true" value was provided', function(done) {
 
-      simple.mock(process.env, 'MSB_BROKER_RECONNECT', 'false');
+      simple.mock(process.env, 'MSB_BROKER_RECONNECT', 'true');
 
       var config = require('../lib/config').create();
 
-      expect(config.amqp.reconnect).equals(false);
+      expect(config.amqp.reconnect).equals(true);
       done();
     });
   });
