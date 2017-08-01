@@ -312,7 +312,11 @@ msb.createChannelManager().configure(config); // Additional channelManager
 - MSB_BROKER_PASSWORD, default "guest".
 - MSB_BROKER_VIRTUAL_HOST, default "/".
 - MSB_BROKER_USE_SSL, default "false".
+- MSB_BROKER_RECONNECT A boolean which determines whether the connection with the broker should be automatically recovered from failures (Default: 'false')
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
+
+### Connection recovery
+By default, MSB does not automatically recover failed connection with the broker. When a connection failure occurs, an error will be raised and the application process will terminate. This behaviour can be overridden by setting `MSB_BROKER_RECONNECT=true`. There is a drawback in the implementation of that functionality though. The reconnection will be done silently, without emitting any events or logging errors. Due to that it might be hard to understand if a microservice is connected to the broker or is in the middle of connection retry. 
 
 ## Tools
 
