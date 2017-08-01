@@ -37,6 +37,7 @@ export interface LocalConfig extends BrokerConfig {
 
 export class Config {
   static readonly DEFAULT_SSL_VALUE = false;
+  static readonly DEFAULT_RECONNECT_VALUE = false;
 
   schema: JsonSchema;
   cleanupConsumers: boolean;
@@ -57,6 +58,7 @@ export class Config {
       password: process.env.MSB_BROKER_PASSWORD || "guest",
       vhost: process.env.MSB_BROKER_VIRTUAL_HOST || "/",
       ssl: Config.getBoolean(process.env.MSB_BROKER_USE_SSL, Config.DEFAULT_SSL_VALUE),
+      reconnect: Config.getBoolean(process.env.MSB_BROKER_RECONNECT, Config.DEFAULT_RECONNECT_VALUE),
       groupId: serviceDetails.name,
       durable: false,
       heartbeat: 10000, // In milliseconds

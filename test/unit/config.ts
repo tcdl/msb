@@ -81,22 +81,32 @@ describe("config", function () {
     });
 
     let tests = [
-      {env: "true", exprected: true},
-      {env: "false", exprected: false},
-      {env: "any falue", exprected: Config.DEFAULT_SSL_VALUE},
-      {env: undefined, exprected: Config.DEFAULT_SSL_VALUE},
+      {env: "true", expected: true},
+      {env: "false", expected: false},
+      {env: "any value", expected: false},
+      {env: undefined, expected: false},
     ];
 
     tests.forEach(function (test) {
-      it(`should set ssl to ${test.exprected} on MSB_BROKER_USE_SSL="${test.env}"`, function (done) {
+      it(`should set ssl to ${test.expected} on MSB_BROKER_USE_SSL="${test.env}"`, function (done) {
         simple.mock(process.env, "MSB_BROKER_USE_SSL", test.env);
 
         const config = create();
 
-        expect(config.amqp.ssl).equals(test.exprected);
+        expect(config.amqp.ssl).equals(test.expected);
+        done();
+      });
+    });
+
+    tests.forEach(function (test) {
+      it(`should set reconnect to ${test.expected} on MSB_BROKER_RECONNECT="${test.env}"`, function (done) {
+        simple.mock(process.env, "MSB_BROKER_RECONNECT", test.env);
+
+        const config = create();
+
+        expect(config.amqp.reconnect).equals(test.expected);
         done();
       });
     });
   });
-
 });
