@@ -11,18 +11,18 @@ var createChannelManager = require('../lib/channelManager').create;
 var messageFactory = msb.messageFactory;
 
 describe('channelManager', function() {
-  var queue;
+  var adapter;
   var channelManager;
 
   before(function(done) {
-    queue = amqp.create();
+    adapter = amqp.create();
     done();
   });
 
   beforeEach(function(done) {
     channelManager = createChannelManager();
 
-    simple.mock(amqp, 'create').returnWith(queue);
+    simple.mock(amqp, 'create').returnWith(adapter);
     simple.mock(config, 'amqp', {
       host: 'mock.host',
       port: '99999'
@@ -69,7 +69,7 @@ describe('channelManager', function() {
     it('can reuse channels per topic', function(done) {
       var mockPublisher = {};
 
-      simple.mock(queue, 'Publish').returnWith(mockPublisher);
+      simple.mock(adapter, 'Publish').returnWith(mockPublisher);
 
       simple
       .mock(mockPublisher, 'channel')
@@ -90,8 +90,8 @@ describe('channelManager', function() {
       var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
       expect(amqp.create.callCount).equals(1);
-      expect(queue.Publish.callCount).equals(2);
-      expect(queue.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
+      expect(adapter.Publish.callCount).equals(2);
+      expect(adapter.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
       expect(mockPublisher.channel.callCount).equals(2);
       expect(producer2).to.not.equal(producer1a);
       expect(producer1a).equals(producer1b);
@@ -131,15 +131,15 @@ describe('channelManager', function() {
       simple.mock(mockSubscriber2, 'on');
 
       simple
-      .mock(queue, 'Subscribe')
+      .mock(adapter, 'Subscribe')
       .returnWith(mockSubscriber1)
       .returnWith(mockSubscriber2)
       .returnWith(null);
 
       var consumer1a = channelManager.findOrCreateConsumer('con1:1');
 
-      expect(queue.Subscribe.called).to.be.true;
-      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+      expect(adapter.Subscribe.called).to.be.true;
+      expect(adapter.Subscribe.lastCall.args[0]).deep.include({
         channel: 'con1:1',
         host: 'mock.host',
         port: '99999'
@@ -147,7 +147,7 @@ describe('channelManager', function() {
 
       var consumer2 = channelManager.findOrCreateConsumer('con1:2');
 
-      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+      expect(adapter.Subscribe.lastCall.args[0]).deep.include({
         channel: 'con1:2',
         host: 'mock.host',
         port: '99999'
@@ -156,7 +156,7 @@ describe('channelManager', function() {
       var consumer1b = channelManager.findOrCreateConsumer('con1:1');
 
       expect(amqp.create.callCount).equals(1);
-      expect(queue.Subscribe.callCount).equals(2);
+      expect(adapter.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
       expect(consumer1a).equals(consumer1b);
       done();
@@ -172,22 +172,22 @@ describe('channelManager', function() {
       simple.mock(mockSubscriber2, 'on');
 
       simple
-        .mock(queue, 'Subscribe')
+        .mock(adapter, 'Subscribe')
         .returnWith(mockSubscriber1)
         .returnWith(mockSubscriber2)
         .returnWith(null);
 
       var consumer1a = channelManager.findOrCreateConsumer('con1:1');
 
-      expect(queue.Subscribe.called).to.be.true;
-      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+      expect(adapter.Subscribe.called).to.be.true;
+      expect(adapter.Subscribe.lastCall.args[0]).deep.include({
         durable: false,
         type: 'fanout'
       });
 
       var consumer2 = channelManager.findOrCreateConsumer('con1:2', { type: 'topic', durable: true });
 
-      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+      expect(adapter.Subscribe.lastCall.args[0]).deep.include({
         durable: true,
         type: 'topic'
       });
@@ -344,7 +344,7 @@ describe('channelManager', function() {
     it('should recreate producer', function(done) {
       var mockPublisher = {};
 
-      simple.mock(queue, 'Publish').returnWith(mockPublisher);
+      simple.mock(adapter, 'Publish').returnWith(mockPublisher);
 
       simple
         .mock(mockPublisher, 'channel')
@@ -372,15 +372,15 @@ describe('channelManager', function() {
       simple.mock(mockSubscriber, 'on');
 
       simple
-        .mock(queue, 'Subscribe')
+        .mock(adapter, 'Subscribe')
         .returnWith(mockSubscriber)
         .returnWith(mockSubscriber)
         .returnWith(null);
 
       var consumer1a = channelManager.findOrCreateConsumer('con1:1');
 
-      expect(queue.Subscribe.called).to.be.true;
-      expect(queue.Subscribe.lastCall.args[0]).deep.include({
+      expect(adapter.Subscribe.called).to.be.true;
+      expect(adapter.Subscribe.lastCall.args[0]).deep.include({
         channel: 'con1:1',
         host: 'mock.host',
         port: '99999'
@@ -398,6 +398,40 @@ describe('channelManager', function() {
       expect(consumer2).to.not.equal(consumer1a);
 
       done();
+    });
+  });
+
+  describe('Adapter events', function() {
+    beforeEach(() => {
+      var mockPublisher = {};
+      simple.mock(adapter, 'Publish').returnWith(mockPublisher);
+      simple.mock(mockPublisher, 'channel').returnWith({});
+    });
+
+    afterEach(function() {
+      channelManager.close();
+    });
+
+    it('should emit connected event', function(done) {
+      channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
+      channelManager.on('connection', done);
+      adapter.emit('connection');
+    });
+
+    it('should emit disconnected event', function(done) {
+      channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
+      channelManager.on('disconnection', done);
+      adapter.emit('disconnection');
+    });
+
+    it('should emit error event', function(done) {
+      channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
+      var error = new Error('socket error');
+      channelManager.on('error', function(event) {
+        expect(event).to.be.equal(error);
+        done();
+      });
+      adapter.emit('error', error);
     });
   });
 });
