@@ -402,7 +402,7 @@ describe('channelManager', function() {
   });
 
   describe('Adapter events', function() {
-    beforeEach(() => {
+    beforeEach(function() {
       var mockPublisher = {};
       simple.mock(adapter, 'Publish').returnWith(mockPublisher);
       simple.mock(mockPublisher, 'channel').returnWith({});
@@ -412,19 +412,19 @@ describe('channelManager', function() {
       channelManager.close();
     });
 
-    it('should emit connected event', function(done) {
+    it('should emit `connection` event', function(done) {
       channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
       channelManager.on('connection', done);
       adapter.emit('connection');
     });
 
-    it('should emit disconnected event', function(done) {
+    it('should emit `disconnection` event', function(done) {
       channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
       channelManager.on('disconnection', done);
       adapter.emit('disconnection');
     });
 
-    it('should emit error event', function(done) {
+    it('should emit `error` event', function(done) {
       channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
       var error = new Error('socket error');
       channelManager.on('error', function(event) {
