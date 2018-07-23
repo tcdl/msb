@@ -419,9 +419,13 @@ describe('channelManager', function() {
     });
 
     it('should emit `disconnection` event', function(done) {
+      var error = new Error('socket error, but going to recover');
       channelManager.findOrCreateProducer('prod1:1'); // trigger adapter creation
-      channelManager.on('disconnection', done);
-      adapter.emit('disconnection');
+      channelManager.on('disconnection', function(event) {
+        expect(event).to.be.equal(error);
+        done();
+      });
+      adapter.emit('disconnection', error);
     });
 
     it('should emit `error` event', function(done) {
