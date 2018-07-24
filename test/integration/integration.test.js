@@ -87,7 +87,7 @@ describe('AMQP Integration', function() {
           expect(onMessageMethod.calls[2].arg).deep.equals(fixtures.consumer_basic);
           expect(confirmMethod.callCount).equals(3);
           done();
-        }, 100);
+        }, 200);
       });
     });
 

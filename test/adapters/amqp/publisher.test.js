@@ -2,12 +2,10 @@
 var expect = require('chai').expect;
 
 /* Modules */
-var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
-var msb = require('..');
-var AMQPPublisherAdapter = require('../lib/adapters/amqp/publisher').AMQPPublisherAdapter;
+var AMQPPublisherAdapter = require('../../../lib/adapters/amqp/publisher').AMQPPublisherAdapter;
 var AMQP = require('amqp-coffee');
-var config = require('../lib/config').create();
+var config = require('../../../lib/config').create();
 
 describe('AMQPPublisherAdapter', function() {
   var connection;

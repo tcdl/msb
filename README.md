@@ -315,7 +315,7 @@ msb.createChannelManager().configure(config); // Additional channelManager
 - MSB_CONFIG_PATH Loads the JSON/JS file at this path over the base channelManager configuration. Similar to calling `channelManager.configure(config)` programmatically.
 
 ### Connection recovery
-By default, MSB does not automatically recover failed connection with the broker. When a connection failure occurs, an error will be raised and the application process will terminate. This behaviour can be overridden by setting `MSB_BROKER_RECONNECT=true`. There is a drawback in the implementation of that functionality though. The reconnection will be done silently, without emitting any events or logging errors. Due to that it might be hard to understand if a microservice is connected to the broker or is in the middle of connection retry. 
+By default, MSB does not automatically recover failed connection with the broker. When a connection failure occurs, an error will be raised and the application process will terminate. This behaviour can be overridden by setting `MSB_BROKER_RECONNECT=true`. There is a drawback in the implementation of that functionality though. The reconnection will be done silently, without emitting any events or logging errors. Due to that it might be hard to understand if a microservice is connected to the broker or is in the middle of connection retry.
 
 ## Tools
 
@@ -571,6 +571,22 @@ Returns a consumer listening on this topic. Either existing or new. Correspondin
 #### Event: 'newConsumedMessage'
 
 - **topic** The name of the topic a message has been successfully published for.
+
+#### Event: 'connection'
+
+The adapter has established connection with message broker
+
+#### Event: 'disconnection'
+
+The adapter has lost connection with message broker, but is going to recover it (if connection recovery is enabled)
+
+- **error** Error object, the cause of disconnection
+
+#### Event: 'error'
+
+An error occurred on adapter level, e.g. unrecoverable connection loss (if connection recovery is disabled)
+
+- **error** Error object
 
 ### Producer
 
