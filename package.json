@@ -1,6 +1,6 @@
 {
   "name": "msb",
-  "version": "2.0.0-alpha",
+  "version": "2.0.1-alpha",
   "description": "A framework to simplify the implementation of an event-bus oriented microservices architecture",
   "license": "MIT",
   "main": "index.js",
@@ -26,7 +26,7 @@
   "dependencies": {
     "amqp-coffee": "0.1.30",
     "async": "2.1.5",
-    "debug": "2.6.3",
+    "debug": "^3.1.0",
     "lodash.clone": "^4.5.0",
     "lodash.get": "4.4.2",
     "lodash.isfunction": "^3.0.8",
