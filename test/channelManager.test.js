@@ -5,6 +5,8 @@ var expect = require('chai').expect;
 var EventEmitter = require('events').EventEmitter;
 var simple = require('simple-mock');
 var amqp = require('../lib/adapters/amqp');
+var activemq = require('../lib/adapters/activemq');
+
 var msb = require('..');
 var config = require('../lib/config');
 var createChannelManager = require('../lib/channelManager').create;
@@ -15,15 +17,15 @@ describe('channelManager', function() {
   var channelManager;
 
   before(function(done) {
-    adapter = amqp.create();
+    adapter = activemq.create();
     done();
   });
 
   beforeEach(function(done) {
     channelManager = createChannelManager();
 
-    simple.mock(amqp, 'create').returnWith(adapter);
-    simple.mock(config, 'amqp', {
+    simple.mock(activemq, 'create').returnWith(adapter);
+    simple.mock(config, 'activemq', {
       host: 'mock.host',
       port: '99999'
     });
@@ -89,7 +91,7 @@ describe('channelManager', function() {
 
       var producer1b = channelManager.findOrCreateProducer('prod1:1');
 
-      expect(amqp.create.callCount).equals(1);
+      expect(activemq.create.callCount).equals(1);
       expect(adapter.Publish.callCount).equals(2);
       expect(adapter.Publish.lastCall.args[0]).to.deep.include({ host: 'mock.host' });
       expect(mockPublisher.channel.callCount).equals(2);
@@ -155,7 +157,7 @@ describe('channelManager', function() {
 
       var consumer1b = channelManager.findOrCreateConsumer('con1:1');
 
-      expect(amqp.create.callCount).equals(1);
+      expect(activemq.create.callCount).equals(1);
       expect(adapter.Subscribe.callCount).equals(2);
       expect(consumer2).to.not.equal(consumer1a);
       expect(consumer1a).equals(consumer1b);
