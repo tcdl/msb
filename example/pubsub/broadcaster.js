@@ -24,15 +24,16 @@ function sendBroadcast() {
 
   var cM = msb
     .channelManager;
+
   cM.findOrCreateProducer(message.topics.to)
     .publish(message, function(err) {
       if (err) return console.error(err);
 
       console.log('broadcaster:' + j);
     });
-  // cM.on('connection', function () {
-  //
-  // });
+  cM.on('connection', function () {
+
+  });
 
 
 }
@@ -43,22 +44,23 @@ setInterval(sendBroadcast, 100);
 //
 // }, 10000)
 
-module.test.exports = async function publish(confirmation) {
-  const logger = commonLogger.child({correlationId: confirmation.headers['tc-correlation-id']});
-  const message = msb.messageFactory
-    .createBroadcastMessage({namespace: process.env.CONFIRM_NAMESPACE});
-  message.payload = confirmation;
-
-  return new Promise((resolve, reject) => {
-    msb.channelManager.findOrCreateProducer(process.env.CONFIRM_NAMESPACE, {})
-      .publish(message, err => {
-        if (err) {
-          logger.err({err}, 'Failed to publish confirmation');
-          return reject(err);
-        } else {
-          logger.info({pub: mask(message.payload)}, 'Send a message');
-          resolve();
-        }
-      });
-  });
-};
+//
+// var test = async function publish(confirmation) {
+//   const logger = commonLogger.child({correlationId: confirmation.headers['tc-correlation-id']});
+//   const message = msb.messageFactory
+//     .createBroadcastMessage({namespace: process.env.CONFIRM_NAMESPACE});
+//   message.payload = confirmation;
+//
+//   return new Promise((resolve, reject) => {
+//     msb.channelManager.findOrCreateProducer(process.env.CONFIRM_NAMESPACE, {})
+//       .publish(message, err => {
+//         if (err) {
+//           logger.err({err}, 'Failed to publish confirmation');
+//           return reject(err);
+//         } else {
+//           logger.info({pub: mask(message.payload)}, 'Send a message');
+//           resolve();
+//         }
+//       });
+//   });
+// };
