@@ -73,6 +73,14 @@ describe('config', function() {
       expect(config.amqp.vhost).equals('j');
       expect(config.amqp.ssl).equals(false);
       expect(config.amqp.reconnect).equals(false);
+
+      expect(config.activemq.host).equals('c');
+      expect(config.activemq.port).equals('e');
+      expect(config.activemq.ssl).equals(false);
+      expect(config.activemq.connectHeaders.login).equals('i');
+      expect(config.activemq.connectHeaders.password).equals('g');
+      expect(config.activemq.connectHeaders.host).equals('j');
+
       done();
     });
   });
@@ -86,6 +94,7 @@ describe('config', function() {
       var config = require('../lib/config').create();
 
       expect(config.amqp.ssl).equals(false);
+      expect(config.activemq.ssl).equals(false);
       done();
     });
 
@@ -96,6 +105,7 @@ describe('config', function() {
       var config = require('../lib/config').create();
 
       expect(config.amqp.ssl).equals(true);
+      expect(config.activemq.ssl).equals(true);
       done();
     });
   });

@@ -20,6 +20,7 @@ describe('channelManager', function() {
   });
 
   beforeEach(function(done) {
+    process.env.NODE_ENV = 'test';
     channelManager = createChannelManager();
 
     simple.mock(amqp, 'create').returnWith(adapter);
@@ -36,6 +37,7 @@ describe('channelManager', function() {
   });
 
   afterEach(function(done) {
+    delete process.env.NODE_ENV;
     simple.restore();
     done();
   });

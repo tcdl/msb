@@ -377,7 +377,7 @@ describe('Collector', function() {
 
         expect(mockChannel.on.called).to.be.true;
         expect(mockChannel.on.lastCall.args[0]).equals('message');
-        expect(mockChannel.on.lastCall.args[1]).to.be.a.function;
+        expect(mockChannel.on.lastCall.args[1]).to.be.a('function');
 
         var message = {};
         var handlerFn = mockChannel.on.lastCall.args[1];
