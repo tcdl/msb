@@ -21,7 +21,14 @@ describe('channelManager', function() {
 
   beforeEach(function(done) {
     process.env.NODE_ENV = 'test';
-    channelManager = createChannelManager();
+    process.env.MSB_BROKER_ADAPTER = 'amqp';
+
+    delete require.cache[require.resolve('..')]; //delete msb from cache
+    delete require.cache[require('../lib/channelManager')]; //delete channel manager from cache
+    msb = require('..');
+    messageFactory = msb.messageFactory;
+
+    channelManager = require('../lib/channelManager').create();
 
     simple.mock(amqp, 'create').returnWith(adapter);
     simple.mock(config, 'amqp', {
@@ -37,9 +44,13 @@ describe('channelManager', function() {
   });
 
   afterEach(function(done) {
-    delete process.env.NODE_ENV;
     simple.restore();
     done();
+  });
+
+  after(function () {
+    delete process.env.NODE_ENV;
+    delete process.env.MSB_BROKER_ADAPTER;
   });
 
   describe('hasChannels', function() {

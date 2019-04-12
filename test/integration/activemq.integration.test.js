@@ -1,52 +1,142 @@
-//process.env.MSB_BROKER_ADAPTER = 'activemq';
-var msb = require('../..');
+/*process.env.MSB_BROKER_ADAPTER = 'activemq';
+delete require.cache[require.resolve('../..')];
+var msb = require('../..');*/
 
 var assert = require('chai').assert;
 
-describe.skip('ActiveMQ integration', function () {
+describe('ActiveMQ integration', function () {
 
-  var consumer;
-  var producer;
+  process.env.MSB_BROKER_ADAPTER = 'activemq';
+  delete require.cache[require.resolve('../..')]; //delete msb from cache
+  delete require.cache[require('../../lib/channelManager')];
 
-  before('create consumer', function (done) {
+  var msb = require('../..');
 
-    consumer = msb.channelManager.findOrCreateConsumer('test:activemq', {});
+  describe('fanout example', function () {
+    var consumer1;
+    var consumer2;
 
-    consumer.onceConsuming(function () {
-      console.log('consumer connected');
+    before('create consumers', function (done) {
+
+      consumer1 = msb.channelManager.createRawConsumer('fanout:activemq', {groupId: 'consumer1'});
+      consumer2 = msb.channelManager.createRawConsumer('fanout:activemq', {groupId: 'consumer2'});
+
+      //todo: define why if tests executed via 'npm run test-no-cs'
+      //todo: then 'consumer1.onceConsuming' - is not a function?
+
+/*      consumer1.onceConsuming(function () {
+        consumer2.onceConsuming(function () {
+          done();
+        });
+      });*/
+
+      setTimeout(done, 100);
+    });
+
+    after('connection should be closed', function (done) {
+      delete process.env.MSB_BROKER_ADAPTER;
+
+      msb.channelManager.close();
       done();
+    });
+
+    it('should publish message and all consumers should receive it', function (done) {
+
+      var consumer1Ready = false;
+      var consumer2Ready = false;
+
+      var payload = {mesasge: 1};
+
+      publishTestMessage('fanout:activemq', payload);
+
+      assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
+
+      consumer1.once('message', function (message) {
+        consumer1Ready = true;
+        assert.deepEqual(message.payload, payload);
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
+
+      consumer2.once('message', function (message) {
+        consumer2Ready = true;
+        assert.deepEqual(message.payload, payload);
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
     });
   });
 
-  after('connection should be closed', function (done) {
-    delete process.env.MSB_BROKER_ADAPTER;
+  describe('topic example', function () {
+    var consumer1;
+    var consumer2;
 
-    msb.channelManager.close();
-    done();
-  });
+    before('create consumers', function (done) {
 
-  it('should publish message and receive it', function (done) {
+      consumer1 = msb.channelManager.createRawConsumer('topic:activemq', {groupId: 'consumer1', bindingKeys:'key1'});
+      consumer2 = msb.channelManager.createRawConsumer('topic:activemq', {groupId: 'consumer2', bindingKeys:'key2'});
 
-    var payload = {mesasge: 1};
-    publishTestMessage(producer, 'test:activemq', payload);
+      //todo: the same here
+      setTimeout(done, 100);
+    });
 
-    consumer.once('message', function (message) {
-      assert.deepEqual(message.payload, payload);
+    after('connection should be closed', function (done) {
+      delete process.env.MSB_BROKER_ADAPTER;
+
+      msb.channelManager.close();
       done();
     });
+
+    it('should publish message to specific subscriber', function (done) {
+
+      var consumer1Ready = false;
+      var consumer2Ready = false;
+
+      var payload = {mesasge: 1};
+
+      publishTestMessage('topic:activemq', payload, 'key1');
+      publishTestMessage('topic:activemq', payload, 'key2');
+
+      assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
+
+      consumer1.once('message', function (message) {
+        consumer1Ready = true;
+        assert.deepEqual(message.payload, payload);
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
+
+      consumer2.once('message', function (message) {
+        consumer2Ready = true;
+        assert.deepEqual(message.payload, payload);
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
+    });
+
   });
+
+  function publishTestMessage(topic, payload, routingKey) {
+    var message = msb.messageFactory
+      .createBroadcastMessage({namespace: topic});
+    message.topics.routingKey = routingKey;
+    message.payload = payload;
+
+    msb.channelManager.findOrCreateProducer(topic)
+      .publish(message, (err) => {
+        if (err) return err;
+      });
+  }
 
 });
 
-function publishTestMessage(producer, topic, payload, routingKey) {
-  var message = msb.messageFactory
-    .createBroadcastMessage({namespace: topic});
-  message.topics.routingKey = routingKey;
-  message.payload = payload;
 
-  msb.channelManager.findOrCreateProducer(topic)
-    .publish(message, (err) => {
-      if (err) return err;
-    });
-}
 
