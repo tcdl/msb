@@ -1,42 +1,34 @@
-/*process.env.MSB_BROKER_ADAPTER = 'activemq';
-delete require.cache[require.resolve('../..')];
-var msb = require('../..');*/
-
+var msb = require('../..');
 var assert = require('chai').assert;
 
 describe('ActiveMQ integration', function () {
 
-  process.env.MSB_BROKER_ADAPTER = 'activemq';
-  delete require.cache[require.resolve('../..')]; //delete msb from cache
-  delete require.cache[require('../../lib/channelManager')];
+  var channelManager;
 
-  var msb = require('../..');
+  before('should delete cache', function () {
+    channelManager = msb.createChannelManager().configure({
+      brokerAdapter: 'activemq'
+    });
+  });
 
   describe('fanout example', function () {
     var consumer1;
     var consumer2;
 
+    var fanoutExample = 'fanout:activemq';
+
     before('create consumers', function (done) {
 
-      consumer1 = msb.channelManager.createRawConsumer('fanout:activemq', {groupId: 'consumer1'});
-      consumer2 = msb.channelManager.createRawConsumer('fanout:activemq', {groupId: 'consumer2'});
-
-      //todo: define why if tests executed via 'npm run test-no-cs'
-      //todo: then 'consumer1.onceConsuming' - is not a function?
-
-/*      consumer1.onceConsuming(function () {
-        consumer2.onceConsuming(function () {
-          done();
-        });
-      });*/
-
-      setTimeout(done, 100);
+      //todo: refactor createRawConsumer to subscribe on all events like findOrCreateConsumer
+      consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: true});
+      consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: true});
+      done();
     });
 
     after('connection should be closed', function (done) {
       delete process.env.MSB_BROKER_ADAPTER;
 
-      msb.channelManager.close();
+      channelManager.close();
       done();
     });
 
@@ -47,7 +39,7 @@ describe('ActiveMQ integration', function () {
 
       var payload = {mesasge: 1};
 
-      publishTestMessage('fanout:activemq', payload);
+      publishTestMessage(fanoutExample, payload);
 
       assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
 
@@ -75,19 +67,19 @@ describe('ActiveMQ integration', function () {
     var consumer1;
     var consumer2;
 
+    var topicExample = 'topic:activemq';
+
     before('create consumers', function (done) {
 
-      consumer1 = msb.channelManager.createRawConsumer('topic:activemq', {groupId: 'consumer1', bindingKeys:'key1'});
-      consumer2 = msb.channelManager.createRawConsumer('topic:activemq', {groupId: 'consumer2', bindingKeys:'key2'});
-
-      //todo: the same here
-      setTimeout(done, 100);
+      consumer1 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer1', bindingKeys:'key1', autoConfirm: true});
+      consumer2 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer2', bindingKeys:'key2', autoConfirm: true});
+      done();
     });
 
     after('connection should be closed', function (done) {
       delete process.env.MSB_BROKER_ADAPTER;
 
-      msb.channelManager.close();
+      channelManager.close();
       done();
     });
 
@@ -96,16 +88,17 @@ describe('ActiveMQ integration', function () {
       var consumer1Ready = false;
       var consumer2Ready = false;
 
-      var payload = {mesasge: 1};
+      var message1 = {mesasge: 1};
+      var message2 = {mesasge: 2};
 
-      publishTestMessage('topic:activemq', payload, 'key1');
-      publishTestMessage('topic:activemq', payload, 'key2');
+      publishTestMessage(topicExample, message1, 'key1');
+      publishTestMessage(topicExample, message2, 'key2');
 
       assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
 
       consumer1.once('message', function (message) {
         consumer1Ready = true;
-        assert.deepEqual(message.payload, payload);
+        assert.deepEqual(message.payload, message1);
 
         if (consumer1Ready && consumer2Ready) {
           done();
@@ -114,7 +107,7 @@ describe('ActiveMQ integration', function () {
 
       consumer2.once('message', function (message) {
         consumer2Ready = true;
-        assert.deepEqual(message.payload, payload);
+        assert.deepEqual(message.payload, message2);
 
         if (consumer1Ready && consumer2Ready) {
           done();
@@ -130,7 +123,7 @@ describe('ActiveMQ integration', function () {
     message.topics.routingKey = routingKey;
     message.payload = payload;
 
-    msb.channelManager.findOrCreateProducer(topic)
+    channelManager.findOrCreateProducer(topic)
       .publish(message, (err) => {
         if (err) return err;
       });

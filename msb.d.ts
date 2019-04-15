@@ -25,6 +25,7 @@ declare namespace msb {
     createRawProducer: (topic: string, options?: producerOptions) => rawProducer;
     findOrCreateConsumer: (topic: string, options: consumerOptions) => rawConsumer;
     createRawConsumer: (topic: string, options: consumerOptions) => rawConsumer;
+    createNewConsumer: (topic: string, options: consumerOptions) => rawConsumer;
   }
 
   interface configure {
@@ -170,7 +171,7 @@ declare namespace msb {
 
   }
 
-  type brokerAdapters = "amqp" | "local";
+  type brokerAdapters = "amqp" | "activemq" | "local";
   type amqpExchangeType = "fanout" | "topic";
 
   interface ConfigAMQP {

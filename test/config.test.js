@@ -78,7 +78,7 @@ describe('config', function() {
       expect(config.activemq.port).equals('e');
       expect(config.activemq.ssl).equals(false);
       expect(config.activemq.connectHeaders.login).equals('i');
-      expect(config.activemq.connectHeaders.password).equals('g');
+      expect(config.activemq.connectHeaders.passcode).equals('g');
       expect(config.activemq.connectHeaders.host).equals('j');
 
       done();
