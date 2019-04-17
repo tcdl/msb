@@ -6,8 +6,7 @@
   "main": "index.js",
   "typings": "msb.d.ts",
   "scripts": {
-    "test": "npm run cs && npm run test-no-cs",
-    "test-no-cs": "NODE_ENV=test mocha --exit",
+    "test": "NODE_ENV=test mocha --exit",
     "cs": "jscs **/*.js",
     "capture": "bin/msb -t test:aggregator,test:general --pretty false | bin/msb-save examples/messages",
     "coveralls": "NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
@@ -25,7 +24,6 @@
     "chai": "^4.2.0",
     "coveralls": "^3.0.3",
     "istanbul": "^0.4.5",
-    "jscs": "^3.0.2",
     "mocha": "^6.1.2",
     "msb-test-utils": "^2.0.0",
     "simple-mock": "^0"

@@ -3,12 +3,8 @@ var assert = require('chai').assert;
 
 describe('ActiveMQ integration', function () {
 
-  var channelManager;
-
-  before('should delete cache', function () {
-    channelManager = msb.createChannelManager().configure({
-      brokerAdapter: 'activemq'
-    });
+  var channelManager = msb.createChannelManager().configure({
+    brokerAdapter: 'activemq'
   });
 
   describe('fanout example', function () {
@@ -18,8 +14,6 @@ describe('ActiveMQ integration', function () {
     var fanoutExample = 'fanout:activemq';
 
     before('create consumers', function (done) {
-
-      //todo: refactor createRawConsumer to subscribe on all events like findOrCreateConsumer
       consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: true});
       consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: true});
       done();
@@ -124,8 +118,11 @@ describe('ActiveMQ integration', function () {
     message.payload = payload;
 
     channelManager.findOrCreateProducer(topic)
-      .publish(message, (err) => {
-        if (err) return err;
+      .publish(message, function (err) {
+        if (err) {
+          console.log('failed to publish message',  err);
+          return err;
+        }
       });
   }
 
