@@ -14,8 +14,8 @@ describe('ActiveMQ integration', function () {
     var fanoutExample = 'fanout:activemq';
 
     before('create consumers', function (done) {
-      consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: true});
-      consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: true});
+      consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: false});
+      consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: false});
       done();
     });
 
@@ -38,6 +38,8 @@ describe('ActiveMQ integration', function () {
       assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
 
       consumer1.once('message', function (message) {
+        consumer1.confirmProcessedMessage(message);
+
         consumer1Ready = true;
         assert.deepEqual(message.payload, payload);
 
@@ -47,6 +49,8 @@ describe('ActiveMQ integration', function () {
       });
 
       consumer2.once('message', function (message) {
+        consumer2.confirmProcessedMessage(message);
+
         consumer2Ready = true;
         assert.deepEqual(message.payload, payload);
 
@@ -65,8 +69,8 @@ describe('ActiveMQ integration', function () {
 
     before('create consumers', function (done) {
 
-      consumer1 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer1', bindingKeys:'key1', autoConfirm: true});
-      consumer2 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer2', bindingKeys:'key2', autoConfirm: true});
+      consumer1 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer1', bindingKeys:'key1', autoConfirm: false});
+      consumer2 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer2', bindingKeys:'key2', autoConfirm: false});
       done();
     });
 
@@ -93,6 +97,7 @@ describe('ActiveMQ integration', function () {
       consumer1.once('message', function (message) {
         consumer1Ready = true;
         assert.deepEqual(message.payload, message1);
+        consumer1.confirmProcessedMessage(message);
 
         if (consumer1Ready && consumer2Ready) {
           done();
@@ -102,6 +107,7 @@ describe('ActiveMQ integration', function () {
       consumer2.once('message', function (message) {
         consumer2Ready = true;
         assert.deepEqual(message.payload, message2);
+        consumer2.confirmProcessedMessage(message);
 
         if (consumer1Ready && consumer2Ready) {
           done();
