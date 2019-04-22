@@ -1,4 +1,6 @@
 var msb = require('../..');
+var STOMPSubscriberAdapter = require('../../lib/adapters/activemq/subscriber').STOMPSubscriberAdapter;
+var simple = require('simple-mock');
 var assert = require('chai').assert;
 
 describe('ActiveMQ integration', function () {
@@ -15,7 +17,7 @@ describe('ActiveMQ integration', function () {
 
     before('create consumers', function (done) {
       consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: true});
-      consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: true});
+      consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: false});
       done();
     });
 
@@ -27,6 +29,9 @@ describe('ActiveMQ integration', function () {
     });
 
     it('should publish message and all consumers should receive it', function (done) {
+
+      var confirmMethod = simple.mock(STOMPSubscriberAdapter.prototype,
+        'confirmProcessedMessage');
 
       var consumer1Ready = false;
       var consumer2Ready = false;
@@ -40,20 +45,21 @@ describe('ActiveMQ integration', function () {
       consumer1.once('message', function (message) {
         consumer1Ready = true;
         assert.deepEqual(message.payload, payload);
-
-        if (consumer1Ready && consumer2Ready) {
-          done();
-        }
+        //autoConfirm here
       });
 
       consumer2.once('message', function (message) {
         consumer2Ready = true;
         assert.deepEqual(message.payload, payload);
-
-        if (consumer1Ready && consumer2Ready) {
-          done();
-        }
+        consumer2.confirmProcessedMessage(message);
       });
+
+      setTimeout(function () {
+        assert.isTrue(consumer1Ready);
+        assert.isTrue(consumer2Ready);
+        assert.equal(confirmMethod.callCount, 2);
+        done();
+      }, 100);
     });
   });
 
@@ -66,7 +72,7 @@ describe('ActiveMQ integration', function () {
     before('create consumers', function (done) {
 
       consumer1 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer1', bindingKeys:'key1', autoConfirm: true});
-      consumer2 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer2', bindingKeys:'key2', autoConfirm: true});
+      consumer2 = channelManager.createNewConsumer(topicExample, {groupId: 'consumer2', bindingKeys:'key2', autoConfirm: false});
       done();
     });
 
@@ -78,6 +84,9 @@ describe('ActiveMQ integration', function () {
     });
 
     it('should publish message to specific subscriber', function (done) {
+
+      var confirmMethod = simple.mock(STOMPSubscriberAdapter.prototype,
+        'confirmProcessedMessage');
 
       var consumer1Ready = false;
       var consumer2Ready = false;
@@ -93,20 +102,21 @@ describe('ActiveMQ integration', function () {
       consumer1.once('message', function (message) {
         consumer1Ready = true;
         assert.deepEqual(message.payload, message1);
-
-        if (consumer1Ready && consumer2Ready) {
-          done();
-        }
+        //autoConfirm here
       });
 
       consumer2.once('message', function (message) {
         consumer2Ready = true;
         assert.deepEqual(message.payload, message2);
-
-        if (consumer1Ready && consumer2Ready) {
-          done();
-        }
+        consumer2.confirmProcessedMessage(message);
       });
+
+      setTimeout(function () {
+        assert.isTrue(consumer1Ready);
+        assert.isTrue(consumer2Ready);
+        assert.equal(confirmMethod.callCount, 2);
+        done();
+      }, 100);
     });
 
   });
