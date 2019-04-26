@@ -9,13 +9,20 @@ var msb = require('..');
 var config = require('../lib/config');
 var createChannelManager = require('../lib/channelManager').create;
 var messageFactory = msb.messageFactory;
+var SchemaValidationError = require('../lib/validateWithSchema').SchemaValidationError;
 
 describe('channelManager', function() {
   var adapter;
   var channelManager;
 
   before(function(done) {
+    process.env.NODE_ENV = 'test';
     adapter = amqp.create();
+    done();
+  });
+
+  after(function(done) {
+    delete process.env.NODE_ENV;
     done();
   });
 
@@ -210,6 +217,25 @@ describe('channelManager', function() {
       expect(onEvent.called).to.be.true;
       expect(onEvent.lastCall.args[0]).equals('etc');
       done();
+    });
+
+    it('will emit `error` event if message does not corresponds to schema', function(done) {
+      simple.mock(config, 'schema', require('../schema'));
+      channelManager.configure(config);
+
+      var mockSubscriber = {};
+      simple.mock(mockSubscriber, 'on');
+      simple.mock(channelManager, 'createRawConsumer').returnWith(mockSubscriber);
+
+      var consumer = channelManager.findOrCreateConsumer('c:errorConsumer');
+
+      consumer.on('error', function(err) {
+        expect(err).to.be.an.instanceof(SchemaValidationError);
+        done();
+      });
+
+      var onMessageFn = mockSubscriber.on.calls[0].args[1];
+      onMessageFn({});
     });
 
     it('will listen for messages and emit a new message event', function(done) {

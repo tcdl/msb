@@ -100,8 +100,10 @@ describe('AMQP Integration', function() {
         'rejectMessage');
 
       var onMessageMethod = simple.mock();
+      var onErrorMethod = simple.mock();
 
       consumer.on('message', onMessageMethod);
+      consumer.on('error', onErrorMethod);
 
       publisher.publish([
         fixtures.consumer_basic,
@@ -111,7 +113,8 @@ describe('AMQP Integration', function() {
         if (err) return done(err);
 
         setTimeout(function() {
-          expect(onMessageMethod.callCount).equals(2)
+          expect(onErrorMethod.callCount).equals(1);
+          expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
           expect(_onMessageMethod.callCount).equals(3);
@@ -133,8 +136,10 @@ describe('AMQP Integration', function() {
         'rejectMessage');
 
       var onMessageMethod = simple.mock();
+      var onErrorMethod = simple.mock();
 
       consumer.on('message', onMessageMethod);
+      consumer.on('error', onErrorMethod);
 
       publisher.publish([
         fixtures.consumer_basic,
@@ -144,7 +149,8 @@ describe('AMQP Integration', function() {
         if (err) return done(err);
 
         setTimeout(function() {
-          expect(onMessageMethod.callCount).equals(2)
+          expect(onErrorMethod.callCount).equals(1);
+          expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
           expect(_onMessageMethod.callCount).equals(3);
@@ -166,8 +172,10 @@ describe('AMQP Integration', function() {
         'rejectMessage');
 
       var onMessageMethod = simple.mock();
+      var onErrorMethod = simple.mock();
 
       consumer.on('message', onMessageMethod);
+      consumer.on('error', onErrorMethod);
 
       publisher.publish([
         fixtures.consumer_basic,
@@ -177,7 +185,8 @@ describe('AMQP Integration', function() {
         if (err) return done(err);
 
         setTimeout(function() {
-          expect(onMessageMethod.callCount).equals(2)
+          expect(onErrorMethod.callCount).equals(1);
+          expect(onMessageMethod.callCount).equals(2);
           expect(onMessageMethod.calls[0].arg).deep.equals(fixtures.consumer_basic);
           expect(onMessageMethod.calls[1].arg).deep.equals(fixtures.consumer_basic);
           expect(rejectMethod.callCount).equals(1);
