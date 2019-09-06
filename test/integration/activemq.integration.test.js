@@ -1,5 +1,5 @@
 var msb = require('../..');
-var STOMPSubscriberAdapter = require('../../lib/adapters/activemq/subscriber').STOMPSubscriberAdapter;
+var RheaSubscriberAdapter = require('../../lib/adapters/activemq/subscriber').RheaSubscriberAdapter;
 var simple = require('simple-mock');
 var assert = require('chai').assert;
 
@@ -30,7 +30,7 @@ describe('ActiveMQ integration', function () {
 
     it('should publish message and all consumers should receive it', function (done) {
 
-      var confirmMethod = simple.mock(STOMPSubscriberAdapter.prototype,
+      var confirmMethod = simple.mock(RheaSubscriberAdapter.prototype,
         'confirmProcessedMessage');
 
       var consumer1Ready = false;
@@ -85,7 +85,7 @@ describe('ActiveMQ integration', function () {
 
     it('should publish message to specific subscriber', function (done) {
 
-      var confirmMethod = simple.mock(STOMPSubscriberAdapter.prototype,
+      var confirmMethod = simple.mock(RheaSubscriberAdapter.prototype,
         'confirmProcessedMessage');
 
       var consumer1Ready = false;
