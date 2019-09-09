@@ -118,6 +118,8 @@ describe('ActiveMQ integration', function () {
   });
 
   describe('fanout multiple consumers example', function () {
+    //todo: add test on wildcards routing: .*
+
     var consumer1;
     var consumer2;
 
