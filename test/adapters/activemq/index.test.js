@@ -9,6 +9,7 @@ describe('ActiveMQ adapter', function() {
 
   beforeEach(function() {
     connection = new EventEmitter();
+    connection.close = function () {};
     simple.mock(connection, 'disconnect');
     simple.mock(activemq, '_createConnection').returnWith(connection);
     adapter = activemq.create();
