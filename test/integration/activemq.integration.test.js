@@ -128,6 +128,7 @@ describe('ActiveMQ integration', function () {
     before('create consumers', function (done) {
       consumer1 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer1', autoConfirm: true});
       consumer2 = channelManager.createNewConsumer(fanoutExample, {groupId: 'consumer2', autoConfirm: false});
+      assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
       done();
     });
 
@@ -144,10 +145,6 @@ describe('ActiveMQ integration', function () {
       var consumer2Received = false;
 
       var payload = {mesasge: 1};
-
-      publishTestMessage(fanoutExample, payload);
-
-      assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
 
       consumer1.once('message', function (message) {
         consumer1Received = true;
@@ -169,6 +166,8 @@ describe('ActiveMQ integration', function () {
         }
       });
 
+      //act
+      publishTestMessage(fanoutExample, payload);
     });
   });
 
@@ -211,11 +210,6 @@ describe('ActiveMQ integration', function () {
       var message1 = {mesasge: 1};
       var message2 = {mesasge: 2};
 
-      publishTestMessage(topicExample, message1, 'key1');
-      publishTestMessage(topicExample, message2, 'key2');
-
-      assert.notStrictEqual(consumer1, consumer2); // to ensure that consumers are different objects
-
       consumer1.once('message', function (message) {
         consumer1Ready = true;
         assert.deepEqual(message.payload, message1);
@@ -235,8 +229,41 @@ describe('ActiveMQ integration', function () {
           done();
         }
       });
+
+      //act
+      publishTestMessage(topicExample, message1, 'key1');
+      publishTestMessage(topicExample, message2, 'key2');
     });
 
+    it('should publish message with * routingKey and all consumers receives it', function (done) {
+
+      var consumer1Ready = false;
+      var consumer2Ready = false;
+
+      var publishedMessage = {mesasge: 1};
+
+      consumer1.once('message', function (message) {
+        consumer1Ready = true;
+        assert.deepEqual(message.payload, publishedMessage);
+        //autoConfirm here
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
+
+      consumer2.once('message', function (message) {
+        consumer2Ready = true;
+        assert.deepEqual(message.payload, publishedMessage);
+        consumer2.confirmProcessedMessage(message);
+
+        if (consumer1Ready && consumer2Ready) {
+          done();
+        }
+      });
+
+      publishTestMessage(topicExample, publishedMessage, '*');
+    });
   });
 
   function publishTestMessage(topic, payload, routingKey) {
