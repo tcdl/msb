@@ -1,6 +1,4 @@
 var msb = require('../..');
-var RheaSubscriberAdapter = require('../../lib/adapters/activemq/subscriber').RheaSubscriberAdapter;
-var simple = require('simple-mock');
 var assert = require('chai').assert;
 
 describe('ActiveMQ integration', function () {
@@ -48,7 +46,11 @@ describe('ActiveMQ integration', function () {
         }
 
         setTimeout(function () {
-          consumer.confirmProcessedMessage(message);
+          if (confirmedMessages % 2 === 0) {
+            consumer.confirmProcessedMessage(message);
+          } else {
+            consumer.rejectMessage(message);
+          }
           currentParallelCalls--;
           confirmedMessages++;
 
@@ -118,8 +120,6 @@ describe('ActiveMQ integration', function () {
   });
 
   describe('fanout multiple consumers example', function () {
-    //todo: add test on wildcards routing: .*
-
     var consumer1;
     var consumer2;
 
@@ -200,9 +200,6 @@ describe('ActiveMQ integration', function () {
     });
 
     it('should publish message to specific subscriber', function (done) {
-
-      var confirmMethod = simple.mock(RheaSubscriberAdapter.prototype,
-        'confirmProcessedMessage');
 
       var consumer1Ready = false;
       var consumer2Ready = false;
