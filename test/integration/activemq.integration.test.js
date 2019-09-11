@@ -46,11 +46,7 @@ describe('ActiveMQ integration', function () {
         }
 
         setTimeout(function () {
-          if (confirmedMessages % 2 === 0) {
-            consumer.confirmProcessedMessage(message);
-          } else {
-            consumer.rejectMessage(message);
-          }
+          consumer.confirmProcessedMessage(message);
           currentParallelCalls--;
           confirmedMessages++;
 
